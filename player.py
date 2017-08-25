@@ -5,7 +5,11 @@ import sys
 import urwid
 import asyncio
 
+import config
+
 class FileBrowser:
+
+    footer_text = 'Browser'
 
     class DirEntry(urwid.Button):
 
@@ -17,9 +21,11 @@ class FileBrowser:
             self.parent_path = parent_path
             self.isdir = is_a_dir
             if is_a_dir:
-                self._w = urwid.AttrMap(urwid.SelectableIcon([u'▸ ', name, '/'], 0), 'dir', 'dir_focused')
+                self._w = urwid.AttrMap(urwid.SelectableIcon([u'▸ ', name, '/'], 0),
+                    'dir', 'dir_focused')
             else:
-                self._w = urwid.AttrMap(urwid.SelectableIcon(['  ', name], 0), 'file', 'file_focused')
+                self._w = urwid.AttrMap(urwid.SelectableIcon(['  ', name], 0),
+                    'file', 'file_focused')
             urwid.connect_signal(self, 'enter_dir', callback)
 
         def _emit(self, signal):
@@ -35,17 +41,6 @@ class FileBrowser:
             elif not self.isdir and other.isdir: return False
             return self.name.lower() < other.name.lower()
 
-    palette = [
-        ('head', 'yellow', 'black', '', '#a30', ''),
-        ('foot', 'light gray', 'black'),
-        ('file', 'white', '', '', '#fff', ''),
-        ('file_focused', 'white', 'black', '', '#fff', 'g11'),
-        ('dir', 'dark green', '', '', '#8a5', ''),
-        ('dir_focused', 'dark green', 'black', '', '#8a5', 'g11')
-    ]
-
-    footer_text = 'Browser'
-
     def __init__(self):
         self.dir_name = os.getcwd()
         self._read_dir()
@@ -57,17 +52,20 @@ class FileBrowser:
             self.listbox,
             header=urwid.AttrWrap(self.header, 'head'),
             footer=self.footer)
-        urwid.register_signal(FileBrowser, 'back')
-        urwid.connect_signal(self, 'back', lambda: self._change_dir('..'))
+        urwid.register_signal(FileBrowser, 'exit_dir')
+        urwid.connect_signal(self, 'exit_dir', lambda: self._change_dir('..'))
+
+    def _callback(self, dirname):
+        self._change_dir(dirname)
 
     def _read_dir(self):
         self.dir_list = sorted([
             self.DirEntry(
-                a,
+                dir_entry,
                 str(self.dir_name),
-                is_a_dir=os.path.isdir(os.path.join(self.dir_name, a)),
+                is_a_dir=os.path.isdir(os.path.join(self.dir_name, dir_entry)),
                 callback=self._callback
-            ) for a in os.listdir(self.dir_name)])
+            ) for dir_entry in os.listdir(self.dir_name)])
 
     def _change_dir(self, dirname):
         path = os.path.abspath(os.path.join(self.dir_name, dirname))
@@ -77,14 +75,11 @@ class FileBrowser:
         self.header.set_text(path)
         self.content[:] = self.dir_list
 
-    def _callback(self, dirname):
-        self._change_dir(dirname)
-
     def _unhandled_input(self, key):
         if key in ('q','Q'):
             raise urwid.ExitMainLoop()
         if key == 'u':
-            urwid.emit_signal(self, 'back')
+            urwid.emit_signal(self, 'exit_dir')
 
     def main(self):
         self.screen = urwid.raw_display.Screen()
@@ -94,7 +89,7 @@ class FileBrowser:
             pass
         self.loop = urwid.MainLoop(
             self.view,
-            self.palette,
+            config.color_palette,
             unhandled_input=self._unhandled_input,
             event_loop=urwid.AsyncioEventLoop(loop=asyncio.get_event_loop()),
             screen=self.screen)
