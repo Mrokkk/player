@@ -7,7 +7,7 @@ import asyncio
 
 import config
 
-class FileBrowser:
+class FileBrowser(urwid.WidgetWrap):
 
     footer_text = 'Browser'
 
@@ -48,10 +48,10 @@ class FileBrowser:
         self.listbox = urwid.ListBox(self.content)
         self.header = urwid.Text(self.dir_name)
         self.footer = urwid.AttrWrap(urwid.Text(self.footer_text), 'foot')
-        self.view = urwid.Frame(
+        super().__init__(urwid.Frame(
             self.listbox,
-            header=urwid.AttrWrap(self.header, 'head'),
-            footer=self.footer)
+            header=self.header,
+            footer=self.footer))
         urwid.register_signal(FileBrowser, 'exit_dir')
         urwid.connect_signal(self, 'exit_dir', lambda: self._change_dir('..'))
 
@@ -75,28 +75,56 @@ class FileBrowser:
         self.header.set_text(path)
         self.content[:] = self.dir_list
 
-    def _unhandled_input(self, key):
+    def unhandled_input(self, key):
         if key in ('q','Q'):
             raise urwid.ExitMainLoop()
         if key == 'u':
             urwid.emit_signal(self, 'exit_dir')
 
-    def main(self):
-        self.screen = urwid.raw_display.Screen()
-        try:
-            self.screen.set_terminal_properties(256)
-        except:
-            pass
-        self.loop = urwid.MainLoop(
-            self.view,
-            config.color_palette,
-            unhandled_input=self._unhandled_input,
-            event_loop=urwid.AsyncioEventLoop(loop=asyncio.get_event_loop()),
-            screen=self.screen)
-        self.loop.run()
+
+focus_map = {
+    'heading': 'focus heading',
+    'options': 'focus options',
+    'line': 'focus line'}
+
+
+class HorizontalBoxes(urwid.Columns):
+    def __init__(self, screen):
+        super().__init__([], dividechars=1)
+        self.screen = screen
+
+    def open_box(self, box):
+        if self.contents:
+            del self.contents[self.focus_position + 1:]
+        self.contents.append((urwid.AttrMap(box, 'options', focus_map),
+            self.options('given', int(self.screen.get_cols_rows()[0] / 2))))
+        self.focus_position = len(self.contents) - 1
+
+
+def create_screen():
+    screen = urwid.raw_display.Screen()
+    try:
+        screen.set_terminal_properties(256)
+    except:
+        pass
+    return screen
+
 
 def main():
-    FileBrowser().main()
+    screen = create_screen()
+
+    top = HorizontalBoxes(screen)
+    file_browser = FileBrowser()
+    top.open_box(file_browser)
+
+    urwid.MainLoop(
+        urwid.Frame(top),
+        config.color_palette,
+        unhandled_input=file_browser.unhandled_input,
+        event_loop=urwid.AsyncioEventLoop(loop=asyncio.get_event_loop()),
+        screen=screen
+    ).run()
+
 
 if __name__ == '__main__':
     main()
