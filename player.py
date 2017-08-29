@@ -9,6 +9,18 @@ import config
 
 class Playlist(urwid.WidgetWrap):
 
+    class Entry(urwid.Button):
+
+        def __init__(self, path):
+            self.path = path
+            self.name = os.path.basename(path)
+            super().__init__(self.name)
+            self._w = urwid.AttrMap(urwid.SelectableIcon(['  ', self.name], 0),
+                'file', 'file_focused')
+
+        def keypress(self, size, key):
+            return key
+
     def __init__(self):
         self.list = []
         self.content = urwid.SimpleListWalker([])
@@ -22,6 +34,9 @@ class Playlist(urwid.WidgetWrap):
 
     def unhandled_input(self, key):
         pass
+
+    def add(self, path):
+        self.content.append(self.Entry(path))
 
 
 class FileBrowser(urwid.WidgetWrap):
@@ -52,6 +67,9 @@ class FileBrowser(urwid.WidgetWrap):
             if key == 'C':
                 self._emit('enter_dir')
             return key
+
+        def path(self):
+            return os.path.join(self.parent_path, self.name)
 
         def __lt__(self, other):
             if self.isdir and not other.isdir: return True
@@ -95,6 +113,8 @@ class FileBrowser(urwid.WidgetWrap):
     def unhandled_input(self, key):
         if key == 'u':
             urwid.emit_signal(self, 'exit_dir')
+        if key == 'enter':
+            return self.content.get_focus()[0].path()
 
 
 class HorizontalBoxes(urwid.Columns):
@@ -108,6 +128,12 @@ class HorizontalBoxes(urwid.Columns):
         self.contents.append((box, self.options('weight', 50)))
         self.focus_position = len(self.contents) - 1
 
+    def keypress(self, size, key):
+        if key == 'ctrl w':
+            self.set_focus(0 if self.focus_position else 1)
+            return None
+        return self.focus.keypress(size, key)
+
 
 def create_screen():
     screen = urwid.raw_display.Screen()
@@ -119,11 +145,11 @@ def create_screen():
 
 
 def handle_input(top, key):
-    if key in ('q','Q'):
+    if key in ('q', 'Q'):
         raise urwid.ExitMainLoop()
-    if key == 'ctrl w':
-        raise urwid.ExitMainLoop()
-    top.focus.unhandled_input(key)
+    path = top.focus.unhandled_input(key)
+    if path:
+        top.contents[1][0].add(path)
 
 
 def main():
