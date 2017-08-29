@@ -144,12 +144,22 @@ def create_screen():
     return screen
 
 
-def handle_input(top, key):
-    if key in ('q', 'Q'):
-        raise urwid.ExitMainLoop()
-    path = top.focus.unhandled_input(key)
-    if path:
-        top.contents[1][0].add(path)
+def handle_input(view, key):
+    if key == ':':
+        view.focus_position = 'footer'
+        view.contents['footer'][0].set_caption(':')
+        return
+    if view.get_focus() == 'footer':
+        if key == 'enter':
+            if view.contents['footer'][0].get_edit_text().strip() == 'q':
+                raise urwid.ExitMainLoop()
+            view.contents['footer'][0].set_caption('')
+            view.contents['footer'][0].set_edit_text('')
+            view.focus_position = 'body'
+    else:
+        path = view.contents['body'][0].focus.unhandled_input(key)
+        if path:
+            view.contents['body'][0].contents[1][0].add(path)
 
 
 def main():
@@ -161,11 +171,13 @@ def main():
     top.open_box(file_browser)
     top.open_box(playlist)
     top.set_focus(0) # Set focus to file browser
+    cli_panel = urwid.Edit()
+    view = urwid.Frame(top, footer=cli_panel)
 
     urwid.MainLoop(
-        urwid.Frame(top),
+        view,
         config.color_palette,
-        unhandled_input=lambda key: handle_input(top, key),
+        unhandled_input=lambda key: handle_input(view, key),
         event_loop=urwid.AsyncioEventLoop(loop=asyncio.get_event_loop()),
         screen=screen
     ).run()
