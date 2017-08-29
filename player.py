@@ -7,6 +7,23 @@ import asyncio
 
 import config
 
+class Playlist(urwid.WidgetWrap):
+
+    def __init__(self):
+        self.list = []
+        self.content = urwid.SimpleListWalker([])
+        self.listbox = urwid.ListBox(self.content)
+        self.header = urwid.AttrWrap(urwid.Text('Unnamed playlist'), 'head')
+        self.footer = urwid.AttrWrap(urwid.Text('Playlist'), 'foot')
+        super().__init__(urwid.Frame(
+            self.listbox,
+            header=self.header,
+            footer=self.footer))
+
+    def unhandled_input(self, key):
+        pass
+
+
 class FileBrowser(urwid.WidgetWrap):
 
     footer_text = 'Browser'
@@ -46,7 +63,7 @@ class FileBrowser(urwid.WidgetWrap):
         self._read_dir()
         self.content = urwid.SimpleListWalker(self.dir_list)
         self.listbox = urwid.ListBox(self.content)
-        self.header = urwid.Text(self.dir_name)
+        self.header = urwid.AttrWrap(urwid.Text(self.dir_name), 'head')
         self.footer = urwid.AttrWrap(urwid.Text(self.footer_text), 'foot')
         super().__init__(urwid.Frame(
             self.listbox,
@@ -76,28 +93,19 @@ class FileBrowser(urwid.WidgetWrap):
         self.content[:] = self.dir_list
 
     def unhandled_input(self, key):
-        if key in ('q','Q'):
-            raise urwid.ExitMainLoop()
         if key == 'u':
             urwid.emit_signal(self, 'exit_dir')
 
 
-focus_map = {
-    'heading': 'focus heading',
-    'options': 'focus options',
-    'line': 'focus line'}
-
-
 class HorizontalBoxes(urwid.Columns):
-    def __init__(self, screen):
+
+    def __init__(self):
         super().__init__([], dividechars=1)
-        self.screen = screen
 
     def open_box(self, box):
         if self.contents:
             del self.contents[self.focus_position + 1:]
-        self.contents.append((urwid.AttrMap(box, 'options', focus_map),
-            self.options('given', int(self.screen.get_cols_rows()[0] / 2))))
+        self.contents.append((box, self.options('weight', 50)))
         self.focus_position = len(self.contents) - 1
 
 
@@ -110,17 +118,28 @@ def create_screen():
     return screen
 
 
+def handle_input(top, key):
+    if key in ('q','Q'):
+        raise urwid.ExitMainLoop()
+    if key == 'ctrl w':
+        raise urwid.ExitMainLoop()
+    top.focus.unhandled_input(key)
+
+
 def main():
     screen = create_screen()
 
-    top = HorizontalBoxes(screen)
+    top = HorizontalBoxes()
     file_browser = FileBrowser()
+    playlist = Playlist()
     top.open_box(file_browser)
+    top.open_box(playlist)
+    top.set_focus(0) # Set focus to file browser
 
     urwid.MainLoop(
         urwid.Frame(top),
         config.color_palette,
-        unhandled_input=file_browser.unhandled_input,
+        unhandled_input=lambda key: handle_input(top, key),
         event_loop=urwid.AsyncioEventLoop(loop=asyncio.get_event_loop()),
         screen=screen
     ).run()
