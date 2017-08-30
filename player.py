@@ -85,5 +85,8 @@ class Player:
         if self.backend:
             self.backend_input.write('quit\n'.encode())
             self.backend_input.flush()
-            self.backend.wait()
+            try:
+                self.backend.wait(timeout=1)
+            except:
+                self.backend.terminate()
 
