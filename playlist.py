@@ -16,10 +16,15 @@ class Playlist(urwid.WidgetWrap):
             self._w = urwid.AttrMap(urwid.SelectableIcon(['  ', self.name], 0),
                 'file', 'file_focused')
 
+        def select(self):
+            self._w = urwid.AttrMap(urwid.SelectableIcon(['▸ ', self.name], 0),
+                'dir', 'dir_focused')
+
         def keypress(self, size, key):
             return key
 
-    def __init__(self):
+    def __init__(self, play_callback):
+        self.callback = play_callback
         self.list = []
         self.content = urwid.SimpleListWalker([])
         self.listbox = urwid.ListBox(self.content)
@@ -31,6 +36,9 @@ class Playlist(urwid.WidgetWrap):
             footer=self.footer))
 
     def unhandled_input(self, key):
+        if key == 'enter':
+            self.callback(self.listbox.focus.path)
+            self.listbox.focus.select()
         pass
 
     def add(self, path):

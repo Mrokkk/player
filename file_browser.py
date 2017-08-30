@@ -42,8 +42,9 @@ class FileBrowser(urwid.WidgetWrap):
             elif not self.isdir and other.isdir: return False
             return self.name.lower() < other.name.lower()
 
-    def __init__(self):
+    def __init__(self, enter_callback):
         self.dir_name = os.getcwd()
+        self.callback = enter_callback
         self._read_dir()
         self.content = urwid.SimpleListWalker(self.dir_list)
         self.listbox = urwid.ListBox(self.content)
@@ -80,5 +81,5 @@ class FileBrowser(urwid.WidgetWrap):
         if key == 'u':
             urwid.emit_signal(self, 'exit_dir')
         if key == 'enter':
-            return self.content.get_focus()[0].path()
+            self.callback(self.content.get_focus()[0].path())
 

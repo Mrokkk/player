@@ -3,55 +3,64 @@
 import os
 import urwid
 import asyncio
+import subprocess
 
 import config
+from cli import *
 from file_browser import *
 from horizontal_panes import *
 from playlist import *
 
-class Cli:
-
-    def handle_command(self, command):
-        if not command: return True
-        if command == 'q' or command == 'qa':
-            raise urwid.ExitMainLoop()
-        else:
-            raise RuntimeError('No such command: ' + command)
-
-
-class CliPanel(urwid.Edit):
-
-    def __init__(self, cli):
-        super().__init__()
-        self.cli = cli
-
-    def unhandled_input(self, key):
-        if key == 'enter':
-            try:
-                if self.cli.handle_command(self.get_edit_text().strip()):
-                    self.set_caption('')
-                    self.set_edit_text('')
-            except RuntimeError as exc:
-                self.set_edit_text('')
-                self.set_caption(exc.__str__())
-
-
 class Player:
 
     def __init__(self):
-        self.playlist = Playlist()
-        self.file_browser = FileBrowser()
+        self.playlist = Playlist(self._play_file)
+        self.file_browser = FileBrowser(self._add_to_playlist)
         self.cli = Cli()
         self.cli_panel = CliPanel(self.cli)
         self.panes = HorizontalPanes([self.file_browser, self.playlist])
         self.view = urwid.Frame(self.panes, footer=self.cli_panel)
         self.screen = self._create_screen()
+        self.event_loop = asyncio.get_event_loop()
         self.main_loop = urwid.MainLoop(
             self.view,
             config.color_palette,
             unhandled_input=self._handle_input,
-            event_loop=urwid.AsyncioEventLoop(loop=asyncio.get_event_loop()),
+            event_loop=urwid.AsyncioEventLoop(loop=self.event_loop),
             screen=self.screen)
+        self.backend = None
+
+    def _start_backend(self, filename):
+        backend_args = ['mplayer', '-ao', 'pulse', '-quiet', '-slave', filename]
+        self.backend = subprocess.Popen(backend_args,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL)
+        self.backend_input = self.backend.stdin
+        self.backend_output = self.backend.stdout
+        if not self.backend: raise RuntimeError('Cannot start backend')
+
+    def _add_to_playlist(self, path):
+        self.playlist.add(path)
+
+    def _play_file(self, filename):
+        if not self.backend:
+            self._start_backend(filename)
+            self.backend_output.readline()
+        else:
+            self.backend_input.write('loadfile "{}"\n'.format(filename).encode())
+            self.backend_input.flush()
+            self.backend_output.readline()
+
+    def _toggle_pause(self):
+        self.backend_input.write('pause\n'.encode())
+        self.backend_input.flush()
+        self.backend_output.readline()
+
+    def _stop(self):
+        self.backend_input.write('stop\n'.encode())
+        self.backend_input.flush()
+        self.backend_output.readline()
 
     def _handle_input(self, key):
         if key == ':':
@@ -61,8 +70,6 @@ class Player:
             self.panes.switch_focus()
         else:
             path = self.view.focus.unhandled_input(key)
-            if path:
-                self.panes.contents[1][0].add(path)
             self.view.focus_position = 'body'
 
     def _create_screen(self):
@@ -75,4 +82,8 @@ class Player:
 
     def run(self):
         self.main_loop.run()
+        if self.backend:
+            self.backend_input.write('quit\n'.encode())
+            self.backend_input.flush()
+            self.backend.wait()
 
