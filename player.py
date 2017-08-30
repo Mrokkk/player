@@ -134,53 +134,56 @@ class HorizontalBoxes(urwid.Columns):
             return None
         return self.focus.keypress(size, key)
 
+class Player:
 
-def create_screen():
-    screen = urwid.raw_display.Screen()
-    try:
-        screen.set_terminal_properties(256)
-    except:
-        pass
-    return screen
+    def __init__(self):
+        self.playlist = Playlist()
+        self.file_browser = FileBrowser()
+        self.cli_panel = urwid.Edit()
+        self.top = HorizontalBoxes()
+        self.top.open_box(self.file_browser)
+        self.top.open_box(self.playlist)
+        self.view = urwid.Frame(self.top, footer=self.cli_panel)
+        self.screen = self._create_screen()
+        self.main_loop = urwid.MainLoop(
+            self.view,
+            config.color_palette,
+            unhandled_input=self._handle_input,
+            event_loop=urwid.AsyncioEventLoop(loop=asyncio.get_event_loop()),
+            screen=self.screen)
 
+    def _handle_input(self, key):
+        if key == ':':
+            self.view.focus_position = 'footer'
+            self.cli_panel.set_caption(':')
+            return
+        if self.view.get_focus() == 'footer':
+            if key == 'enter':
+                if self.cli_panel.get_edit_text().strip() == 'q':
+                    raise urwid.ExitMainLoop()
+                self.cli_panel.set_caption('')
+                self.cli_panel.set_edit_text('')
+                self.view.focus_position = 'body'
+        else:
+            path = self.top.focus.unhandled_input(key)
+            if path:
+                self.top.contents[1][0].add(path)
 
-def handle_input(view, key):
-    if key == ':':
-        view.focus_position = 'footer'
-        view.contents['footer'][0].set_caption(':')
-        return
-    if view.get_focus() == 'footer':
-        if key == 'enter':
-            if view.contents['footer'][0].get_edit_text().strip() == 'q':
-                raise urwid.ExitMainLoop()
-            view.contents['footer'][0].set_caption('')
-            view.contents['footer'][0].set_edit_text('')
-            view.focus_position = 'body'
-    else:
-        path = view.contents['body'][0].focus.unhandled_input(key)
-        if path:
-            view.contents['body'][0].contents[1][0].add(path)
+    def _create_screen(self):
+        screen = urwid.raw_display.Screen()
+        try:
+            screen.set_terminal_properties(256)
+        except:
+            pass
+        return screen
+
+    def run(self):
+        self.top.set_focus(0) # Set focus to file browser
+        self.main_loop.run()
 
 
 def main():
-    screen = create_screen()
-
-    top = HorizontalBoxes()
-    file_browser = FileBrowser()
-    playlist = Playlist()
-    top.open_box(file_browser)
-    top.open_box(playlist)
-    top.set_focus(0) # Set focus to file browser
-    cli_panel = urwid.Edit()
-    view = urwid.Frame(top, footer=cli_panel)
-
-    urwid.MainLoop(
-        view,
-        config.color_palette,
-        unhandled_input=lambda key: handle_input(view, key),
-        event_loop=urwid.AsyncioEventLoop(loop=asyncio.get_event_loop()),
-        screen=screen
-    ).run()
+    Player().run()
 
 
 if __name__ == '__main__':
