@@ -17,79 +17,71 @@ from playlist import *
 
 class MplayerBackend:
 
-    def __init__(self, event_loop, error_callback):
+    def __init__(self, event_loop, error_callback, adv_callback):
         self.loop = event_loop
         self.error = error_callback
+        self.adv_callback = adv_callback
         self.mplayer = None
         self.current_item = None
 
-    def _error(self):
-        self.error('Failed to play')
-        self.mplayer = None
-        if self.current_item: self.current_item.unselect()
-        return
-
-    def _controller(self):
-        os.read(self.mplayer.stdout.fileno(), 4096)
-        time.sleep(1)
-        if self.mplayer.poll() != None:
-            self._error()
-            return
-        os.read(self.mplayer.stdout.fileno(), 4096)
-        self.thread2.start()
+    def _reader(self):
         while True:
-            data = self.input_queue.get()
-            self.mplayer.stdin.write(data.encode())
-            self.mplayer.stdin.flush()
-            time.sleep(1)
-            if self.mplayer.poll() != None:
-                self._error()
+            line = self.mplayer.stdout.readline()
+            if not line:
+                self.mplayer = None
+                self.adv_callback()
                 return
-            os.read(self.mplayer.stdout.fileno(), 4096)
+            try:
+                splitted = line.decode('utf-8').strip().split('=')
+                key = splitted[0]
+                value = splitted[1]
+                if key == 'ID_LENGTH':
+                    self.current_item.update_time(
+                        time.strftime('%H:%M:%S',
+                            time.gmtime(int(round(float(value))))))
+            except:
+                pass
+
+    def _send_command(self, command):
+        if not self.mplayer: return
+        self.mplayer.stdin.write(command.encode())
+        self.mplayer.stdin.flush()
 
     def _run_mplayer(self):
         self.output_queue = queue.Queue()
         self.input_queue = queue.Queue()
-        backend_args = ['mplayer', '-ao', 'pulse', '-quiet', '-slave', self.current_item.path]
+        backend_args = ['mplayer', '-ao', 'pulse', '-quiet', '-slave', '-identify', self.current_item.path]
         return subprocess.Popen(backend_args,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL)
 
-    def _time_check(self):
-        self.mplayer.stdin.write('get_time_length\n'.encode())
-        self.mplayer.stdin.flush()
-        length = self.mplayer.stdout.readline().decode('ascii').strip().split('=')[1]
-        while True:
-            self.mplayer.stdin.write('get_time_pos\n'.encode())
-            self.mplayer.stdin.flush()
-            data = self.mplayer.stdout.readline().decode('ascii').strip().split('=')[1]
-            self.current_item.update_time('{}/{}'.format(
-                time.strftime('%H:%M:%S', time.gmtime(int(round(float(data))))),
-                time.strftime('%H:%M:%S', time.gmtime(int(round(float(length)))))))
-            time.sleep(0.2)
-
     def _start_backend(self):
         self.mplayer = self._run_mplayer()
-        self.thread = threading.Thread(target=self._controller, daemon=True)
-        self.thread2 = threading.Thread(target=self._time_check, daemon=True)
+        self.thread = threading.Thread(target=self._reader, daemon=True)
         self.thread.start()
 
     def play_file(self, item):
+        if not item: return
         if self.current_item: self.current_item.unselect()
         self.current_item = item
         self.current_item.select()
         if not self.mplayer:
             self._start_backend()
         else:
-            self.input_queue.put('loadfile "{}"\n'.format(item.path))
+            self._send_command('loadfile "{}"\n'.format(item.path))
+
+    def toggle_pause(self):
+        self._send_command('pause\n')
+
+    def stop(self):
+        self._send_command('stop\n')
 
     def quit(self):
         if self.mplayer:
-            self.mplayer.stdin.write('quit\n'.encode())
-            self.mplayer.stdin.flush()
+            self._send_command('quit\n')
             try:
-                self.mplayer.wait(timeout=1)
+                self.mplayer.wait(timeout=2)
             except:
                 self.mplayer.terminate()
 
@@ -97,9 +89,9 @@ class MplayerBackend:
 class Player:
 
     def __init__(self):
-        self.playlist = Playlist(self._play_file)
+        self.playlist = Playlist(self.play_file)
         self.file_browser = FileBrowser(self._add_to_playlist)
-        self.cli = Cli()
+        self.cli = Cli(self)
         self.cli_panel = CliPanel(self.cli)
         self.panes = HorizontalPanes([self.file_browser, self.playlist])
         self.view = urwid.Frame(self.panes, footer=self.cli_panel)
@@ -111,7 +103,7 @@ class Player:
             unhandled_input=self._handle_input,
             event_loop=urwid.AsyncioEventLoop(loop=self.event_loop),
             screen=self.screen)
-        self.backend = MplayerBackend(self.event_loop, self._error)
+        self.backend = MplayerBackend(self.event_loop, self._error, self.advance)
 
     def _error(self, error):
         self.cli_panel.set_edit_text('')
@@ -120,14 +112,24 @@ class Player:
     def _add_to_playlist(self, path):
         self.playlist.add(path)
 
-    def _play_file(self, item):
+    def play_file(self, item):
         self.backend.play_file(item)
 
-    def _toggle_pause(self):
-        pass
+    def toggle_pause(self):
+        self.backend.toggle_pause()
 
-    def _stop(self):
-        pass
+    def stop(self):
+        self.backend.stop()
+
+    def advance(self):
+        current = self.playlist.get_current()
+        current.unselect()
+        try:
+            next_item = self.playlist.get_next()
+            next_item.select()
+            self.play_file(next_item)
+        except:
+            self.stop()
 
     def _handle_input(self, key):
         if key == ':':

@@ -47,6 +47,15 @@ class Playlist(urwid.WidgetWrap):
         if key == 'enter':
             self.callback(self.listbox.focus)
 
+    def get_current(self):
+        return self.listbox.focus
+
+    def get_next(self):
+        return self.content[self.listbox.focus_position + 1]
+
+    def get_prev(self):
+        return self.content[self.listbox.focus_position - 1]
+
     def add(self, path):
         self.content.append(self.Entry(path))
 
