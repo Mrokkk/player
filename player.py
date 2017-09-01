@@ -5,9 +5,10 @@ import os
 import urwid
 
 from cli import *
-from file_browser import *
+from file_browser.file_browser import *
 from horizontal_panes import *
 from playlist import *
+
 from backends.mplayer import *
 
 import config
