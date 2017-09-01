@@ -10,6 +10,9 @@ class Cli:
 
     def handle_command(self, command):
         if not command: return True
+        splitted = command.split()
+        command = splitted[0]
+        args = splitted[1:]
         if command == 'q' or command == 'qa':
             raise urwid.ExitMainLoop()
         elif command == 'pause':
@@ -20,6 +23,9 @@ class Cli:
             return True
         elif command == 'advance':
             self.player.advance()
+            return True
+        elif command == 'e':
+            self.player.add_to_playlist(args[0])
             return True
         else:
             raise RuntimeError('No such command: ' + command)

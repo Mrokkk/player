@@ -16,7 +16,7 @@ class Player:
 
     def __init__(self):
         self.playlist = Playlist(self.play_file)
-        self.file_browser = FileBrowser(self._add_to_playlist)
+        self.file_browser = FileBrowser(self.add_to_playlist)
         self.cli = Cli(self)
         self.cli_panel = CliPanel(self.cli)
         self.panes = HorizontalPanes([self.file_browser, self.playlist])
@@ -35,7 +35,7 @@ class Player:
         self.cli_panel.set_edit_text('')
         self.cli_panel.set_caption(('error', error))
 
-    def _add_to_playlist(self, path):
+    def add_to_playlist(self, path):
         self.playlist.add(path)
 
     def play_file(self, item):
@@ -77,6 +77,5 @@ class Player:
 
     def run(self):
         self.main_loop.run()
-        if self.backend:
-            self.backend.quit()
+        self.backend.quit()
 
