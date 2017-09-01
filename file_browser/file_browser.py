@@ -22,16 +22,13 @@ class FileBrowser(urwid.WidgetWrap):
             header=self.header,
             footer=self.footer))
 
-    def _callback(self, dirname):
-        self._change_dir(dirname)
-
     def _read_dir(self):
         self.dir_list = sorted([
             DirEntry(
                 dir_entry,
                 str(self.dir_name),
                 is_a_dir=os.path.isdir(os.path.join(self.dir_name, dir_entry)),
-                callback=self._callback
+                callback=lambda dirname: self._change_dir(dirname)
             ) for dir_entry in os.listdir(self.dir_name)])
 
     def _change_dir(self, dirname):
@@ -45,6 +42,6 @@ class FileBrowser(urwid.WidgetWrap):
     def unhandled_input(self, key):
         if key == 'u':
             self._change_dir('..')
-        if key == 'enter':
+        elif key == 'enter':
             self.callback(self.content.get_focus()[0].path())
 
