@@ -15,6 +15,7 @@ class MplayerBackend:
         self.adv_callback = adv_callback
         self.mplayer = None
         self.current_item = None
+        self.should_stop = False
 
     def _parse(self, line):
         splitted = line.strip().split('=')
@@ -30,7 +31,9 @@ class MplayerBackend:
             line = self.mplayer.stdout.readline()
             if not line:
                 self.mplayer = None
-                self.adv_callback()
+                if not self.should_stop:
+                    self.adv_callback()
+                self.should_stop = False
                 return
             try:
                 self._parse(line.decode('utf-8'))
@@ -70,6 +73,9 @@ class MplayerBackend:
         self._send_command('pause\n')
 
     def stop(self):
+        if self.current_item: self.current_item.unselect()
+        else: return
+        self.should_stop = True
         self._send_command('stop\n')
 
     def quit(self):
@@ -79,5 +85,4 @@ class MplayerBackend:
                 self.mplayer.wait(timeout=2)
             except:
                 self.mplayer.terminate()
-
 

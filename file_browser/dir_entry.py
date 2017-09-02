@@ -27,7 +27,7 @@ class DirEntry(urwid.Button):
         return key
 
     def path(self):
-        return os.path.join(self.parent_path, self.name)
+        return os.path.join(self.parent_path, self.name).replace("\\", "\\\\")
 
     def __lt__(self, other):
         if self.isdir and not other.isdir: return True

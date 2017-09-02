@@ -29,7 +29,7 @@ class FileBrowser(urwid.WidgetWrap):
                 str(self.dir_name),
                 is_a_dir=os.path.isdir(os.path.join(self.dir_name, dir_entry)),
                 callback=lambda dirname: self._change_dir(dirname)
-            ) for dir_entry in os.listdir(self.dir_name)])
+            ) for dir_entry in os.listdir(self.dir_name) if not dir_entry.startswith('.')])
 
     def _change_dir(self, dirname):
         path = os.path.abspath(os.path.join(self.dir_name, dirname))
