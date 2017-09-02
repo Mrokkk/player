@@ -5,8 +5,6 @@ import os
 import urwid
 import cueparser
 
-import traceback
-
 from cli import *
 from file_browser.file_browser import *
 from horizontal_panes import *
@@ -16,15 +14,23 @@ from backends.mplayer import *
 
 import config
 
-class PlaylistItem:
+class PlayerState:
+    STOPPED = 0
+    PLAYING = 1
+    PAUSED = 2
+
+
+class Track:
 
     def __init__(self, file_path, offset=0):
         self.path = file_path
-        self.offset = offset
-        self._played = False
-
-    def play(self):
-        self._played = True
+        self.offset = offset # For CUE sheets
+        self.length = None
+        self.index = 0
+        self.title = None
+        self.artist = None
+        self.performer = None
+        self.state = None
 
 
 class Player:
@@ -49,6 +55,8 @@ class Player:
             event_loop=urwid.AsyncioEventLoop(loop=self.event_loop),
             screen=self.screen)
         self.backend = MplayerBackend(self.event_loop, self._error, self.advance)
+        self.current_track = None
+        self.current_track_state = PlayerState.STOPPED
 
     def _error(self, error):
         self.cli_panel.set_edit_text('')
@@ -68,15 +76,18 @@ class Player:
                 cue.setData(data)
             cue.parse()
         except Exception as e:
-            print(traceback.format_exc())
-        return [PlaylistItem(os.path.dirname(path) + '/' + cue.file.replace("\\", "\\\\"), offset=t.offset) for t in cue.tracks]
+            self._error(e.__str__())
+        return [Track(os.path.dirname(path) + '/' + cue.file.replace("\\", "\\\\"), offset=t.offset)
+            for t in cue.tracks]
 
     def _get_files(self, path):
         if os.path.isfile(path):
             if path.endswith('.cue'): return self._handle_cue_sheet(path)
-            return [PlaylistItem(path)] if self._is_music_file(path) else []
+            return [Track(path)] if self._is_music_file(path) else []
         elif os.path.isdir(path):
-            return [PlaylistItem(os.path.join(path, f)) for f in sorted(os.listdir(path)) if os.path.isfile(os.path.join(path, f)) and self._is_music_file(f)]
+            return [Track(os.path.join(path, f))
+                for f in sorted(os.listdir(path))
+                    if os.path.isfile(os.path.join(path, f)) and self._is_music_file(f)]
         else:
             return []
 
@@ -85,15 +96,30 @@ class Player:
             self.playlist.add(f)
 
     def play_file(self, item):
+        track = item.data
+        if not track: raise RuntimeError('No track!')
+        if track == self.current_track:
+            self.backend.seek(self.current_track.offset)
+            return
         self.backend.play_file(item)
+        self.current_track = track
+        self.current_track_state = PlayerState.PLAYING
+        if self.current_track.offset != 0:
+            self.backend.seek(self.current_track.offset)
 
     def toggle_pause(self):
+        if not self.current_track: return
         self.backend.toggle_pause()
+        self.current_track_state = PlayerState.PLAYING if self.current_track_state == PlayerState.STOPPED else PlayerState.STOPPED
 
     def stop(self):
+        if not self.current_track: return
         self.backend.stop()
+        self.current_track = None
+        self.current_track_state = PlayerState.STOPPED
 
     def advance(self):
+        if not self.current_track: return
         current = self.playlist.get_current()
         current.unselect()
         try:

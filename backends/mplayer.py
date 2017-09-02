@@ -100,6 +100,9 @@ class MplayerBackend:
         self.should_stop = True
         self._send_command('stop\n')
 
+    def seek(self, offset):
+        self._send_command('seek {} 2 1\n'.format(offset))
+
     def quit(self):
         if self.mplayer:
             self._send_command('quit\n')
