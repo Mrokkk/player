@@ -16,6 +16,17 @@ from backends.mplayer import *
 
 import config
 
+class PlaylistItem:
+
+    def __init__(self, file_path, offset=0):
+        self.path = file_path
+        self.offset = offset
+        self._played = False
+
+    def play(self):
+        self._played = True
+
+
 class Player:
 
     extensions = [
@@ -58,14 +69,14 @@ class Player:
             cue.parse()
         except Exception as e:
             print(traceback.format_exc())
-        return [t.title for t in cue.tracks]
+        return [PlaylistItem(os.path.dirname(path) + '/' + cue.file.replace("\\", "\\\\"), offset=t.offset) for t in cue.tracks]
 
     def _get_files(self, path):
         if os.path.isfile(path):
             if path.endswith('.cue'): return self._handle_cue_sheet(path)
-            return [path] if self._is_music_file(path) else []
+            return [PlaylistItem(path)] if self._is_music_file(path) else []
         elif os.path.isdir(path):
-            return [os.path.join(path, f) for f in sorted(os.listdir(path)) if os.path.isfile(os.path.join(path, f)) and self._is_music_file(f)]
+            return [PlaylistItem(os.path.join(path, f)) for f in sorted(os.listdir(path)) if os.path.isfile(os.path.join(path, f)) and self._is_music_file(f)]
         else:
             return []
 

@@ -48,7 +48,16 @@ class MplayerBackend:
     def _run_mplayer(self):
         self.output_queue = queue.Queue()
         self.input_queue = queue.Queue()
-        backend_args = ['mplayer', '-ao', 'pulse', '-quiet', '-slave', '-identify', self.current_item.path]
+        backend_args = [
+            'mplayer',
+            '-ao', 'pulse',
+            '-quiet',
+            '-slave',
+            '-identify',
+            '-demuxer', 'lavf',
+            '-vo', 'null',
+            self.current_item.data.path
+        ]
         return subprocess.Popen(backend_args,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
@@ -60,20 +69,33 @@ class MplayerBackend:
         self.thread.start()
 
     def play_file(self, item):
+        file_change = True
         if not item: return
-        if self.current_item: self.current_item.unselect()
-        self.current_item = item
-        self.current_item.select()
+        if self.current_item:
+            if self.current_item.data.path == item.data.path:
+                file_change = False
+        if self.current_item:
+            if self.current_item != item:
+                self.current_item.unselect()
+                self.current_item = item
+                self.current_item.select()
+        else:
+            self.current_item = item
+            self.current_item.select()
         if not self.mplayer:
             self._start_backend()
+        elif file_change:
+            self._send_command('loadfile "{}"\n'.format(item.data.path))
         else:
-            self._send_command('loadfile "{}"\n'.format(item.path))
+            self._send_command('seek {} 2 1\n'.format(item.data.offset))
 
     def toggle_pause(self):
         self._send_command('pause\n')
 
     def stop(self):
-        if self.current_item: self.current_item.unselect()
+        if self.current_item:
+            self.current_item.unselect()
+            self.current_item = None
         else: return
         self.should_stop = True
         self._send_command('stop\n')

@@ -9,9 +9,9 @@ class Playlist(urwid.WidgetWrap):
 
     class Entry(urwid.Button):
 
-        def __init__(self, path):
-            self.path = path
-            self.name = os.path.basename(path)
+        def __init__(self, data):
+            self.data = data
+            self.name = os.path.basename(data.path)
             super().__init__(self.name)
             self._w = urwid.AttrMap(urwid.SelectableIcon(['  ', self.name], 0),
                 'file', 'file_focused')
@@ -56,6 +56,6 @@ class Playlist(urwid.WidgetWrap):
     def get_prev(self):
         return self.content[self.listbox.focus_position - 1]
 
-    def add(self, path):
-        self.content.append(self.Entry(path))
+    def add(self, data):
+        self.content.append(self.Entry(data))
 
