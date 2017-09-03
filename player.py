@@ -121,7 +121,9 @@ class Player:
             self.playlist.add(f)
 
     def play_file(self, track):
-        if not track: raise RuntimeError('No track!')
+        if not track:
+            self._error('No track!')
+            return
         if self.current_track:
             if track.data.path == self.current_track.data.path:
                 self.current_track.unselect()
