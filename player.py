@@ -22,9 +22,9 @@ class PlayerState:
 
 class Track:
 
-    def __init__(self, file_path, offset=0):
+    def __init__(self, file_path):
         self.path = file_path
-        self.offset = offset # For CUE sheets
+        self.offset = 0 # For CUE sheets
         self.length = 0
         self.index = 0
         self.title = None
@@ -80,12 +80,12 @@ class Player:
         tracks = []
         for t in cue.tracks:
             new_track = Track(
-                os.path.join(os.path.dirname(path), cue.file.replace("\\", "\\\\")),
-                offset=t.offset)
+                os.path.join(os.path.dirname(path), cue.file.replace("\\", "\\\\")))
             new_track.artist = [cue.title]
             new_track.title = [t.title]
             new_track.index = str(t.number) if t.number else None
             new_track.length = 0 # FIXME: bug in cueparser
+            new_track.offset = t.offset
             tracks.append(new_track)
         return tracks
 
