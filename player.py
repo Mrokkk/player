@@ -6,12 +6,11 @@ import os
 import taglib
 import urwid
 
-from cli import *
+from backends.mplayer import *
+from cli.cli import *
 from file_browser.file_browser import *
 from horizontal_panes import *
-from playlist import *
-
-from backends.mplayer import *
+from playlist.playlist import *
 
 import config
 
