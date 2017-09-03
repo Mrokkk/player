@@ -18,13 +18,7 @@ class MplayerBackend:
         self.should_stop = False
 
     def _parse(self, line):
-        splitted = line.strip().split('=')
-        key = splitted[0]
-        value = splitted[1]
-        if key == 'ID_LENGTH':
-            self.current_track.update_time(
-                time.strftime('%H:%M:%S',
-                    time.gmtime(int(round(float(value))))))
+        pass
 
     def _reader(self):
         while True:

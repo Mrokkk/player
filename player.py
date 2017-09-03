@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import asyncio
-import os
-import urwid
 import cueparser
+import os
+import taglib
+import urwid
 
 from cli import *
 from file_browser.file_browser import *
@@ -80,12 +81,28 @@ class Player:
         return [Track(os.path.join(os.path.dirname(path), cue.file.replace("\\", "\\\\")), offset=t.offset)
             for t in cue.tracks]
 
+    def _handle_file(self, path):
+        if not self._is_music_file(path): return []
+        track = Track(path)
+        tags = taglib.File(path)
+        try:
+            track.title = tags.tags['TITLE']
+        except KeyError: pass
+        try:
+            track.artist = tags.tags['ARTIST']
+        except KeyError: pass
+        try:
+            track.index = tags.tags['TRACKNUMBER']
+        except KeyError: pass
+        track.length = tags.length
+        return track
+
     def _get_files(self, path):
         if os.path.isfile(path):
             if path.endswith('.cue'): return self._handle_cue_sheet(path)
-            return [Track(path)] if self._is_music_file(path) else []
+            return [self._handle_file(path)]
         elif os.path.isdir(path):
-            return [Track(os.path.join(path, f))
+            return [self._handle_file(os.path.join(path, f))
                 for f in sorted(os.listdir(path))
                     if os.path.isfile(os.path.join(path, f)) and self._is_music_file(f)]
         else:
