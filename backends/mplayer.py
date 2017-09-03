@@ -69,25 +69,12 @@ class MplayerBackend:
         self.thread.start()
 
     def play_file(self, item):
-        file_change = True
         if not item: return
-        if self.current_item:
-            if self.current_item.data.path == item.data.path:
-                file_change = False
-        if self.current_item:
-            if self.current_item != item:
-                self.current_item.unselect()
-                self.current_item = item
-                self.current_item.select()
-        else:
-            self.current_item = item
-            self.current_item.select()
+        self.current_item = item
         if not self.mplayer:
             self._start_backend()
-        elif file_change:
-            self._send_command('loadfile "{}"\n'.format(item.data.path))
         else:
-            self._send_command('seek {} 2 1\n'.format(item.data.offset))
+            self._send_command('loadfile "{}"\n'.format(item.data.path))
 
     def toggle_pause(self):
         self._send_command('pause\n')

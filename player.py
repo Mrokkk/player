@@ -77,7 +77,7 @@ class Player:
             cue.parse()
         except Exception as e:
             self._error(e.__str__())
-        return [Track(os.path.dirname(path) + '/' + cue.file.replace("\\", "\\\\"), offset=t.offset)
+        return [Track(os.path.join(os.path.dirname(path), cue.file.replace("\\", "\\\\")), offset=t.offset)
             for t in cue.tracks]
 
     def _get_files(self, path):
@@ -95,22 +95,31 @@ class Player:
         for f in self._get_files(path):
             self.playlist.add(f)
 
-    def play_file(self, item):
-        track = item.data
+    def play_file(self, track):
         if not track: raise RuntimeError('No track!')
-        if track == self.current_track:
-            self.backend.seek(self.current_track.offset)
-            return
-        self.backend.play_file(item)
+        if self.current_track:
+            if track.data.path == self.current_track.data.path:
+                self.current_track = track
+                self.backend.seek(self.current_track.data.offset)
+                return
+        if self.current_track:
+            self.current_track.unselect()
+        self.backend.play_file(track)
         self.current_track = track
+        self.current_track.select()
         self.current_track_state = PlayerState.PLAYING
-        if self.current_track.offset != 0:
-            self.backend.seek(self.current_track.offset)
+        if self.current_track.data.offset != 0:
+            self.backend.seek(self.current_track.data.offset)
 
     def toggle_pause(self):
         if not self.current_track: return
         self.backend.toggle_pause()
-        self.current_track_state = PlayerState.PLAYING if self.current_track_state == PlayerState.STOPPED else PlayerState.STOPPED
+        if self.current_track_state == PlayerState.PAUSED:
+            self.current_track_state = PlayerState.PLAYING
+            self.current_track.select()
+        elif self.current_track_state == PlayerState.PLAYING:
+            self.current_track_state = PlayerState.PAUSED
+            self.current_track.pause()
 
     def stop(self):
         if not self.current_track: return
@@ -120,10 +129,9 @@ class Player:
 
     def advance(self):
         if not self.current_track: return
-        current = self.playlist.get_current()
-        current.unselect()
+        self.current_track.unselect()
         try:
-            next_item = self.playlist.get_next()
+            next_item = self.current_track.next
             next_item.select()
             self.play_file(next_item)
         except:
