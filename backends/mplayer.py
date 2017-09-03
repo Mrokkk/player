@@ -17,9 +17,6 @@ class MplayerBackend:
         self.current_track = None
         self.should_stop = False
 
-    def _parse(self, line):
-        pass
-
     def _reader(self):
         while True:
             line = self.mplayer.stdout.readline()
@@ -28,11 +25,6 @@ class MplayerBackend:
                 if not self.should_stop:
                     self.adv_callback()
                 self.should_stop = False
-                return
-            try:
-                self._parse(line.decode('utf-8'))
-            except:
-                pass
 
     def _send_command(self, command):
         if not self.mplayer: return
@@ -42,17 +34,16 @@ class MplayerBackend:
     def _run_mplayer(self):
         self.output_queue = queue.Queue()
         self.input_queue = queue.Queue()
-        backend_args = [
+        mplayer_args = [
             'mplayer',
             '-ao', 'pulse',
             '-quiet',
             '-slave',
-            '-identify',
             '-demuxer', 'lavf',
             '-vo', 'null',
             self.current_track.data.path
         ]
-        return subprocess.Popen(backend_args,
+        return subprocess.Popen(mplayer_args,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL)
