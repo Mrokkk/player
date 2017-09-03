@@ -9,9 +9,9 @@ class FileBrowser(urwid.WidgetWrap):
 
     footer_text = 'Browser'
 
-    def __init__(self, enter_callback):
+    def __init__(self, add_callback):
         self.dir_name = os.getcwd()
-        self.callback = enter_callback
+        self.callback = add_callback
         self._read_dir()
         self.content = urwid.SimpleListWalker(self.dir_list)
         self.listbox = urwid.ListBox(self.content)
@@ -28,7 +28,6 @@ class FileBrowser(urwid.WidgetWrap):
                 dir_entry,
                 str(self.dir_name),
                 is_a_dir=os.path.isdir(os.path.join(self.dir_name, dir_entry)),
-                callback=lambda dirname: self._change_dir(dirname)
             ) for dir_entry in os.listdir(self.dir_name) if not dir_entry.startswith('.')])
 
     def _change_dir(self, dirname):
@@ -42,6 +41,9 @@ class FileBrowser(urwid.WidgetWrap):
     def unhandled_input(self, key):
         if key == 'u':
             self._change_dir('..')
-        elif key == 'enter':
+        elif key == 'a':
             self.callback(self.content.get_focus()[0].path())
+        elif key == 'C':
+            self._change_dir(self.content.get_focus()[0].label)
+            return None
 
