@@ -16,7 +16,7 @@ class Playlist(urwid.WidgetWrap):
             super().__init__(self.name)
             if self.data.title:
                 self.line = '{}. {} - {} {}'.format(
-                    ', '.join(self.data.index) if self.data.index else '?',
+                    self.data.index if self.data.index else '?',
                     ', '.join(self.data.artist) if self.data.artist else '?',
                     ', '.join(self.data.title),
                     time.strftime('%H:%M:%S',
@@ -66,6 +66,15 @@ class Playlist(urwid.WidgetWrap):
     def unhandled_input(self, key):
         if key == 'enter':
             self.callback(self.listbox.focus)
+            return
+        try:
+            if key[0] == 'mouse press':
+                if key[1] == 5.0:
+                    self.listbox.focus_position += 1
+                elif key[1] == 4.0:
+                    self.listbox.focus_position -= 1
+        except:
+            pass
 
     def add(self, data):
         last = self.content[-1] if len(self.content) > 0 else None

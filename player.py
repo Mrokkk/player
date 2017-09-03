@@ -85,7 +85,7 @@ class Player:
                 offset=t.offset)
             new_track.artist = [cue.title]
             new_track.title = [t.title]
-            new_track.index = [str(t.number)] if t.number else []
+            new_track.index = str(t.number) if t.number else None
             new_track.length = 0 # FIXME: bug in cueparser
             tracks.append(new_track)
         return tracks
@@ -101,7 +101,7 @@ class Player:
             track.artist = tags.tags['ARTIST']
         except KeyError: pass
         try:
-            track.index = tags.tags['TRACKNUMBER']
+            track.index = tags.tags['TRACKNUMBER'][0]
         except KeyError: pass
         track.length = tags.length
         return track
