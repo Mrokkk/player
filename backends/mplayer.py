@@ -14,7 +14,7 @@ class MplayerBackend:
         self.error = error_callback
         self.adv_callback = adv_callback
         self.mplayer = None
-        self.current_item = None
+        self.current_track = None
         self.should_stop = False
 
     def _parse(self, line):
@@ -22,7 +22,7 @@ class MplayerBackend:
         key = splitted[0]
         value = splitted[1]
         if key == 'ID_LENGTH':
-            self.current_item.update_time(
+            self.current_track.update_time(
                 time.strftime('%H:%M:%S',
                     time.gmtime(int(round(float(value))))))
 
@@ -56,7 +56,7 @@ class MplayerBackend:
             '-identify',
             '-demuxer', 'lavf',
             '-vo', 'null',
-            self.current_item.data.path
+            self.current_track.data.path
         ]
         return subprocess.Popen(backend_args,
             stdin=subprocess.PIPE,
@@ -70,7 +70,7 @@ class MplayerBackend:
 
     def play_file(self, item):
         if not item: return
-        self.current_item = item
+        self.current_track = item
         if not self.mplayer:
             self._start_backend()
         else:
@@ -80,10 +80,8 @@ class MplayerBackend:
         self._send_command('pause\n')
 
     def stop(self):
-        if self.current_item:
-            self.current_item.unselect()
-            self.current_item = None
-        else: return
+        if not self.current_track: return
+        self.current_track = None
         self.should_stop = True
         self._send_command('stop\n')
 

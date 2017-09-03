@@ -54,7 +54,7 @@ class Player:
             unhandled_input=self._handle_input,
             event_loop=urwid.AsyncioEventLoop(loop=self.event_loop),
             screen=self.screen)
-        self.backend = MplayerBackend(self.event_loop, self._error, self.advance)
+        self.backend = MplayerBackend(self.event_loop, self._error, self.next)
         self.current_track = None
         self.current_track_state = PlayerState.STOPPED
 
@@ -124,16 +124,25 @@ class Player:
     def stop(self):
         if not self.current_track: return
         self.backend.stop()
+        self.current_track.unselect()
         self.current_track = None
         self.current_track_state = PlayerState.STOPPED
 
-    def advance(self):
+    def next(self):
         if not self.current_track: return
         self.current_track.unselect()
         try:
-            next_item = self.current_track.next
-            next_item.select()
-            self.play_file(next_item)
+            next_track = self.current_track.next
+            self.play_file(next_track)
+        except:
+            self.stop()
+
+    def prev(self):
+        if not self.current_track: return
+        self.current_track.unselect()
+        try:
+            prev_track = self.current_track.prev
+            self.play_file(prev_track)
         except:
             self.stop()
 
@@ -154,6 +163,9 @@ class Player:
         except:
             pass
         return screen
+
+    def quit(self):
+        raise urwid.ExitMainLoop()
 
     def run(self):
         self.main_loop.run()

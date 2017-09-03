@@ -14,15 +14,19 @@ class Cli:
         command = splitted[0]
         args = splitted[1:]
         if command == 'q' or command == 'qa':
-            raise urwid.ExitMainLoop()
+            self.player.quit()
+            return True
         elif command == 'pause':
             self.player.toggle_pause()
             return True
         elif command == 'stop':
             self.player.stop()
             return True
-        elif command == 'advance':
-            self.player.advance()
+        elif command == 'next':
+            self.player.next()
+            return True
+        elif command == 'prev':
+            self.player.prev()
             return True
         elif command == 'e':
             self.player.add_to_playlist(args[0])
