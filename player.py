@@ -26,7 +26,7 @@ class Track:
     def __init__(self, file_path, offset=0):
         self.path = file_path
         self.offset = offset # For CUE sheets
-        self.length = None
+        self.length = 0
         self.index = 0
         self.title = None
         self.artist = None
@@ -78,8 +78,17 @@ class Player:
             cue.parse()
         except Exception as e:
             self._error(e.__str__())
-        return [Track(os.path.join(os.path.dirname(path), cue.file.replace("\\", "\\\\")), offset=t.offset)
-            for t in cue.tracks]
+        tracks = []
+        for t in cue.tracks:
+            new_track = Track(
+                os.path.join(os.path.dirname(path), cue.file.replace("\\", "\\\\")),
+                offset=t.offset)
+            new_track.artist = [cue.title]
+            new_track.title = [t.title]
+            new_track.index = [str(t.number)] if t.number else []
+            new_track.length = 0 # FIXME: bug in cueparser
+            tracks.append(new_track)
+        return tracks
 
     def _handle_file(self, path):
         if not self._is_music_file(path): return []
@@ -116,7 +125,9 @@ class Player:
         if not track: raise RuntimeError('No track!')
         if self.current_track:
             if track.data.path == self.current_track.data.path:
+                self.current_track.unselect()
                 self.current_track = track
+                self.current_track.select()
                 self.backend.seek(self.current_track.data.offset)
                 return
         if self.current_track:
