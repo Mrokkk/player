@@ -25,6 +25,7 @@ class MplayerBackend:
                 if not self.should_stop:
                     self.adv_callback()
                 self.should_stop = False
+                return
 
     def _send_command(self, command):
         if not self.mplayer: return
