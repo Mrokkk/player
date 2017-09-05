@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import cueparser
+import glob
 import os
 import taglib
 
@@ -62,14 +63,23 @@ class TracksFactory:
         track.length = tags.length
         return track
 
+    def _handle_dir(self, path):
+        cue_files = glob.glob(os.path.join(path, '*.cue'))
+        if len(cue_files) > 0:
+            tracks = []
+            for cue in cue_files:
+                tracks.extend(self._handle_cue_sheet(cue))
+            return tracks
+        return [self._handle_file(os.path.join(path, f))
+            for f in sorted(os.listdir(path))
+                if os.path.isfile(os.path.join(path, f)) and self._is_music_file(f)]
+
     def get(self, path):
         if os.path.isfile(path):
             if path.endswith('.cue'): return self._handle_cue_sheet(path)
             return [self._handle_file(path)]
         elif os.path.isdir(path):
-            return [self._handle_file(os.path.join(path, f))
-                for f in sorted(os.listdir(path))
-                    if os.path.isfile(os.path.join(path, f)) and self._is_music_file(f)]
+            return self._handle_dir(path)
         else:
             return []
 
