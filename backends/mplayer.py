@@ -23,9 +23,9 @@ class MplayerBackend:
             if not line:
                 self.mplayer = None
                 self.current_track = None
-                self.should_stop = False
                 if not self.should_stop:
                     self.adv_callback()
+                self.should_stop = False
                 return
 
     def _send_command(self, command):

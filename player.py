@@ -11,6 +11,7 @@ from cli.cli import *
 from file_browser.file_browser import *
 from horizontal_panes import *
 from playlist.playlist import *
+from tracks_factory import *
 
 import config
 
@@ -19,25 +20,7 @@ class PlayerState:
     PLAYING = 1
     PAUSED = 2
 
-
-class Track:
-
-    def __init__(self, file_path):
-        self.path = file_path
-        self.offset = 0 # For CUE sheets
-        self.length = 0
-        self.index = 0
-        self.title = None
-        self.artist = None
-        self.performer = None
-        self.state = None
-
-
 class Player:
-
-    extensions = [
-        '.mp3', '.flac', '.m4a', '.wma', '.ogg', '.ape', '.alac', '.mpc', '.wav', '.wv'
-    ]
 
     def __init__(self):
         self.playlist = Playlist(self.play_file)
@@ -57,69 +40,16 @@ class Player:
         self.backend = MplayerBackend(self.event_loop, self._error, self.next)
         self.current_track = None
         self.current_track_state = PlayerState.STOPPED
+        self.tracks_factory = TracksFactory()
 
     def _error(self, error):
         self.cli_panel.set_edit_text('')
         self.cli_panel.set_caption(('error', error))
 
-    def _is_music_file(self, path):
-        for e in self.extensions:
-            if path.endswith(e): return True
-        return False
-
-    def _handle_cue_sheet(self, path):
-        cue = cueparser.CueSheet()
-        cue.setOutputFormat('%performer% - %title%\n%file%\n%tracks%', '%performer% - %title%')
-        try:
-            with open(path, 'r', encoding='latin1') as f:
-                data = f.read()
-                cue.setData(data)
-            cue.parse()
-        except Exception as e:
-            self._error(e.__str__())
-        tracks = []
-        for t in cue.tracks:
-            new_track = Track(
-                os.path.join(os.path.dirname(path), cue.file.replace("\\", "\\\\")))
-            new_track.artist = [cue.title]
-            new_track.title = [t.title]
-            new_track.index = str(t.number) if t.number else None
-            new_track.length = 0 # FIXME: bug in cueparser
-            new_track.offset = t.offset
-            tracks.append(new_track)
-        return tracks
-
-    def _handle_file(self, path):
-        if not self._is_music_file(path): return []
-        track = Track(path)
-        tags = taglib.File(path)
-        try:
-            track.title = tags.tags['TITLE']
-        except KeyError: pass
-        try:
-            track.artist = tags.tags['ARTIST']
-        except KeyError: pass
-        try:
-            track.index = tags.tags['TRACKNUMBER'][0]
-        except KeyError: pass
-        track.length = tags.length
-        return track
-
-    def _get_files(self, path):
-        if os.path.isfile(path):
-            if path.endswith('.cue'): return self._handle_cue_sheet(path)
-            return [self._handle_file(path)]
-        elif os.path.isdir(path):
-            return [self._handle_file(os.path.join(path, f))
-                for f in sorted(os.listdir(path))
-                    if os.path.isfile(os.path.join(path, f)) and self._is_music_file(f)]
-        else:
-            return []
-
     def add_to_playlist(self, path, clear=False):
         if clear:
             self.playlist.clear()
-        for f in self._get_files(path):
+        for f in self.tracks_factory.get(path):
             self.playlist.add(f)
 
     def play_file(self, track):
@@ -166,7 +96,11 @@ class Player:
         self.current_track.unselect()
         try:
             next_track = self.current_track.next
-            if not next_track: return
+            if not next_track:
+                self.stop()
+                return
+            else:
+                self.current_track = None
             self.play_file(next_track)
         except:
             self.stop()
@@ -178,7 +112,11 @@ class Player:
         self.current_track.unselect()
         try:
             prev_track = self.current_track.prev
-            if not prev_track: return
+            if not prev_track:
+                self.stop()
+                return
+            else:
+                self.current_track = None
             self.play_file(prev_track)
         except:
             self.stop()
