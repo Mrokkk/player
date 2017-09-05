@@ -43,6 +43,8 @@ class FileBrowser(urwid.WidgetWrap):
             self._change_dir('..')
         elif key == 'a':
             self.callback(self.content.get_focus()[0].path())
+        elif key == 'r':
+            self.callback(self.content.get_focus()[0].path(), True)
         elif key == 'C':
             self._change_dir(self.content.get_focus()[0].label)
             return None

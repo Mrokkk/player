@@ -22,9 +22,10 @@ class MplayerBackend:
             line = self.mplayer.stdout.readline()
             if not line:
                 self.mplayer = None
+                self.current_track = None
+                self.should_stop = False
                 if not self.should_stop:
                     self.adv_callback()
-                self.should_stop = False
                 return
 
     def _send_command(self, command):
@@ -55,7 +56,7 @@ class MplayerBackend:
         self.thread.start()
 
     def play_file(self, item):
-        if not item: return
+        if not item: raise RuntimeError('No track!')
         self.current_track = item
         if not self.mplayer:
             self._start_backend()

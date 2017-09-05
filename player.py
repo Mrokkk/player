@@ -116,7 +116,9 @@ class Player:
         else:
             return []
 
-    def add_to_playlist(self, path):
+    def add_to_playlist(self, path, clear=False):
+        if clear:
+            self.playlist.clear()
         for f in self._get_files(path):
             self.playlist.add(f)
 
@@ -158,19 +160,25 @@ class Player:
         self.current_track_state = PlayerState.STOPPED
 
     def next(self):
-        if not self.current_track: return
+        if not self.current_track:
+            self._error('No track playing')
+            return
         self.current_track.unselect()
         try:
             next_track = self.current_track.next
+            if not next_track: return
             self.play_file(next_track)
         except:
             self.stop()
 
     def prev(self):
-        if not self.current_track: return
+        if not self.current_track:
+            self._error('No track playing')
+            return
         self.current_track.unselect()
         try:
             prev_track = self.current_track.prev
+            if not prev_track: return
             self.play_file(prev_track)
         except:
             self.stop()

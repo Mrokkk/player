@@ -40,3 +40,6 @@ class Playlist(urwid.WidgetWrap):
             last.next = new_track
         self.content.append(new_track)
 
+    def clear(self):
+        self.content[:] = []
+
