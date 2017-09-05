@@ -89,37 +89,26 @@ class Player:
         self.current_track = None
         self.current_track_state = PlayerState.STOPPED
 
-    def next(self):
+    def _play_next_track(self, track):
         if not self.current_track:
             self._error('No track playing')
             return
         self.current_track.unselect()
         try:
-            next_track = self.current_track.next
-            if not next_track:
+            if not track:
                 self.stop()
                 return
             else:
                 self.current_track = None
-            self.play_file(next_track)
+            self.play_file(track)
         except:
             self.stop()
 
+    def next(self):
+        self._play_next_track(self.current_track.next)
+
     def prev(self):
-        if not self.current_track:
-            self._error('No track playing')
-            return
-        self.current_track.unselect()
-        try:
-            prev_track = self.current_track.prev
-            if not prev_track:
-                self.stop()
-                return
-            else:
-                self.current_track = None
-            self.play_file(prev_track)
-        except:
-            self.stop()
+        self._play_next_track(self.current_track.prev)
 
     def _handle_input(self, key):
         if key == ':':

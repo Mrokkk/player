@@ -30,13 +30,10 @@ class TracksFactory:
     def _handle_cue_sheet(self, path):
         cue = cueparser.CueSheet()
         cue.setOutputFormat('%performer% - %title%\n%file%\n%tracks%', '%performer% - %title%')
-        try:
-            with open(path, 'r', encoding='latin1') as f:
-                data = f.read()
-                cue.setData(data)
-            cue.parse()
-        except Exception as e:
-            self._error(e.__str__())
+        with open(path, 'r', encoding='latin1') as f:
+            data = f.read()
+            cue.setData(data)
+        cue.parse()
         tracks = []
         for t in cue.tracks:
             new_track = Track(
@@ -75,6 +72,4 @@ class TracksFactory:
                     if os.path.isfile(os.path.join(path, f)) and self._is_music_file(f)]
         else:
             return []
-
-
 
