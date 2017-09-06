@@ -38,14 +38,37 @@ class FileBrowser(urwid.WidgetWrap):
         self.header.set_text(path)
         self.content[:] = self.dir_list
 
+    def _show_dir(self, item):
+        if not os.path.isdir(item.path()): return
+        index = self.listbox.focus_position + 1
+        self.content[index:index] = sorted([
+            DirEntry(
+                d,
+                item.path(),
+                is_a_dir=os.path.isdir(os.path.join(item.path(), d)),
+                level=item.level + 1
+            ) for d in os.listdir(item.path()) if not d.startswith('.')])
+        item.open = True
+
+    def _hide_dir(self, item):
+        # TODO
+        pass
+
+    def _toggle_dir(self, item):
+        if item.open:
+            self._hide_dir(item)
+        else:
+            self._show_dir(item)
+
     def unhandled_input(self, key):
         if key == 'u':
             self._change_dir('..')
+        elif key == 'enter':
+            self._toggle_dir(self.content.get_focus()[0])
         elif key == 'a':
             self.callback(self.content.get_focus()[0].path())
         elif key == 'r':
             self.callback(self.content.get_focus()[0].path(), True)
         elif key == 'C':
             self._change_dir(self.content.get_focus()[0].label)
-            return None
 

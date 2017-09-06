@@ -48,7 +48,7 @@ class TracksFactory:
         return tracks
 
     def _handle_file(self, path):
-        if not self._is_music_file(path): return []
+        if not self._is_music_file(path): return None
         track = Track(path)
         tags = taglib.File(path)
         try:

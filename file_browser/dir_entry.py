@@ -7,16 +7,18 @@ class DirEntry(urwid.Button):
 
     signals = []
 
-    def __init__(self, name, parent_path, is_a_dir=False, callback=None):
+    def __init__(self, name, parent_path, is_a_dir=False, level=0):
         super().__init__(name)
         self.name = name
         self.parent_path = parent_path
         self.isdir = is_a_dir
+        self.level = level
+        self.open = False
         if is_a_dir:
-            self._w = urwid.AttrMap(urwid.SelectableIcon([u'▸ ', name, '/'], 0),
+            self._w = urwid.AttrMap(urwid.SelectableIcon(['  ' * level, u'▸ ', name, '/'], 0),
                 'dir', 'dir_focused')
         else:
-            self._w = urwid.AttrMap(urwid.SelectableIcon(['  ', name], 0),
+            self._w = urwid.AttrMap(urwid.SelectableIcon(['  ' * level, '  ', name], 0),
                 'file', 'file_focused')
 
     def keypress(self, size, key):

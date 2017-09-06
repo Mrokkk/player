@@ -50,6 +50,7 @@ class Player:
         if clear:
             self.playlist.clear()
         for f in self.tracks_factory.get(path):
+            if not f: continue
             self.playlist.add(f)
 
     def play_file(self, track):
