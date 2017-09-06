@@ -12,7 +12,7 @@ class FileBrowser(urwid.WidgetWrap):
     def __init__(self, add_callback):
         self.dir_name = os.getcwd()
         self.callback = add_callback
-        self._read_dir()
+        self.dir_list = self._read_dir(self.dir_name)
         self.content = urwid.SimpleListWalker(self.dir_list)
         self.listbox = urwid.ListBox(self.content)
         self.header = urwid.AttrWrap(urwid.Text(self.dir_name), 'head')
@@ -22,43 +22,39 @@ class FileBrowser(urwid.WidgetWrap):
             header=self.header,
             footer=self.footer))
 
-    def _read_dir(self):
-        self.dir_list = sorted([
+    def _read_dir(self, path, level=0):
+        return sorted([
             DirEntry(
                 dir_entry,
-                str(self.dir_name),
-                is_a_dir=os.path.isdir(os.path.join(self.dir_name, dir_entry)),
-            ) for dir_entry in os.listdir(self.dir_name) if not dir_entry.startswith('.')])
+                path,
+                is_a_dir=os.path.isdir(os.path.join(path, dir_entry)),
+                level=level
+            ) for dir_entry in os.listdir(path) if not dir_entry.startswith('.')])
 
     def _change_dir(self, dirname):
         path = os.path.abspath(os.path.join(self.dir_name, dirname))
         if not os.path.isdir(path): return
         self.dir_name = path
-        self._read_dir()
+        self.dir_list = self._read_dir(self.dir_name)
         self.header.set_text(path)
         self.content[:] = self.dir_list
 
-    def _show_dir(self, item):
-        if not os.path.isdir(item.path()): return
+    def _show_dir(self, parent):
+        parent_path = parent.path()
+        if not os.path.isdir(parent_path): return
         index = self.listbox.focus_position + 1
-        self.content[index:index] = sorted([
-            DirEntry(
-                d,
-                item.path(),
-                is_a_dir=os.path.isdir(os.path.join(item.path(), d)),
-                level=item.level + 1
-            ) for d in os.listdir(item.path()) if not d.startswith('.')])
-        item.open = True
+        self.content[index:index] = self._read_dir(parent_path, parent.level + 1)
+        parent.open = True
 
-    def _hide_dir(self, item):
+    def _hide_dir(self, parent):
         # TODO
         pass
 
-    def _toggle_dir(self, item):
-        if item.open:
-            self._hide_dir(item)
+    def _toggle_dir(self, parent):
+        if parent.open:
+            self._hide_dir(parent)
         else:
-            self._show_dir(item)
+            self._show_dir(parent)
 
     def unhandled_input(self, key):
         if key == 'u':
