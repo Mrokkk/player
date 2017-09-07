@@ -58,6 +58,17 @@ class FileBrowser(urwid.WidgetWrap):
         else:
             self._show_dir(parent)
 
+    def search_forward(self, pattern):
+        index = self.listbox.focus_position + 1
+        while True:
+            try:
+                if pattern in self.content[index].name:
+                    self.listbox.focus_position = index
+                    return
+                index += 1
+            except:
+                break
+
     def unhandled_input(self, key):
         if key == 'u':
             self._change_dir('..')

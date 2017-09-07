@@ -45,7 +45,7 @@ class Cli:
             raise RuntimeError('No such command: ' + command)
 
     def _search_forward_mode(self, command):
-        # TODO
+        self.player.panes.search_forward(command)
         return True
 
     def _search_backward_mode(self, command):
@@ -76,6 +76,6 @@ class CliPanel(urwid.Edit):
             try:
                 if self.cli.handle_command(self.get_edit_text().strip(), self.mode):
                     self._clear_and_set_caption('')
-            except RuntimeError as exc:
+            except (RuntimeError, AttributeError) as exc:
                 self._clear_and_set_caption(('error', exc.__str__()))
 

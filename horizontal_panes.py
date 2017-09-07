@@ -19,6 +19,12 @@ class HorizontalPanes(urwid.Columns):
     def unhandled_input(self, key):
         return self.focus.unhandled_input(key)
 
+    def search_forward(self, pattern):
+        return self.focus.search_forward(pattern)
+
+    def search_backward(self, pattern):
+        return self.focus.search_backward(pattern)
+
     def switch_focus(self):
         self.set_focus(0 if self.focus_position else 1)
 
