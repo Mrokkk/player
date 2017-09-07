@@ -16,11 +16,10 @@ class FileBrowser(urwid.WidgetWrap):
         self.content = urwid.SimpleListWalker(self.dir_list)
         self.listbox = urwid.ListBox(self.content)
         self.header = urwid.AttrWrap(urwid.Text(self.dir_name), 'head')
-        self.footer = urwid.AttrWrap(urwid.Text(self.footer_text), 'foot')
         super().__init__(urwid.Frame(
             self.listbox,
             header=self.header,
-            footer=self.footer))
+            footer=urwid.AttrWrap(urwid.Text(self.footer_text), 'foot')))
 
     def _read_dir(self, path, level=0):
         return sorted([
@@ -47,8 +46,11 @@ class FileBrowser(urwid.WidgetWrap):
         parent.open = True
 
     def _hide_dir(self, parent):
-        # TODO
-        pass
+        index = self.listbox.focus_position + 1
+        while True:
+            del self.content[index]
+            if self.content[index].level != parent.level + 1: break
+        parent.open = False
 
     def _toggle_dir(self, parent):
         if parent.open:
@@ -65,6 +67,8 @@ class FileBrowser(urwid.WidgetWrap):
             self.callback(self.content.get_focus()[0].path())
         elif key == 'r':
             self.callback(self.content.get_focus()[0].path(), True)
+        elif key == 'R':
+            self._change_dir('.')
         elif key == 'C':
             self._change_dir(self.content.get_focus()[0].label)
 
