@@ -37,10 +37,14 @@ class Player:
             unhandled_input=self._handle_input,
             event_loop=urwid.AsyncioEventLoop(loop=self.event_loop),
             screen=self.screen)
-        self.backend = MplayerBackend(self.event_loop, self._error, self.next)
+        self.backend = MplayerBackend(self.event_loop, self._error, self.next, self._set_time)
         self.current_track = None
         self.current_track_state = PlayerState.STOPPED
         self.tracks_factory = TracksFactory()
+
+    def _set_time(self, time):
+        self.cli_panel.set_caption(time)
+        pass
 
     def _error(self, error):
         self.cli_panel.set_edit_text('')

@@ -6,19 +6,30 @@ import subprocess
 import threading
 import time
 import urwid
+import csv
 
 class MplayerBackend:
 
-    def __init__(self, event_loop, error_callback, adv_callback):
+    def __init__(self, event_loop, error_callback, adv_callback, set_time_callback):
         self.loop = event_loop
         self.error = error_callback
         self.adv_callback = adv_callback
+        self.set_time_callback = set_time_callback
         self.mplayer = None
         self.current_track = None
         self.should_stop = False
 
     def _reader(self):
         while True:
+            try:
+                reader = csv.reader(self.mplayer.stdout, delimiter='\r')
+                for row in reader:
+                    try:
+                        self.set_time_callback(row[0].split()[1].strip())
+                    except:
+                        pass
+            except:
+                pass
             line = self.mplayer.stdout.readline()
             if not line:
                 self.mplayer = None
@@ -30,7 +41,7 @@ class MplayerBackend:
 
     def _send_command(self, command):
         if not self.mplayer: return
-        self.mplayer.stdin.write(command.encode())
+        self.mplayer.stdin.write(command)
         self.mplayer.stdin.flush()
 
     def _run_mplayer(self):
@@ -39,7 +50,7 @@ class MplayerBackend:
         mplayer_args = [
             'mplayer',
             '-ao', 'pulse',
-            '-quiet',
+            '-noquiet',
             '-slave',
             '-demuxer', 'lavf',
             '-vo', 'null',
@@ -48,7 +59,8 @@ class MplayerBackend:
         return subprocess.Popen(mplayer_args,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL)
+            stderr=subprocess.DEVNULL,
+            encoding='utf-8')
 
     def _start_backend(self):
         self.mplayer = self._run_mplayer()
