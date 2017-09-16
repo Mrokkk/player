@@ -82,4 +82,13 @@ class FileBrowser(urwid.WidgetWrap):
             self._change_dir('.')
         elif key == 'C':
             self._change_dir(self.content.get_focus()[0].label)
+        else:
+            try:
+                if key[0] == 'mouse press':
+                    if key[1] == 5.0:
+                        self.listbox.focus_position += 1
+                    elif key[1] == 4.0:
+                        self.listbox.focus_position -= 1
+            except:
+                pass
 
