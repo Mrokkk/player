@@ -49,7 +49,7 @@ class FileBrowser(urwid.WidgetWrap):
         index = self.listbox.focus_position + 1
         while True:
             del self.content[index]
-            if self.content[index].level != parent.level + 1: break
+            if self.content[index].level < parent.level + 1: break
         parent.open = False
 
     def _toggle_dir(self, parent):
