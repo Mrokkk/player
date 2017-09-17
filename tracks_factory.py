@@ -39,11 +39,11 @@ class TracksFactory:
         for t in cue.tracks:
             new_track = Track(
                 os.path.join(os.path.dirname(path), cue.file.replace("\\", "\\\\")))
-            new_track.artist = [cue.title]
-            new_track.title = [t.title]
+            new_track.artist = cue.title
+            new_track.title = t.title
             new_track.index = str(t.number) if t.number else None
             new_track.length = 0 # FIXME: bug in cueparser
-            new_track.offset = t.offset
+            new_track.offset = t.offset if t.offset else 0
             tracks.append(new_track)
         return tracks
 
@@ -52,10 +52,10 @@ class TracksFactory:
         track = Track(path)
         tags = taglib.File(path)
         try:
-            track.title = tags.tags['TITLE']
+            track.title = ', '.join(tags.tags['TITLE'])
         except KeyError: pass
         try:
-            track.artist = tags.tags['ARTIST']
+            track.artist = ', '.join(tags.tags['ARTIST'])
         except KeyError: pass
         try:
             track.index = tags.tags['TRACKNUMBER'][0]

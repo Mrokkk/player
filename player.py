@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 import asyncio
-import cueparser
 import os
-import taglib
 import time
 import urwid
 
@@ -38,20 +36,22 @@ class Player:
             unhandled_input=self._handle_input,
             event_loop=urwid.AsyncioEventLoop(loop=self.event_loop),
             screen=self.screen)
-        self.backend = MplayerBackend(self.event_loop, self._error, self.next, self._set_time)
+        self.backend = MplayerBackend(self.event_loop, self._error, self.next, self._update_current_state)
         self.current_track = None
         self.current_track_state = PlayerState.STOPPED
         self.tracks_factory = TracksFactory()
 
-    def _set_time(self, pos):
+    def _update_current_state(self, pos):
         if self.view.focus_position != 'footer':
             if self.current_track.data.length >= 3600:
-                self.cli_panel.set_caption('{} / {}'.format(
-                    time.strftime('%H:%M:%S', time.gmtime(int(pos.split('.')[0]))),
+                self.cli_panel.set_caption('{} : {} / {}'.format(
+                    self.current_track.data.title,
+                    time.strftime('%H:%M:%S', time.gmtime(pos - self.current_track.data.offset)),
                     time.strftime('%H:%M:%S', time.gmtime(self.current_track.data.length))))
             else:
-                self.cli_panel.set_caption('{} / {}'.format(
-                    time.strftime('%M:%S', time.gmtime(int(pos.split('.')[0]))),
+                self.cli_panel.set_caption('{} : {} / {}'.format(
+                    self.current_track.data.title,
+                    time.strftime('%M:%S', time.gmtime(pos - self.current_track.data.offset)),
                     time.strftime('%M:%S', time.gmtime(self.current_track.data.length))))
 
     def _error(self, error):

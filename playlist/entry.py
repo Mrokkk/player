@@ -13,8 +13,8 @@ class Entry(urwid.Button):
         if self.data.title:
             self.line = '{}. {} - {} {}'.format(
                 self.data.index if self.data.index else '?',
-                ', '.join(self.data.artist) if self.data.artist else '?',
-                ', '.join(self.data.title),
+                self.data.artist if self.data.artist else '?',
+                self.data.title,
                 time.strftime('%H:%M:%S',
                     time.gmtime(int(self.data.length))))
             self._w = urwid.AttrMap(urwid.SelectableIcon(['  ', self.line], -1),

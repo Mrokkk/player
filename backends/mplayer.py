@@ -25,8 +25,9 @@ class MplayerBackend:
                 reader = csv.reader(self.mplayer.stdout, delimiter='\r')
                 for row in reader:
                     try:
-                        self.set_time_callback(row[0].split()[1].strip())
-                    except:
+                        if not row[0].startswith('A'): continue
+                        self.set_time_callback(int(row[0].split(':')[1].split()[0].strip().split('.')[0]))
+                    except Exception as e:
                         pass
             except:
                 pass
