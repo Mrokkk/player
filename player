@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
+import signal
 from player import *
 
 def main():
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
     Player().run()
 
 if __name__ == '__main__':

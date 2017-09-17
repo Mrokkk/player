@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
+import csv
 import os
 import queue
 import subprocess
 import threading
 import time
 import urwid
-import csv
 
 class MplayerBackend:
 

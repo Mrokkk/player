@@ -4,6 +4,7 @@ import asyncio
 import cueparser
 import os
 import taglib
+import time
 import urwid
 
 from backends.mplayer import *
@@ -42,9 +43,16 @@ class Player:
         self.current_track_state = PlayerState.STOPPED
         self.tracks_factory = TracksFactory()
 
-    def _set_time(self, time):
-        self.cli_panel.set_caption(time)
-        pass
+    def _set_time(self, pos):
+        if self.view.focus_position != 'footer':
+            if self.current_track.data.length >= 3600:
+                self.cli_panel.set_caption('{} / {}'.format(
+                    time.strftime('%H:%M:%S', time.gmtime(int(pos.split('.')[0]))),
+                    time.strftime('%H:%M:%S', time.gmtime(self.current_track.data.length))))
+            else:
+                self.cli_panel.set_caption('{} / {}'.format(
+                    time.strftime('%M:%S', time.gmtime(int(pos.split('.')[0]))),
+                    time.strftime('%M:%S', time.gmtime(self.current_track.data.length))))
 
     def _error(self, error):
         self.cli_panel.set_edit_text('')
