@@ -85,8 +85,7 @@ class Player:
 
     def toggle_pause(self):
         if not self.current_track:
-            self._error('No track playing!')
-            return
+            raise RuntimeError('No track playing!')
         self.backend.toggle_pause()
         if self.current_track_state == PlayerState.PAUSED:
             self.current_track_state = PlayerState.PLAYING
@@ -97,8 +96,7 @@ class Player:
 
     def stop(self):
         if not self.current_track:
-            self._error('No track playing!')
-            return
+            raise RuntimeError('No track playing!')
         self.backend.stop()
         self.current_track.unselect()
         self.current_track = None
