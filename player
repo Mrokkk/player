@@ -1,11 +1,21 @@
 #!/usr/bin/env python3
 
+import asyncio
 import signal
+import urwid
 from player import *
+
+def create_screen():
+    screen = urwid.raw_display.Screen()
+    try:
+        screen.set_terminal_properties(256)
+    except:
+        pass
+    return screen
 
 def main():
     signal.signal(signal.SIGINT, signal.SIG_IGN)
-    Player().run()
+    Player(asyncio.get_event_loop(), create_screen()).run()
 
 if __name__ == '__main__':
     main()

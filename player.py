@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import asyncio
 import os
 import time
 import urwid
@@ -21,15 +20,15 @@ class PlayerState:
 
 class Player:
 
-    def __init__(self):
+    def __init__(self, event_loop, screen):
+        self.event_loop = event_loop
+        self.screen = screen
         self.playlist = Playlist(self.play_file)
         self.file_browser = FileBrowser(self.add_to_playlist)
         self.cli = Cli(self)
         self.cli_panel = CliPanel(self.cli)
         self.panes = HorizontalPanes([self.file_browser, self.playlist])
         self.view = urwid.Frame(self.panes, footer=self.cli_panel)
-        self.screen = self._create_screen()
-        self.event_loop = asyncio.get_event_loop()
         self.main_loop = urwid.MainLoop(
             self.view,
             config.color_palette,
@@ -43,16 +42,11 @@ class Player:
 
     def _update_current_state(self, pos):
         if self.view.focus_position != 'footer':
-            if self.current_track.data.length >= 3600:
-                self.cli_panel.set_caption('{} : {} / {}'.format(
-                    self.current_track.data.title if self.current_track.data.title else self.current_track.name,
-                    time.strftime('%H:%M:%S', time.gmtime(pos - self.current_track.data.offset)),
-                    time.strftime('%H:%M:%S', time.gmtime(self.current_track.data.length))))
-            else:
-                self.cli_panel.set_caption('{} : {} / {}'.format(
-                    self.current_track.data.title if self.current_track.data.title else self.current_track.name,
-                    time.strftime('%M:%S', time.gmtime(pos - self.current_track.data.offset)),
-                    time.strftime('%M:%S', time.gmtime(self.current_track.data.length))))
+            time_format = '%H:%M:%S' if self.current_track.data.length >= 3600 else '%M:%S'
+            self.cli_panel.set_caption('{} : {} / {}'.format(
+                self.current_track.data.title if self.current_track.data.title else self.current_track.name,
+                time.strftime(time_format, time.gmtime(pos - self.current_track.data.offset)),
+                time.strftime(time_format, time.gmtime(self.current_track.data.length))))
 
     def _error(self, error):
         self.cli_panel.set_edit_text('')
@@ -137,14 +131,6 @@ class Player:
         else:
             if not self.view.focus.unhandled_input(key):
                 self.view.focus_position = 'body'
-
-    def _create_screen(self):
-        screen = urwid.raw_display.Screen()
-        try:
-            screen.set_terminal_properties(256)
-        except:
-            pass
-        return screen
 
     def quit(self):
         raise urwid.ExitMainLoop()
