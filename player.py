@@ -45,12 +45,12 @@ class Player:
         if self.view.focus_position != 'footer':
             if self.current_track.data.length >= 3600:
                 self.cli_panel.set_caption('{} : {} / {}'.format(
-                    self.current_track.data.title,
+                    self.current_track.data.title if self.current_track.data.title else self.current_track.name,
                     time.strftime('%H:%M:%S', time.gmtime(pos - self.current_track.data.offset)),
                     time.strftime('%H:%M:%S', time.gmtime(self.current_track.data.length))))
             else:
                 self.cli_panel.set_caption('{} : {} / {}'.format(
-                    self.current_track.data.title,
+                    self.current_track.data.title if self.current_track.data.title else self.current_track.name,
                     time.strftime('%M:%S', time.gmtime(pos - self.current_track.data.offset)),
                     time.strftime('%M:%S', time.gmtime(self.current_track.data.length))))
 
