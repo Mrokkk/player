@@ -78,4 +78,12 @@ class CliPanel(urwid.Edit):
                     self._clear_and_set_caption('')
             except (RuntimeError, AttributeError) as exc:
                 self._clear_and_set_caption(('error', exc.__str__()))
+        elif key == 'esc':
+            self._clear_and_set_caption('')
+        elif key == 'up':
+            # TODO
+            return True
+        elif key == 'down':
+            # TODO
+            return True
 

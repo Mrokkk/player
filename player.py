@@ -135,8 +135,8 @@ class Player:
         elif key == 'ctrl w':
             self.panes.switch_focus()
         else:
-            path = self.view.focus.unhandled_input(key)
-            self.view.focus_position = 'body'
+            if not self.view.focus.unhandled_input(key):
+                self.view.focus_position = 'body'
 
     def _create_screen(self):
         screen = urwid.raw_display.Screen()
