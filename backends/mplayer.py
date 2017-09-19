@@ -3,6 +3,7 @@
 import csv
 import os
 import queue
+import re
 import subprocess
 import threading
 import time
@@ -25,8 +26,9 @@ class MplayerBackend:
                 reader = csv.reader(self.mplayer.stdout, delimiter='\r')
                 for row in reader:
                     try:
-                        if not row[0].startswith('A'): continue
-                        self.set_time_callback(int(row[0].split(':')[1].split()[0].strip().split('.')[0]))
+                        match = re.search('[0-9]+', row[0])
+                        if not match: continue
+                        self.set_time_callback(int(match.group()))
                     except Exception as e:
                         pass
             except:
