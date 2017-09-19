@@ -70,6 +70,8 @@ class MplayerBackend:
 
     def play_file(self, item):
         if not item: raise RuntimeError('No track!')
+        if item.data.path == 'cdda://':
+            self.stop()
         self.current_track = item
         if not self.mplayer:
             self._start_backend()

@@ -75,7 +75,11 @@ class TracksFactory:
                 if os.path.isfile(os.path.join(path, f)) and self._is_music_file(f)]
 
     def get(self, path):
-        if os.path.isfile(path):
+        if path == 'cdda://':
+            track = Track(path)
+            track.title = 'CD Audio'
+            return [track]
+        elif os.path.isfile(path):
             if path.endswith('.cue'): return self._handle_cue_sheet(path)
             return [self._handle_file(path)]
         elif os.path.isdir(path):
