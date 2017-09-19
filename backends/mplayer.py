@@ -50,15 +50,27 @@ class MplayerBackend:
     def _run_mplayer(self):
         self.output_queue = queue.Queue()
         self.input_queue = queue.Queue()
-        mplayer_args = [
-            'mplayer',
-            '-ao', 'pulse',
-            '-noquiet',
-            '-slave',
-            '-demuxer', 'lavf',
-            '-vo', 'null',
-            self.current_track.data.path
-        ]
+        if self.current_track.data.path == 'cdda://':
+            mplayer_args = [
+                'mplayer',
+                '-ao', 'pulse',
+                '-noquiet',
+                '-slave',
+                '-cdrom-device', '/dev/cdrom',
+                '-vo', 'null',
+                '-cache', '8192',
+                self.current_track.data.path
+            ]
+        else:
+            mplayer_args = [
+                'mplayer',
+                '-ao', 'pulse',
+                '-noquiet',
+                '-slave',
+                '-demuxer', 'lavf',
+                '-vo', 'null',
+                self.current_track.data.path
+            ]
         return subprocess.Popen(mplayer_args,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
