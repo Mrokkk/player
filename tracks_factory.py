@@ -5,17 +5,7 @@ import glob
 import os
 import taglib
 
-class Track:
-
-    def __init__(self, file_path):
-        self.path = file_path
-        self.offset = 0 # For CUE sheets
-        self.length = 0
-        self.index = 0
-        self.title = None
-        self.artist = None
-        self.performer = None
-        self.state = None
+from track import *
 
 class TracksFactory:
 

@@ -9,6 +9,7 @@ from cli.cli import *
 from file_browser.file_browser import *
 from horizontal_panes import *
 from playlist.playlist import *
+from track import *
 from tracks_factory import *
 
 import config
