@@ -42,11 +42,11 @@ class Player:
 
     def _update_current_state(self, pos):
         if self.view.focus_position != 'footer':
-            time_format = '%H:%M:%S' if self.current_track.data.length >= 3600 else '%M:%S'
+            time_format = '%H:%M:%S' if self.current_track.track.length >= 3600 else '%M:%S'
             self.cli_panel.set_caption('{} : {} / {}'.format(
-                self.current_track.data.title if self.current_track.data.title else self.current_track.name,
-                time.strftime(time_format, time.gmtime(pos - self.current_track.data.offset)),
-                time.strftime(time_format, time.gmtime(self.current_track.data.length))))
+                self.current_track.track.title,
+                time.strftime(time_format, time.gmtime(pos - self.current_track.track.offset)),
+                time.strftime(time_format, time.gmtime(self.current_track.track.length))))
 
     def _error(self, error):
         self.cli_panel.set_edit_text('')
@@ -68,20 +68,11 @@ class Player:
             self._error('No track!')
             return
         if self.current_track:
-            if track.data.path == self.current_track.data.path:
-                self.current_track.unselect()
-                self.current_track = track
-                self.current_track.select()
-                self.backend.seek(self.current_track.data.offset)
-                return
-        if self.current_track:
             self.current_track.unselect()
-        self.backend.play_file(track)
+        self.backend.play_file(track.track)
         self.current_track = track
         self.current_track.select()
         self.current_track_state = PlayerState.PLAYING
-        if self.current_track.data.offset != 0:
-            self.backend.seek(self.current_track.data.offset)
 
     def toggle_pause(self):
         if not self.current_track:
@@ -106,13 +97,10 @@ class Player:
         if not self.current_track:
             self._error('No track playing!')
             return
-        self.current_track.unselect()
         try:
-            if not track:
+            if not track and self.current_track:
                 self.stop()
                 return
-            else:
-                self.current_track = None
             self.play_file(track)
         except:
             self.stop()

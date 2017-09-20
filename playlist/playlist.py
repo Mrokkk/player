@@ -32,13 +32,20 @@ class Playlist(urwid.WidgetWrap):
         except:
             pass
 
+    def _get_track_string(self, track):
+        if track.title:
+            return '{}. {} - {} {}'.format(
+                track.index if track.index else '?',
+                track.artist if track.artist else '?',
+                track.title,
+                time.strftime('%H:%M:%S', time.gmtime(int(track.length))))
+        else:
+            track.title = os.path.basename(track.path) # FIXME: shouldn't be here
+            return '{} {}'.format(track.title, time.strftime('%H:%M:%S', time.gmtime(int(track.length))))
+
     def add(self, data):
         last = self.content[-1] if len(self.content) > 0 else None
-        new_track = Entry(data)
-        new_track.prev = last
-        if last:
-            last.next = new_track
-        self.content.append(new_track)
+        self.content.append(Entry(data, self._get_track_string(data), prev=last))
 
     def clear(self):
         self.content[:] = []

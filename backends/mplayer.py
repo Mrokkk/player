@@ -20,19 +20,20 @@ class MplayerBackend:
         self.current_track = None
         self.should_stop = False
 
+    def _update_time_pos(self, line):
+        match = re.search('[0-9]+', line)
+        if not match: return
+        self.set_time_callback(int(match.group()))
+
     def _reader(self):
         while True:
             try:
                 reader = csv.reader(self.mplayer.stdout, delimiter='\r')
                 for row in reader:
                     try:
-                        match = re.search('[0-9]+', row[0])
-                        if not match: continue
-                        self.set_time_callback(int(match.group()))
-                    except Exception as e:
-                        pass
-            except:
-                pass
+                        self._update_time_pos(row[0])
+                    except: pass
+            except: pass
             line = self.mplayer.stdout.readline()
             if not line:
                 self.mplayer = None
@@ -50,7 +51,7 @@ class MplayerBackend:
     def _run_mplayer(self):
         self.output_queue = queue.Queue()
         self.input_queue = queue.Queue()
-        if self.current_track.data.path == 'cdda://':
+        if self.current_track.path == 'cdda://':
             mplayer_args = [
                 'mplayer',
                 '-ao', 'pulse',
@@ -59,7 +60,7 @@ class MplayerBackend:
                 '-cdrom-device', '/dev/cdrom',
                 '-vo', 'null',
                 '-cache', '8192',
-                self.current_track.data.path
+                self.current_track.path
             ]
         else:
             mplayer_args = [
@@ -69,7 +70,7 @@ class MplayerBackend:
                 '-slave',
                 '-demuxer', 'lavf',
                 '-vo', 'null',
-                self.current_track.data.path
+                self.current_track.path
             ]
         return subprocess.Popen(mplayer_args,
             stdin=subprocess.PIPE,
@@ -82,15 +83,26 @@ class MplayerBackend:
         self.thread = threading.Thread(target=self._reader, daemon=True)
         self.thread.start()
 
-    def play_file(self, item):
-        if not item: raise RuntimeError('No track!')
-        if item.data.path == 'cdda://':
+    def _loadfile(self, path):
+        self._send_command('loadfile "{}"\n'.format(path))
+
+    def play_file(self, track):
+        if not track: raise RuntimeError('No track!')
+        last_track = self.current_track
+        if track.path == 'cdda://':
             self.stop()
-        self.current_track = item
+        self.current_track = track
         if not self.mplayer:
             self._start_backend()
         else:
-            self._send_command('loadfile "{}"\n'.format(item.data.path))
+            if self.current_track.path != last_track.path:
+                self._loadfile(track.path)
+        # FIXME: might cause troubles
+        if self.current_track == last_track:
+            self.seek(self.current_track.offset)
+        else:
+            if last_track and self.current_track.path == last_track.path:
+                self.seek(self.current_track.offset)
 
     def toggle_pause(self):
         self._send_command('pause\n')
