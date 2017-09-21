@@ -3,7 +3,7 @@
 import os
 import urwid
 
-import config
+import playerlib.config
 
 class HorizontalPanes(urwid.Columns):
 

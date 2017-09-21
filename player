@@ -3,7 +3,7 @@
 import asyncio
 import signal
 import urwid
-from player import *
+from playerlib.player import *
 
 def create_screen():
     screen = urwid.raw_display.Screen()

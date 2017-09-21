@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 
-import os
-import time
 import urwid
+from time import gmtime, strftime
 
-import config
-from backends.mplayer import *
-from cli.cli import *
-from file_browser.file_browser import *
-from horizontal_panes import *
-from playlist.playlist import *
-from track import *
-from tracks_factory import *
+import playerlib.config as config
+from playerlib.backends.mplayer import *
+from playerlib.cli.cli import *
+from playerlib.file_browser.file_browser import *
+from playerlib.horizontal_panes import *
+from playerlib.playlist.playlist import *
+from playerlib.track import *
+from playerlib.tracks_factory import *
 
 class Player:
 
@@ -40,8 +39,8 @@ class Player:
             time_format = '%H:%M:%S' if self.current_track.track.length >= 3600 else '%M:%S'
             self.cli_panel.set_caption('{} : {} / {}'.format(
                 self.current_track.track.title,
-                time.strftime(time_format, time.gmtime(pos - self.current_track.track.offset)),
-                time.strftime(time_format, time.gmtime(self.current_track.track.length))))
+                strftime(time_format, gmtime(pos - self.current_track.track.offset)),
+                strftime(time_format, gmtime(self.current_track.track.length))))
 
     def _error(self, error):
         self.cli_panel.set_edit_text('')
@@ -55,7 +54,6 @@ class Player:
         if clear:
             self.playlist.clear()
         for f in tracks:
-            if not f: continue
             self.playlist.add(f)
 
     def play_file(self, track):

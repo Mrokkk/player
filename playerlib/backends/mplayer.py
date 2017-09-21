@@ -100,11 +100,10 @@ class MplayerBackend:
         else:
             if self.current_track.path != last_track.path:
                 self._loadfile(track.path)
-        # FIXME: might cause troubles
         if self.current_track == last_track:
             self.seek(self.current_track.offset)
         else:
-            if last_track and self.current_track.path == last_track.path:
+            if last_track and self.current_track.path == last_track.path or not last_track:
                 self.seek(self.current_track.offset)
 
     def toggle_pause(self):

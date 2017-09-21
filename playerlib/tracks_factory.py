@@ -5,7 +5,7 @@ import glob
 import os
 import taglib
 
-from track import *
+from playerlib.track import *
 
 class TracksFactory:
 
