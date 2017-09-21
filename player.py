@@ -4,6 +4,7 @@ import os
 import time
 import urwid
 
+import config
 from backends.mplayer import *
 from cli.cli import *
 from file_browser.file_browser import *
@@ -11,13 +12,6 @@ from horizontal_panes import *
 from playlist.playlist import *
 from track import *
 from tracks_factory import *
-
-import config
-
-class PlayerState:
-    STOPPED = 0
-    PLAYING = 1
-    PAUSED = 2
 
 class Player:
 
@@ -38,7 +32,7 @@ class Player:
             screen=self.screen)
         self.backend = MplayerBackend(self.event_loop, self._error, self.next, self._update_current_state)
         self.current_track = None
-        self.current_track_state = PlayerState.STOPPED
+        self.current_track_state = Track.State.STOPPED
         self.tracks_factory = TracksFactory()
 
     def _update_current_state(self, pos):
@@ -68,22 +62,22 @@ class Player:
         if not track:
             self._error('No track!')
             return
+        self.backend.play_file(track.track)
         if self.current_track:
             self.current_track.unselect()
-        self.backend.play_file(track.track)
         self.current_track = track
         self.current_track.select()
-        self.current_track_state = PlayerState.PLAYING
+        self.current_track_state = Track.State.PLAYING
 
     def toggle_pause(self):
         if not self.current_track:
             raise RuntimeError('No track playing!')
         self.backend.toggle_pause()
-        if self.current_track_state == PlayerState.PAUSED:
-            self.current_track_state = PlayerState.PLAYING
+        if self.current_track_state == Track.State.PAUSED:
+            self.current_track_state = Track.State.PLAYING
             self.current_track.select()
-        elif self.current_track_state == PlayerState.PLAYING:
-            self.current_track_state = PlayerState.PAUSED
+        elif self.current_track_state == Track.State.PLAYING:
+            self.current_track_state = Track.State.PAUSED
             self.current_track.pause()
 
     def stop(self):
@@ -92,19 +86,15 @@ class Player:
         self.backend.stop()
         self.current_track.unselect()
         self.current_track = None
-        self.current_track_state = PlayerState.STOPPED
+        self.current_track_state = Track.State.STOPPED
 
     def _play_next_track(self, track):
         if not self.current_track:
-            self._error('No track playing!')
-            return
-        try:
-            if not track and self.current_track:
-                self.stop()
-                return
-            self.play_file(track)
-        except:
+            raise RuntimeError('No track playing!')
+        if not track:
             self.stop()
+        else:
+            self.play_file(track)
 
     def next(self):
         self._play_next_track(self.current_track.next)

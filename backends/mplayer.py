@@ -39,7 +39,10 @@ class MplayerBackend:
                 self.mplayer = None
                 self.current_track = None
                 if not self.should_stop:
-                    self.adv_callback()
+                    try:
+                        self.adv_callback()
+                    except Exception as e:
+                        self.error(str(e))
                 self.should_stop = False
                 return
 
