@@ -8,6 +8,7 @@ class Entry(urwid.Button):
 
     def __init__(self, track, line, prev=None):
         self.track = track
+        self.track.playlist_entry = self
         super().__init__('')
         self.line = line
         self.unselect()
