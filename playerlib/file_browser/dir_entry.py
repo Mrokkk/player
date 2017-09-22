@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import re
 import urwid
 
 class DirEntry(urwid.Button):
@@ -30,5 +31,11 @@ class DirEntry(urwid.Button):
     def __lt__(self, other):
         if self.isdir and not other.isdir: return True
         elif not self.isdir and other.isdir: return False
+        if other.name[0].isdigit() and self.name[0].isdigit():
+            try:
+                a = re.search('[0-9]+', self.name).group(0)
+                b = re.search('[0-9]+', other.name).group(0)
+                return int(a) < int(b)
+            except: pass
         return self.name.lower() < other.name.lower()
 
