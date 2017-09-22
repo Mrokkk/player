@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import cueparser
+import discid
 import glob
 import os
 import taglib
@@ -64,11 +65,25 @@ class TracksFactory:
             for f in sorted(os.listdir(path))
                 if os.path.isfile(os.path.join(path, f)) and self._is_music_file(f)]
 
+    def _handle_cdda(self):
+        device_name = discid.get_default_device()
+        disc = discid.read(device_name)
+        tracks = []
+        for cdda_track in disc.tracks:
+            track = Track('cdda://')
+            track.title = 'cdda://' # TODO: read tags from FreeDB
+            track.index = cdda_track.number
+            track.length = cdda_track.seconds
+            try:
+                track.offset = tracks[-1].offset + tracks[-1].length
+            except:
+                pass
+            tracks.append(track)
+        return tracks
+
     def get(self, path):
         if path == 'cdda://':
-            track = Track(path)
-            track.title = 'CD Audio'
-            return [track]
+            return self._handle_cdda()
         elif os.path.isfile(path):
             if path.endswith('.cue'): return self._handle_cue_sheet(path)
             return [self._handle_file(path)]

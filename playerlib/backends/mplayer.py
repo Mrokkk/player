@@ -92,8 +92,6 @@ class MplayerBackend:
     def play_file(self, track):
         if not track: raise RuntimeError('No track!')
         last_track = self.current_track
-        if track.path == 'cdda://':
-            self.stop()
         self.current_track = track
         if not self.mplayer:
             self._start_backend()
