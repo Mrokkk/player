@@ -9,7 +9,7 @@ class Track:
 
     def __init__(self, file_path):
         self.path = file_path
-        self.offset = 0 # For CUE sheets
+        self.offset = 0
         self.length = 0
         self.index = 0
         self.title = None
@@ -20,17 +20,19 @@ class Track:
 
     def play(self):
         self.state = self.State.PLAYING
-        self.playlist_entry.select()
+        self.playlist_entry.set_playing()
+
+    def pause(self):
+        self.state = self.State.PAUSED
+        self.playlist_entry.set_paused()
 
     def toggle_pause(self):
         if self.state == self.State.PAUSED:
-            self.state = self.State.PLAYING
-            self.playlist_entry.select()
+            self.play()
         elif self.state == self.State.PLAYING:
-            self.state = self.State.PAUSED
-            self.playlist_entry.pause()
+            self.pause()
 
     def stop(self):
         self.state = self.State.STOPPED
-        self.playlist_entry.unselect()
+        self.playlist_entry.set_stopped()
 

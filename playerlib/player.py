@@ -36,11 +36,11 @@ class Player:
 
     def _update_current_state(self, pos):
         if self.view.focus_position != 'footer':
-            time_format = '%H:%M:%S' if self.current_track.track.length >= 3600 else '%M:%S'
+            time_format = '%H:%M:%S' if self.current_track.length >= 3600 else '%M:%S'
             self.cli_panel.set_caption('{} : {} / {}'.format(
-                self.current_track.track.title,
-                strftime(time_format, gmtime(pos - self.current_track.track.offset)),
-                strftime(time_format, gmtime(self.current_track.track.length))))
+                self.current_track.title,
+                strftime(time_format, gmtime(pos - self.current_track.offset)),
+                strftime(time_format, gmtime(self.current_track.length))))
 
     def _error(self, error):
         self.cli_panel.set_edit_text('')
@@ -60,31 +60,24 @@ class Player:
         if not track:
             self._error('No track!')
             return
-        self.backend.play_file(track.track)
         if self.current_track:
-            self.current_track.unselect()
-        self.current_track = track
-        self.current_track.select()
-        self.current_track_state = Track.State.PLAYING
+            self.current_track.stop()
+        self.current_track = track.track
+        self.backend.play_file(self.current_track)
+        self.current_track.play()
 
     def toggle_pause(self):
         if not self.current_track:
             raise RuntimeError('No track playing!')
         self.backend.toggle_pause()
-        if self.current_track_state == Track.State.PAUSED:
-            self.current_track_state = Track.State.PLAYING
-            self.current_track.select()
-        elif self.current_track_state == Track.State.PLAYING:
-            self.current_track_state = Track.State.PAUSED
-            self.current_track.pause()
+        self.current_track.toggle_pause()
 
     def stop(self):
         if not self.current_track:
             raise RuntimeError('No track playing!')
         self.backend.stop()
-        self.current_track.unselect()
+        self.current_track.stop()
         self.current_track = None
-        self.current_track_state = Track.State.STOPPED
 
     def _play_next_track(self, track):
         if not self.current_track:
@@ -95,10 +88,10 @@ class Player:
             self.play_file(track)
 
     def next(self):
-        self._play_next_track(self.current_track.next)
+        self._play_next_track(self.current_track.playlist_entry.next)
 
     def prev(self):
-        self._play_next_track(self.current_track.prev)
+        self._play_next_track(self.current_track.playlist_entry.prev)
 
     def _handle_input(self, key):
         if key == ':':
