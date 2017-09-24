@@ -4,13 +4,11 @@ import urwid
 from time import gmtime, strftime
 
 import playerlib.config as config
-from playerlib.backends.mplayer import *
 from playerlib.cli.cli import *
 from playerlib.file_browser.file_browser import *
 from playerlib.horizontal_panes import *
 from playerlib.playback_controller import *
 from playerlib.playlist.playlist import *
-from playerlib.track import *
 from playerlib.tracks_factory import *
 
 class Player:

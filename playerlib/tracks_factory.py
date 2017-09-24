@@ -93,7 +93,9 @@ class TracksFactory:
             return self._handle_cdda()
         elif os.path.isfile(path):
             if path.endswith('.cue'): return self._handle_cue_sheet(path)
-            return [self._handle_file(path)]
+            f = self._handle_file(path)
+            if f: return [f]
+            else: return []
         elif os.path.isdir(path):
             return self._handle_dir(path)
         else:
