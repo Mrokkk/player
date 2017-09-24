@@ -18,13 +18,13 @@ class Entry(urwid.Button):
             prev.next = self
 
     def set_playing(self):
-        self._w = urwid.AttrMap(urwid.SelectableIcon(['▸ ', self.line]), 'dir', 'dir_focused')
+        self._w = urwid.AttrMap(urwid.SelectableIcon(['▸ ', self.line], 0), 'dir', 'dir_focused')
 
     def set_stopped(self):
-        self._w = urwid.AttrMap(urwid.SelectableIcon(['  ', self.line]), 'file', 'file_focused')
+        self._w = urwid.AttrMap(urwid.SelectableIcon(['  ', self.line], 0), 'file', 'file_focused')
 
     def set_paused(self):
-        self._w = urwid.AttrMap(urwid.SelectableIcon(['‖ ', self.line]), 'dir', 'dir_focused')
+        self._w = urwid.AttrMap(urwid.SelectableIcon(['‖ ', self.line], 0), 'dir', 'dir_focused')
 
     def keypress(self, size, key):
         return key

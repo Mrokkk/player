@@ -31,7 +31,6 @@ class Player:
             screen=self.screen)
         self.backend = MplayerBackend(self.event_loop, self._error, self.next, self._update_current_state)
         self.current_track = None
-        self.current_track_state = Track.State.STOPPED
         self.tracks_factory = TracksFactory()
 
     def _update_current_state(self, pos):
