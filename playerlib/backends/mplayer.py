@@ -11,9 +11,7 @@ import urwid
 
 class MplayerBackend:
 
-    def __init__(self, event_loop, error_callback, adv_callback, set_time_callback):
-        self.loop = event_loop
-        self.error = error_callback
+    def __init__(self, adv_callback, set_time_callback):
         self.adv_callback = adv_callback
         self.set_time_callback = set_time_callback
         self.mplayer = None
@@ -41,8 +39,9 @@ class MplayerBackend:
                 if not self.should_stop:
                     try:
                         self.adv_callback()
-                    except Exception as e:
-                        self.error(str(e))
+                    except:
+                        # self.error(str(e))
+                        pass
                 self.should_stop = False
                 return
 
