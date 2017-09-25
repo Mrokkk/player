@@ -1,21 +1,12 @@
 #!/usr/bin/env python3
 
-from time import gmtime, strftime
 from playerlib.backends.mplayer import *
 
 class PlaybackController:
 
-    def __init__(self):
-        self.backend = MplayerBackend(self.next, None)
+    def __init__(self, update_time_callback):
+        self.backend = MplayerBackend(self.next, update_time_callback)
         self.current_track = None
-
-    def _update_current_state(self, pos):
-        if self.view.focus_position != 'footer':
-            time_format = '%H:%M:%S' if self.current_track.length >= 3600 else '%M:%S'
-            self.cli_panel.set_caption('{} : {} / {}'.format(
-                self.current_track.title,
-                strftime(time_format, gmtime(pos - self.current_track.offset)),
-                strftime(time_format, gmtime(self.current_track.length))))
 
     def play_file(self, track):
         if not track:

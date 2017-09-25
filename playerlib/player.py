@@ -17,7 +17,7 @@ class Player:
         self.event_loop = event_loop
         self.screen = screen
 
-        self.playback_controller = PlaybackController()
+        self.playback_controller = PlaybackController(self._update_current_state)
         self.tracks_factory = TracksFactory()
 
         self.cli = Cli(self)
@@ -39,6 +39,15 @@ class Player:
     def _error(self, error):
         self.cli_panel.set_edit_text('')
         self.cli_panel.set_caption(('error', error))
+
+    def _update_current_state(self, pos):
+        if self.view.focus_position != 'footer':
+            current_track = self.playback_controller.current_track
+            time_format = '%H:%M:%S' if current_track.length >= 3600 else '%M:%S'
+            self.cli_panel.set_caption('{} : {} / {}'.format(
+                current_track.title,
+                strftime(time_format, gmtime(pos - current_track.offset)),
+                strftime(time_format, gmtime(current_track.length))))
 
     def add_to_playlist(self, path, clear=False):
         tracks = self.tracks_factory.get(path)
