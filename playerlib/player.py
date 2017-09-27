@@ -23,8 +23,8 @@ class Player:
         self.cli = Cli(self)
         self.cli_panel = CliPanel(self.cli)
 
-        self.playlist = Playlist(self.playback_controller.play_file)
-        self.file_browser = FileBrowser(self.add_to_playlist)
+        self.playlist = Playlist(self.playback_controller.play_file, self._error_handler)
+        self.file_browser = FileBrowser(self.add_to_playlist, self._error_handler)
         self.panes = HorizontalPanes([self.file_browser, self.playlist])
         self.view = urwid.Frame(self.panes, footer=self.cli_panel)
 
@@ -36,7 +36,7 @@ class Player:
             screen=self.screen)
 
 
-    def _error(self, error):
+    def _error_handler(self, error):
         self.cli_panel.set_edit_text('')
         self.cli_panel.set_caption(('error', error))
 
@@ -52,8 +52,7 @@ class Player:
     def add_to_playlist(self, path, clear=False):
         tracks = self.tracks_factory.get(path)
         if len(tracks) == 0:
-            self._error('No music files to play!')
-            return
+            raise RuntimeError('No music files to play!')
         if clear:
             self.playlist.clear()
         for f in tracks:

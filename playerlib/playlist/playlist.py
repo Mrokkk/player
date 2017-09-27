@@ -7,8 +7,9 @@ from .entry import *
 
 class Playlist(urwid.WidgetWrap):
 
-    def __init__(self, play_callback):
+    def __init__(self, play_callback, error_handler):
         self.callback = play_callback
+        self.error_handler = error_handler
         self.list = []
         self.content = urwid.SimpleListWalker([])
         self.listbox = urwid.ListBox(self.content)
@@ -21,8 +22,12 @@ class Playlist(urwid.WidgetWrap):
 
     def unhandled_input(self, key):
         if key == 'enter':
-            self.callback(self.listbox.focus)
-            return
+            try:
+                self.callback(self.listbox.focus)
+            except Exception as e:
+                self.error_handler(str(e))
+            finally:
+                return
         try:
             if key[0] == 'mouse press':
                 if key[1] == 5.0:
