@@ -64,6 +64,9 @@ class CliPanel(urwid.Edit):
     def set_mode(self, mode):
         self.mode = mode
 
+    def error(self, error):
+        self._clear_and_set_caption(('error', error))
+
     def unhandled_input(self, key):
         if key == 'enter':
             try:

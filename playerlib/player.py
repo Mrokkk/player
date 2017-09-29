@@ -37,8 +37,7 @@ class Player:
 
 
     def _error_handler(self, error):
-        self.cli_panel.set_edit_text('')
-        self.cli_panel.set_caption(('error', error))
+        self.cli_panel.error(error)
 
     def _update_current_state(self, pos):
         if self.view.focus_position != 'footer':
@@ -51,7 +50,7 @@ class Player:
 
     def add_to_playlist(self, path, clear=False):
         tracks = self.tracks_factory.get(path)
-        if len(tracks) == 0:
+        if not tracks or len(tracks) == 0:
             raise RuntimeError('No music files to play!')
         if clear:
             self.playlist.clear()
