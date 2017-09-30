@@ -18,11 +18,17 @@ class Cli:
             CliMode.SEARCH_FORWARD: self._search_forward_mode,
             CliMode.SEARCH_BACKWARD: self._search_backward_mode
         }
+        self.history = {
+            CliMode.COMMAND: [],
+            CliMode.SEARCH_FORWARD: [],
+            CliMode.SEARCH_BACKWARD: []
+        }
 
     def _command_mode(self, command):
         splitted = command.split()
         command = splitted[0]
         args = splitted[1:]
+        self.history[CliMode.COMMAND].insert(0, command)
         if command == 'q' or command == 'qa':
             self.player.quit()
         elif command == 'pause':
@@ -42,8 +48,7 @@ class Cli:
         self.player.panes.search_forward(command)
 
     def _search_backward_mode(self, command):
-        # TODO
-        pass
+        self.player.panes.search_backward(command)
 
     def handle_command(self, command, mode):
         if not command: return
@@ -56,6 +61,7 @@ class CliPanel(urwid.Edit):
         super().__init__()
         self.cli = cli
         self.mode = CliMode.COMMAND
+        self.history_index = 0
 
     def _clear_and_set_caption(self, caption):
         self.set_edit_text('')
@@ -63,6 +69,7 @@ class CliPanel(urwid.Edit):
 
     def set_mode(self, mode):
         self.mode = mode
+        self.history_index = -1
 
     def error(self, error):
         self._clear_and_set_caption(('error', error))
@@ -77,9 +84,21 @@ class CliPanel(urwid.Edit):
         elif key == 'esc':
             self._clear_and_set_caption('')
         elif key == 'up':
-            # TODO
+            try:
+                self.history_index += 1
+                if self.history_index >= len(self.cli.history[self.mode]):
+                    self.history_index -= 1
+                    return True
+                self.set_edit_text(self.cli.history[self.mode][self.history_index])
+                self.set_edit_pos(len(self.edit_text))
+            except: pass
             return True
         elif key == 'down':
-            # TODO
+            self.history_index -= 1
+            if self.history_index < 0:
+                self.history_index = 0
+                return True
+            self.set_edit_text(self.cli.history[self.mode][self.history_index])
+            self.set_edit_pos(len(self.edit_text))
             return True
 
