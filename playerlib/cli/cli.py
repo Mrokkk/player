@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 
-import os
 import urwid
 
 class CliMode:
     COMMAND = 1
     SEARCH_FORWARD = 2
     SEARCH_BACKWARD = 3
+
+
+def clamp(value, min_val=-9999, max_val=9999):
+    if value > max_val: return max_val
+    if value < min_val: return min_val
+    return value
 
 
 class Cli:
@@ -74,31 +79,39 @@ class CliPanel(urwid.Edit):
     def error(self, error):
         self._clear_and_set_caption(('error', error))
 
+    def clear(self):
+        self._clear_and_set_caption('')
+
+    def _update_panel(self):
+        self.set_edit_text(self.cli.history[self.mode][self.history_index])
+        self.set_edit_pos(len(self.edit_text))
+
     def unhandled_input(self, key):
         if key == 'enter':
             try:
                 self.cli.handle_command(self.get_edit_text().strip(), self.mode)
-                self._clear_and_set_caption('')
+                self.clear()
             except (RuntimeError, AttributeError, IndexError) as exc:
-                self._clear_and_set_caption(('error', exc.__str__()))
+                self.error(exc.__str__())
         elif key == 'esc':
-            self._clear_and_set_caption('')
+            self.clear()
         elif key == 'up':
             try:
                 self.history_index += 1
-                if self.history_index >= len(self.cli.history[self.mode]):
-                    self.history_index -= 1
-                    return True
-                self.set_edit_text(self.cli.history[self.mode][self.history_index])
-                self.set_edit_pos(len(self.edit_text))
+                self.history_index = clamp(self.history_index, max_val=len(self.cli.history[self.mode])-1)
+                self._update_panel()
             except: pass
             return True
         elif key == 'down':
+            if self.history_index < 0: return True
             self.history_index -= 1
-            if self.history_index < 0:
-                self.history_index = 0
+            self.history_index = clamp(self.history_index, min_val=-1)
+            if self.history_index == -1:
+                self.set_edit_text('')
+                self.set_edit_pos(0)
                 return True
-            self.set_edit_text(self.cli.history[self.mode][self.history_index])
-            self.set_edit_pos(len(self.edit_text))
+            self._update_panel()
+            return True
+        else:
             return True
 
