@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import time
 import urwid
 
 from .entry import *
