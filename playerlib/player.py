@@ -60,12 +60,13 @@ class Player:
     def _handle_input(self, key):
         if key == ':':
             self.view.focus_position = 'footer'
-            self.cli_panel.set_caption(':')
             self.cli_panel.set_mode(CliMode.COMMAND)
         elif key == '/':
             self.view.focus_position = 'footer'
-            self.cli_panel.set_caption('/')
             self.cli_panel.set_mode(CliMode.SEARCH_FORWARD)
+        elif key == '?':
+            self.view.focus_position = 'footer'
+            self.cli_panel.set_mode(CliMode.SEARCH_BACKWARD)
         elif key == 'ctrl w':
             self.panes.switch_focus()
         else:

@@ -70,25 +70,49 @@ class FileBrowser(urwid.WidgetWrap):
             except:
                 break
 
+    def search_backward(self, pattern):
+        index = self.listbox.focus_position - 1
+        while True:
+            try:
+                if pattern in self.content[index].name:
+                    self.listbox.focus_position = index
+                    return
+                index -= 1
+                if index < 0: return
+            except:
+                break
+
+    def _reload(self):
+        self._change_dir('.')
+
+    def _enter_selected_dir(self):
+        self._change_dir(self.content.get_focus()[0].label)
+
+    def _replace_playlist(self):
+        try:
+            self.callback(self.content.get_focus()[0].path(), True)
+        except Exception as e:
+            self.error_handler(str(e))
+
+    def _add_to_playlist(self):
+        try:
+            self.callback(self.content.get_focus()[0].path())
+        except Exception as e:
+            self.error_handler(str(e))
+
     def unhandled_input(self, key):
         if key == 'u':
             self._change_dir('..')
         elif key == 'enter':
             self._toggle_dir(self.content.get_focus()[0])
         elif key == 'a':
-            try:
-                self.callback(self.content.get_focus()[0].path())
-            except Exception as e:
-                self.error_handler(str(e))
+            self._add_to_playlist()
         elif key == 'r':
-            try:
-                self.callback(self.content.get_focus()[0].path(), True)
-            except Exception as e:
-                self.error_handler(str(e))
+            self._replace_playlist()
         elif key == 'R':
-            self._change_dir('.')
+            self._reload()
         elif key == 'C':
-            self._change_dir(self.content.get_focus()[0].label)
+            self._enter_selected_dir()
         else:
             try:
                 if key[0] == 'mouse press':

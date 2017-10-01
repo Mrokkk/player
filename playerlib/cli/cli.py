@@ -75,6 +75,12 @@ class CliPanel(urwid.Edit):
     def set_mode(self, mode):
         self.mode = mode
         self.history_index = -1
+        if mode == CliMode.COMMAND:
+            self.set_caption(':')
+        elif mode == CliMode.SEARCH_FORWARD:
+            self.set_caption('/')
+        elif mode == CliMode.SEARCH_BACKWARD:
+            self.set_caption('?')
 
     def error(self, error):
         self._clear_and_set_caption(('error', error))
@@ -92,7 +98,7 @@ class CliPanel(urwid.Edit):
                 self.cli.handle_command(self.get_edit_text().strip(), self.mode)
                 self.clear()
             except (RuntimeError, AttributeError, IndexError) as exc:
-                self.error(exc.__str__())
+                self.error(str(exc))
         elif key == 'esc':
             self.clear()
         elif key == 'up':
