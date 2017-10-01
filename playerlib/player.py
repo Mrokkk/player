@@ -10,6 +10,7 @@ from playerlib.horizontal_panes import *
 from playerlib.playback_controller import *
 from playerlib.playlist.playlist import *
 from playerlib.tracks_factory import *
+from playerlib.player_context import *
 
 class Player:
 
@@ -20,12 +21,15 @@ class Player:
         self.playback_controller = PlaybackController(self._update_current_state)
         self.tracks_factory = TracksFactory()
 
-        self.cli = Cli(self)
-        self.cli_panel = CliPanel(self.cli)
-
         self.playlist = Playlist(self.playback_controller.play_file, self._error_handler)
         self.file_browser = FileBrowser(self.add_to_playlist, self._error_handler)
         self.panes = HorizontalPanes([self.file_browser, self.playlist])
+
+        self.context = PlayerContext(self.panes, self.playlist, self.file_browser, self.playback_controller, self.tracks_factory, self)
+
+        self.cli = Cli(self.context)
+        self.cli_panel = CliPanel(self.cli)
+
         self.view = urwid.Frame(self.panes, footer=self.cli_panel)
 
         self.main_loop = urwid.MainLoop(

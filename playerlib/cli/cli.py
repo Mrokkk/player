@@ -16,8 +16,8 @@ def clamp(value, min_val=-9999, max_val=9999):
 
 class Cli:
 
-    def __init__(self, player):
-        self.player = player
+    def __init__(self, context):
+        self.context = context
         self.mode_map = {
             CliMode.COMMAND: self._command_mode,
             CliMode.SEARCH_FORWARD: self._search_forward_mode,
@@ -34,26 +34,26 @@ class Cli:
         command = splitted[0]
         args = splitted[1:]
         self.history[CliMode.COMMAND].insert(0, command)
-        if command == 'q' or command == 'qa':
-            self.player.quit()
+        if command in ('quit', 'q', 'qa'):
+            raise urwid.ExitMainLoop()
         elif command == 'pause':
-            self.player.playback_controller.toggle_pause()
+            self.context.playback_controller.toggle_pause()
         elif command == 'stop':
-            self.player.playback_controller.stop()
+            self.context.playback_controller.stop()
         elif command == 'next':
-            self.player.playback_controller.next()
+            self.context.playback_controller.next()
         elif command == 'prev':
-            self.player.playback_controller.prev()
+            self.context.playback_controller.prev()
         elif command == 'e':
-            self.player.add_to_playlist(args[0])
+            self.context.player.add_to_playlist(args[0])
         else:
             raise RuntimeError('No such command: ' + command)
 
     def _search_forward_mode(self, command):
-        self.player.panes.search_forward(command)
+        self.context.panes.search_forward(command)
 
     def _search_backward_mode(self, command):
-        self.player.panes.search_backward(command)
+        self.context.panes.search_backward(command)
 
     def handle_command(self, command, mode):
         if not command: return
