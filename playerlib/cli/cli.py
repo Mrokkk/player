@@ -37,13 +37,13 @@ class Cli:
         if command == 'q' or command == 'qa':
             self.player.quit()
         elif command == 'pause':
-            self.player.toggle_pause()
+            self.player.playback_controller.toggle_pause()
         elif command == 'stop':
-            self.player.stop()
+            self.player.playback_controller.stop()
         elif command == 'next':
-            self.player.next()
+            self.player.playback_controller.next()
         elif command == 'prev':
-            self.player.prev()
+            self.player.playback_controller.prev()
         elif command == 'e':
             self.player.add_to_playlist(args[0])
         else:
