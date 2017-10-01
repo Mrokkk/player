@@ -4,15 +4,20 @@
 # playerlib/tracks_factory.py: 3
 CueParser == 1.0.0
 
-# playerlib/tracks_factory.py: 6
+# playerlib/tracks_factory.py: 4
+discid == 1.1.1
+
+# playerlib/tracks_factory.py: 8
 pytaglib == 1.4.1
 
 # playerlib/backends/mplayer.py: 10
-# playerlib/cli/cli.py: 4
-# playerlib/file_browser/dir_entry.py: 4
+# playerlib/command_panel.py: 3
+# playerlib/file_browser/dir_entry.py: 5
 # playerlib/file_browser/file_browser.py: 4
-# playerlib/horizontal_panes.py: 4
 # playerlib/player.py: 3
-# playerlib/playlist/entry.py: 5
-# playerlib/playlist/playlist.py: 4
+# playerlib/player_controller.py: 3
+# playerlib/player_view.py: 3
+# playerlib/playlist/entry.py: 3
+# playerlib/playlist/playlist.py: 5
+# playerlib/user_input.py: 3
 urwid == 1.3.1
