@@ -9,7 +9,6 @@ class CommandHandler:
 
     def __init__(self, context):
         self.context = context
-        self.player_controller = context.player_controller
         self.mode_map = {
             self.Mode.COMMAND: self._command_mode,
             self.Mode.SEARCH_FORWARD: self._search_forward_mode,
@@ -34,7 +33,7 @@ class CommandHandler:
         if command in self.command_mapping:
             command = self.command_mapping[command]
         if command in self.player_commands:
-            eval('self.player_controller.{}({})'.format(
+            eval('self.context.player_controller.{}({})'.format(
                 command,
                 '' if not len(args) else '\'{}\''.format(args[0]))) # FIXME
         elif command in self.view_commands:

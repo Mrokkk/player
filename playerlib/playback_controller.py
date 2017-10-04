@@ -4,13 +4,16 @@ from playerlib.backends.mplayer import *
 
 class PlaybackController:
 
-    def __init__(self, update_time_callback):
-        self.backend = MplayerBackend(self.next, update_time_callback)
+    def __init__(self, backend_factory):
+        self.backend_factory = backend_factory
+        self.backend = None
         self.current_track = None
 
     def play_file(self, track):
         if not track:
             raise RuntimeError('No track!')
+        if not self.backend:
+            self.backend = self.backend_factory.create()
         if self.current_track:
             self.current_track.stop()
         self.current_track = track.track
@@ -45,5 +48,6 @@ class PlaybackController:
         self._play_next_track(self.current_track.playlist_entry.prev)
 
     def quit(self):
-        self.backend.quit()
+        if self.backend:
+            self.backend.quit()
 

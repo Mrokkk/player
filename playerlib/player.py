@@ -12,6 +12,7 @@ from playerlib.player_controller import *
 from playerlib.player_view import *
 from playerlib.playlist.playlist import *
 from playerlib.user_input import *
+from playerlib.backends.backend_factory import *
 
 class Player:
 
@@ -21,7 +22,7 @@ class Player:
         player_controller = PlayerController(context)
         context.player_controller = player_controller
 
-        self.playback_controller = PlaybackController(player_controller.update_current_state)
+        self.playback_controller = PlaybackController(BackendFactory(context))
         context.playback_controller = self.playback_controller
 
         command_handler = CommandHandler(context)
