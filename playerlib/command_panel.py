@@ -35,6 +35,9 @@ class CommandPanel(urwid.Edit):
     def error(self, error):
         self._clear_and_set_caption(('error', 'Error: ' + error))
 
+    def info(self, error):
+        self._clear_and_set_caption(('info', 'Info: ' + error))
+
     def clear(self):
         self._clear_and_set_caption('')
 
