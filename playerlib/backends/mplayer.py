@@ -19,9 +19,9 @@ class MplayerBackend:
         self.should_stop = False
 
     def _update_time_pos(self, line):
-        match = re.search('[0-9]+', line)
+        match = re.match('A:[ \t]+([0-9]+).*', line)
         if not match: return
-        self.set_time_callback(int(match.group()))
+        self.set_time_callback(int(match.group(1)))
 
     def _reader(self):
         while True:

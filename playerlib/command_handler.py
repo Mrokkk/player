@@ -15,7 +15,10 @@ class CommandHandler:
             self.Mode.SEARCH_BACKWARD: self._search_backward_mode
         }
         self.player_commands = [
-            'add_to_playlist', 'pause', 'stop', 'next', 'prev', 'quit',
+            'add_to_playlist', 'quit',
+        ]
+        self.playback_commands = [
+            'pause', 'stop', 'next', 'prev',
         ]
         self.view_commands = [
             'switch_panes',
@@ -32,16 +35,17 @@ class CommandHandler:
         args = splitted[1:]
         if command in self.command_mapping:
             command = self.command_mapping[command]
+        module = None
         if command in self.player_commands:
-            eval('self.context.player_controller.{}({})'.format(
-                command,
-                '' if not len(args) else '\'{}\''.format(args[0]))) # FIXME
+            module = 'self.context.player_controller'
+        elif command in self.playback_commands:
+            module = 'self.context.playback_controller'
         elif command in self.view_commands:
-            eval('self.context.view.{}({})'.format(
-                command,
-                '' if not len(args) else '\'{}\''.format(args[0]))) # FIXME
-        else:
+            module = 'self.context.view'
+        if module == None:
             raise RuntimeError('no such command: ' + command)
+        eval('{}.{}({})'.format(module, command,
+            '' if not len(args) else '\'{}\''.format(args[0]))) # FIXME
 
     def _search_forward_mode(self, command):
         self.context.view.focus.search_forward(command)

@@ -20,7 +20,7 @@ class PlaybackController:
         self.backend.play_file(self.current_track)
         self.current_track.play()
 
-    def toggle_pause(self):
+    def pause(self):
         if not self.current_track:
             raise RuntimeError('No track playing!')
         self.backend.toggle_pause()
