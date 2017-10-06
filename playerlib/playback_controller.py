@@ -16,7 +16,7 @@ class PlaybackController:
             self.backend = self.backend_factory.create()
         if self.current_track:
             self.current_track.stop()
-        self.current_track = track.track
+        self.current_track = track
         self.backend.play_file(self.current_track)
         self.current_track.play()
 
@@ -42,10 +42,10 @@ class PlaybackController:
             self.play_file(track)
 
     def next(self):
-        self._play_next_track(self.current_track.playlist_entry.next)
+        self._play_next_track(self.current_track.playlist_entry.next.track)
 
     def prev(self):
-        self._play_next_track(self.current_track.playlist_entry.prev)
+        self._play_next_track(self.current_track.playlist_entry.prev.track)
 
     def _seek_percentage(self, value):
         match = re.match('([0-9]+)%', value)

@@ -4,6 +4,7 @@ import os
 import time
 import urwid
 
+from playerlib.helpers.scrollable import *
 from .entry import *
 
 class Playlist(urwid.WidgetWrap):
@@ -22,21 +23,12 @@ class Playlist(urwid.WidgetWrap):
             footer=self.footer))
 
     def unhandled_input(self, key):
+        try_to_scroll(self.listbox, key)
         if key == 'enter':
             try:
-                self.callback(self.listbox.focus)
+                self.callback(self.listbox.focus.track)
             except Exception as e:
                 self.error_handler(str(e))
-            finally:
-                return
-        try:
-            if key[0] == 'mouse press':
-                if key[1] == 5.0:
-                    self.listbox.focus_position += 1
-                elif key[1] == 4.0:
-                    self.listbox.focus_position -= 1
-        except:
-            pass
 
     def _get_track_string(self, track):
         if track.title:

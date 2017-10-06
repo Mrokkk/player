@@ -3,6 +3,7 @@
 import os
 import urwid
 
+from playerlib.helpers.scrollable import *
 from .dir_entry import *
 
 class FileBrowser(urwid.WidgetWrap):
@@ -109,6 +110,7 @@ class FileBrowser(urwid.WidgetWrap):
             self.error_handler(str(e))
 
     def unhandled_input(self, key):
+        try_to_scroll(self.listbox, key)
         if key == 'u':
             self._go_back()
         elif key == 'enter':
@@ -125,13 +127,4 @@ class FileBrowser(urwid.WidgetWrap):
             self.listbox.focus_position = 0
         elif key == 'end':
             self.listbox.focus_position = len(self.content) - 1
-        else:
-            try:
-                if key[0] == 'mouse press':
-                    if key[1] == 5.0:
-                        self.listbox.focus_position += 1
-                    elif key[1] == 4.0:
-                        self.listbox.focus_position -= 1
-            except:
-                pass
 
