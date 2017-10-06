@@ -17,6 +17,7 @@ class FileBrowser(urwid.WidgetWrap):
         self.content = urwid.SimpleListWalker(self.dir_list)
         self.listbox = urwid.ListBox(self.content)
         self.header = urwid.AttrWrap(urwid.Text(self.dir_name), 'head')
+        self.last_position = 0
         super().__init__(urwid.Frame(
             self.listbox,
             header=self.header,
@@ -86,7 +87,14 @@ class FileBrowser(urwid.WidgetWrap):
         self._change_dir('.')
 
     def _enter_selected_dir(self):
+        self.last_position = self.listbox.focus_position
         self._change_dir(self.content.get_focus()[0].label)
+        self.listbox.focus_position = 0
+
+    def _go_back(self):
+        self._change_dir('..')
+        if self.last_position:
+            self.listbox.focus_position = self.last_position
 
     def _replace_playlist(self):
         try:
@@ -102,7 +110,7 @@ class FileBrowser(urwid.WidgetWrap):
 
     def unhandled_input(self, key):
         if key == 'u':
-            self._change_dir('..')
+            self._go_back()
         elif key == 'enter':
             self._toggle_dir(self.content.get_focus()[0])
         elif key == 'a':
@@ -113,6 +121,10 @@ class FileBrowser(urwid.WidgetWrap):
             self._reload()
         elif key == 'C':
             self._enter_selected_dir()
+        elif key == 'home':
+            self.listbox.focus_position = 0
+        elif key == 'end':
+            self.listbox.focus_position = len(self.content) - 1
         else:
             try:
                 if key[0] == 'mouse press':
