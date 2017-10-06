@@ -18,7 +18,7 @@ class CommandHandler:
             'add_to_playlist', 'quit',
         ]
         self.playback_commands = [
-            'pause', 'stop', 'next', 'prev',
+            'pause', 'stop', 'next', 'prev', 'seek'
         ]
         self.view_commands = [
             'switch_panes',

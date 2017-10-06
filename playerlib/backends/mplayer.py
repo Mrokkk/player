@@ -115,6 +115,15 @@ class MplayerBackend:
     def seek(self, offset):
         self._send_command('seek {} 2 1\n'.format(offset))
 
+    def seek_percentage(self, percent):
+        self._send_command('seek {} 1\n'.format(percent))
+
+    def seek_forward(self, time):
+        self._send_command('seek +{} 0\n'.format(time))
+
+    def seek_backward(self, time):
+        self._send_command('seek -{} 0\n'.format(time))
+
     def quit(self):
         if self.mplayer:
             self._send_command('quit\n')

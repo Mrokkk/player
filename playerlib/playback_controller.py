@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from playerlib.backends.mplayer import *
+import re
 
 class PlaybackController:
 
@@ -46,6 +46,29 @@ class PlaybackController:
 
     def prev(self):
         self._play_next_track(self.current_track.playlist_entry.prev)
+
+    def _seek_percentage(self, value):
+        match = re.match('([0-9]+)%', value)
+        if not match: raise RuntimeError('Bad value!')
+        self.backend.seek_percentage(int(match.group(1)))
+
+    def _seek_offset(self, value):
+        if value.startswith('-'):
+            self.backend.seek_backward(int(value[1:]))
+        elif value.startswith('+'):
+            self.backend.seek_forward(int(value[1:]))
+        else:
+            raise RuntimeError('Bad value!')
+
+    def _seek_absolute(self, value):
+        self.backend.seek(int(value))
+
+    def seek(self, value):
+        if not self.current_track:
+            raise RuntimeError('No track playing!')
+        if '%' in value: self._seek_percentage(value)
+        elif '+' in value or '-' in value: self._seek_offset(value)
+        else: self._seek_absolute(value)
 
     def quit(self):
         if self.backend:
