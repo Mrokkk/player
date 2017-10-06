@@ -10,6 +10,10 @@ class UserInput:
         self.command_panel = command_panel
         self.view = view
         self.key_to_command_mapping = {
+            'h': ':seek -10',
+            'l': ':seek +10',
+            'H': ':seek -60',
+            'L': ':seek +60',
             ' ': ':pause',
             'ctrl w': ':switch_panes',
         }
