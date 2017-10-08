@@ -34,21 +34,20 @@ class PlaybackController:
         self.current_track = None
 
     def _play_next_track(self, track):
-        if not self.current_track:
-            raise RuntimeError('No track playing!')
-        if not track:
-            self.stop()
-        else:
-            self.play_file(track)
+        self.play_file(track)
 
     def next(self):
-        self._play_next_track(self.current_track.playlist_entry.next.track)
+        try:
+            self._play_next_track(self.current_track.playlist_entry.next.track)
+        except: self.stop()
 
     def prev(self):
-        self._play_next_track(self.current_track.playlist_entry.prev.track)
+        try:
+            self._play_next_track(self.current_track.playlist_entry.prev.track)
+        except: self.stop()
 
     def _seek_percentage(self, value):
-        match = re.match('([0-9]+)%', value)
+        match = re.match('^([0-9]+)%$', value)
         if not match: raise RuntimeError('Bad value!')
         self.backend.seek_percentage(int(match.group(1)))
 
