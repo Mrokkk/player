@@ -2,6 +2,7 @@
 
 import unittest
 from test.playback_controller_tests import *
+from test.command_panel_tests import *
 
 if __name__ == "__main__":
     unittest.main()
