@@ -87,6 +87,12 @@ class TestPlaybackController(TestCase):
         for value in values:
             self.assertRaises(Exception, self.sut.seek, value)
 
+    def test_seek_will_raise_exception_when_no_track_playing(self):
+        self.assertRaises(Exception, self.sut.seek, '3')
+        self.assertRaises(Exception, self.sut.seek, '+3')
+        self.assertRaises(Exception, self.sut.seek, '-3')
+        self.assertRaises(Exception, self.sut.seek, '3%')
+
     def test_next_and_prev_will_raise_exception_in_no_track_playing(self):
         self.sut.current_track = None
         self.assertRaises(Exception, self.sut.next)

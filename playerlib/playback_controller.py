@@ -56,8 +56,6 @@ class PlaybackController:
             self.backend.seek_backward(int(value[1:]))
         elif value.startswith('+'):
             self.backend.seek_forward(int(value[1:]))
-        else:
-            raise RuntimeError('Bad value!')
 
     def _seek_absolute(self, value):
         self.backend.seek(int(value))
