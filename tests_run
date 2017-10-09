@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 import unittest
-from test.playback_controller_tests import *
+from test.command_handler_tests import *
 from test.command_panel_tests import *
+from test.playback_controller_tests import *
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,12 +1,13 @@
 # .coveragerc
 [run]
 branch = True
-omit = 
+omit =
     */.local/*
     /usr/*
     */__init__.py
     test/*.py
     tests_run
+source = playerlib
 
 [report]
 exclude_lines =
