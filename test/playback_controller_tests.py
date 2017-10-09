@@ -10,7 +10,7 @@ class TestPlaybackController(TestCase):
 
     def setUp(self):
         self.backend = Mock()
-        self.backend_factory = MagicMock()
+        self.backend_factory = Mock()
         self.backend_factory.create.return_value = self.backend
         self.sut = PlaybackController(self.backend_factory)
 
@@ -100,7 +100,6 @@ class TestPlaybackController(TestCase):
 
     def test_next_will_stop_if_no_track_and_current_track_playing(self):
         track = Mock()
-        track.playlist_entry = Mock()
         track.playlist_entry.next = None
         self.sut.current_track = track
         self.sut.backend = self.backend
@@ -111,8 +110,6 @@ class TestPlaybackController(TestCase):
     def test_next_will_play_next_track(self):
         track = Mock()
         next_track = Mock()
-        track.playlist_entry = Mock()
-        track.playlist_entry.next = Mock()
         track.playlist_entry.next.track = next_track
         self.sut.current_track = track
         self.sut.backend = self.backend
@@ -132,8 +129,6 @@ class TestPlaybackController(TestCase):
     def test_prev_will_play_prev_track(self):
         track = Mock()
         prev_track = Mock()
-        track.playlist_entry = Mock()
-        track.playlist_entry.prev = Mock()
         track.playlist_entry.prev.track = prev_track
         self.sut.current_track = track
         self.sut.backend = self.backend

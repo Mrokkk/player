@@ -11,9 +11,6 @@ class TestCommandHandler(TestCase):
 
     def setUp(self):
         self.context_mock = Mock()
-        self.context_mock.player_controller = Mock()
-        self.context_mock.playback_controller = Mock()
-        self.context_mock.view = Mock()
         self.sut = CommandHandler(self.context_mock)
 
 
