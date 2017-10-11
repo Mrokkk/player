@@ -3,6 +3,7 @@
 import unittest
 from test.command_handler_tests import *
 from test.command_panel_tests import *
+from test.mplayer_backend_tests import *
 from test.playback_controller_tests import *
 from test.tracks_factory_tests import *
 from test.user_input_tests import *

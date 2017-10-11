@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 
 import csv
-import os
 import queue
 import re
 import subprocess
 import threading
-import time
-import urwid
 
 class MplayerBackend:
 
@@ -104,6 +101,7 @@ class MplayerBackend:
                 self.seek(self.current_track.offset)
 
     def toggle_pause(self):
+        if not self.current_track: return
         self._send_command('pause\n')
 
     def stop(self):
