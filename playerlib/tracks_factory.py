@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import cueparser
 import discid
 import glob
 import os
@@ -8,6 +7,7 @@ import re
 import taglib
 
 from playerlib.track import *
+from playerlib.cue_parser import *
 
 class TracksFactory:
 
@@ -21,19 +21,17 @@ class TracksFactory:
         return False
 
     def _handle_cue_sheet(self, path):
-        cue = cueparser.CueSheet()
-        cue.setOutputFormat('%performer% - %title%\n%file%\n%tracks%', '%performer% - %title%')
+        cuesheet = None
         with open(path, 'r', encoding='latin1') as f:
-            cue.setData(f.read())
-        cue.parse()
+            cuesheet = CueParser().parse(f)
         tracks = []
-        for t in cue.tracks:
-            new_track = Track(os.path.join(os.path.dirname(path), cue.file.replace("\\", "\\\\")))
-            new_track.artist = cue.title
-            new_track.title = t.title
-            new_track.index = str(t.number) if t.number else None
-            new_track.length = 0 # FIXME: bug in cueparser
-            new_track.offset = t.offset if t.offset else 0
+        for t in cuesheet.tracks:
+            new_track = Track(os.path.join(os.path.dirname(path), t.file.replace("\\", "\\\\")))
+            new_track.artist = ', '.join(cuesheet.title)
+            new_track.title = ', '.join(t.title)
+            new_track.index = str(t.index)
+            new_track.length = t.length
+            new_track.offset = t.offset
             tracks.append(new_track)
         return tracks
 

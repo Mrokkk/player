@@ -2,15 +2,11 @@
 # https://github.com/Damnever/pigar
 
 # playerlib/tracks_factory.py: 3
-CueParser == 1.0.0
-
-# playerlib/tracks_factory.py: 4
 discid == 1.1.1
 
-# playerlib/tracks_factory.py: 8
+# playerlib/tracks_factory.py: 7
 pytaglib == 1.4.1
 
-# playerlib/backends/mplayer.py: 10
 # playerlib/command_panel.py: 3
 # playerlib/file_browser/dir_entry.py: 5
 # playerlib/file_browser/file_browser.py: 4

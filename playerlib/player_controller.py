@@ -29,9 +29,6 @@ class PlayerController:
                     strftime(time_format, gmtime(pos - current_track.offset)),
                     strftime(time_format, gmtime(current_track.length))))
 
-    def error_handler(self, error):
-        self.context.command_panel.error(error)
-
     def quit(self):
         raise urwid.ExitMainLoop()
 

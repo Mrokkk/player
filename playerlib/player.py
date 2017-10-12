@@ -44,10 +44,12 @@ class Player:
         command_panel = CommandPanel(command_handler)
         context.command_panel = command_panel
 
-        playlist = Playlist(self.playback_controller.play_track, player_controller.error_handler)
+        error_handler = context.command_panel.error
+
+        playlist = Playlist(self.playback_controller.play_track, error_handler)
         context.playlist = playlist
 
-        file_browser = FileBrowser(player_controller.add_to_playlist, player_controller.error_handler)
+        file_browser = FileBrowser(player_controller.add_to_playlist, error_handler)
 
         context.view = PlayerView(file_browser, playlist, command_panel)
 
@@ -55,7 +57,7 @@ class Player:
             context.draw_lock,
             context.view,
             palette=config.color_palette,
-            unhandled_input=UserInput(context.view, command_handler, command_panel, player_controller.error_handler)
+            unhandled_input=UserInput(context.view, command_handler, command_panel, error_handler)
                 .handle_input,
             event_loop=urwid.AsyncioEventLoop(loop=event_loop),
             screen=screen)
