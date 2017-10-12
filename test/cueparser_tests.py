@@ -79,3 +79,27 @@ class CueParserTests(TestCase):
         self.assertEqual(track3.offset, 0)
         self.assertEqual(track3.length, 0)
 
+    def test_supports_multiple_tracks_in_multiple_files_with_taglib(self):
+        lines = ['FILE "file1.ape"', '  TRACK 01 AUDIO', '    INDEX 01 00:00:00',
+                 '  TRACK 02 AUDIO', '    INDEX 01 03:23:00',
+                 'FILE "file2.ape"', '  TRACK 03 AUDIO', '    INDEX 01 00:00:00']
+        with patch('taglib.File') as taglib_mock:
+            file1, file2 = Mock(), Mock()
+            file1.length = 300
+            file2.length = 400
+            taglib_mock.side_effect = [file1, file2]
+            cuesheet = self.sut.parse(lines, use_taglib=True, parent_dir='/some_dir')
+        self.assertEqual(len(cuesheet.tracks), 3)
+        track1 = cuesheet.tracks[0]
+        track2 = cuesheet.tracks[1]
+        track3 = cuesheet.tracks[2]
+        self.assertEqual(track1.file, 'file1.ape')
+        self.assertEqual(track1.offset, 0)
+        self.assertEqual(track1.length, 203)
+        self.assertEqual(track2.file, 'file1.ape')
+        self.assertEqual(track2.offset, 203)
+        self.assertEqual(track2.length, 97)
+        self.assertEqual(track3.file, 'file2.ape')
+        self.assertEqual(track3.offset, 0)
+        self.assertEqual(track3.length, 400)
+

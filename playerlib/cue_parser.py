@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import re
 
 class CueTrack:
@@ -24,7 +25,8 @@ class CueSheet:
 
 class CueParser:
 
-    def parse(self, data):
+    def parse(self, data, use_taglib=False, parent_dir=None):
+        if use_taglib: import taglib
         cuesheet = CueSheet()
         current_track = None
         current_file = None
@@ -69,6 +71,9 @@ class CueParser:
                         last_track = cuesheet.tracks[-1]
                         if last_track.file == current_track.file:
                             last_track.length = current_track.offset - last_track.offset
+                        elif use_taglib:
+                            f = taglib.File(os.path.join(parent_dir, last_track.file.replace("\\", "\\\\")))
+                            last_track.length = f.length - last_track.offset
                 continue
 
             match = re.match('^    TITLE \"(.*)\"$', line)
@@ -84,6 +89,9 @@ class CueParser:
                 continue
 
         if current_track:
+            if use_taglib:
+                f = taglib.File(os.path.join(parent_dir, current_track.file.replace("\\", "\\\\")))
+                current_track.length = f.length - current_track.offset
             cuesheet.tracks.append(current_track)
 
         return cuesheet
