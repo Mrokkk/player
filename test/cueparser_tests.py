@@ -71,8 +71,11 @@ class CueParserTests(TestCase):
         track3 = cuesheet.tracks[2]
         self.assertEqual(track1.file, 'file1.ape')
         self.assertEqual(track1.offset, 0)
+        self.assertEqual(track1.length, 203)
         self.assertEqual(track2.file, 'file1.ape')
         self.assertEqual(track2.offset, 203)
+        self.assertEqual(track2.length, 0)
         self.assertEqual(track3.file, 'file2.ape')
         self.assertEqual(track3.offset, 0)
+        self.assertEqual(track3.length, 0)
 

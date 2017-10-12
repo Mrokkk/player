@@ -67,7 +67,8 @@ class CueParser:
                     current_track.offset = int(match.group(1)) * 60 + int(match.group(2))
                     if len(cuesheet.tracks) > 0:
                         last_track = cuesheet.tracks[-1]
-                        last_track.length = current_track.offset - last_track.offset
+                        if last_track.file == current_track.file:
+                            last_track.length = current_track.offset - last_track.offset
                 continue
 
             match = re.match('^    TITLE \"(.*)\"$', line)
