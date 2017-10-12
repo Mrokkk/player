@@ -44,7 +44,7 @@ class Player:
         command_panel = CommandPanel(command_handler)
         context.command_panel = command_panel
 
-        playlist = Playlist(self.playback_controller.play_file, player_controller.error_handler)
+        playlist = Playlist(self.playback_controller.play_track, player_controller.error_handler)
         context.playlist = playlist
 
         file_browser = FileBrowser(player_controller.add_to_playlist, player_controller.error_handler)

@@ -15,27 +15,27 @@ class TestPlaybackController(TestCase):
         self.sut = PlaybackController(self.backend_factory)
 
     def test_play_will_raise_exception_when_no_track_given(self):
-        self.assertRaises(RuntimeError, self.sut.play_file, None)
+        self.assertRaises(RuntimeError, self.sut.play_track, None)
 
     def test_play_creates_backend(self):
-        self.sut.play_file(Mock())
+        self.sut.play_track(Mock())
         self.backend_factory.create.assert_called()
         self.assertNotEqual(self.sut.backend, None)
 
     def test_play_sets_current_track(self):
-        self.sut.play_file(Mock())
+        self.sut.play_track(Mock())
         self.assertNotEqual(self.sut.current_track, None)
 
     def test_play_sends_track_to_backend(self):
         track = Mock()
-        self.sut.play_file(track)
-        self.backend.play_file.assert_called_with(track)
+        self.sut.play_track(track)
+        self.backend.play_track.assert_called_with(track)
 
     def test_play_will_stop_current_track_if_exists(self):
         track = Mock()
         last_track = MagicMock()
         self.sut.current_track = last_track
-        self.sut.play_file(track)
+        self.sut.play_track(track)
 
     def test_quit_will_stop_backend_if_it_exists(self):
         self.sut.backend = self.backend
@@ -104,7 +104,7 @@ class TestPlaybackController(TestCase):
         self.sut.current_track = track
         self.sut.backend = self.backend
         self.sut.next()
-        self.backend.play_file.assert_not_called()
+        self.backend.play_track.assert_not_called()
         self.backend.stop.assert_called_once()
 
     def test_next_will_play_next_track(self):
@@ -114,7 +114,7 @@ class TestPlaybackController(TestCase):
         self.sut.current_track = track
         self.sut.backend = self.backend
         self.sut.next()
-        self.backend.play_file.assert_called_with(next_track)
+        self.backend.play_track.assert_called_with(next_track)
 
     def test_prev_will_stop_if_no_track_and_current_track_playing(self):
         track = Mock()
@@ -123,7 +123,7 @@ class TestPlaybackController(TestCase):
         self.sut.current_track = track
         self.sut.backend = self.backend
         self.sut.prev()
-        self.backend.play_file.assert_not_called()
+        self.backend.play_track.assert_not_called()
         self.backend.stop.assert_called_once()
 
     def test_prev_will_play_prev_track(self):
@@ -133,5 +133,5 @@ class TestPlaybackController(TestCase):
         self.sut.current_track = track
         self.sut.backend = self.backend
         self.sut.prev()
-        self.backend.play_file.assert_called_with(prev_track)
+        self.backend.play_track.assert_called_with(prev_track)
 

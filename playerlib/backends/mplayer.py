@@ -85,7 +85,7 @@ class MplayerBackend:
     def _loadfile(self, path):
         self._send_command('loadfile "{}"\n'.format(path))
 
-    def play_file(self, track):
+    def play_track(self, track):
         if not track: raise RuntimeError('No track!')
         last_track = self.current_track
         self.current_track = track

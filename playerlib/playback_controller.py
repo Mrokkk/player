@@ -9,7 +9,7 @@ class PlaybackController:
         self.backend = None
         self.current_track = None
 
-    def play_file(self, track):
+    def play_track(self, track):
         if not track:
             raise RuntimeError('No track!')
         if not self.backend:
@@ -17,7 +17,7 @@ class PlaybackController:
         if self.current_track:
             self.current_track.stop()
         self.current_track = track
-        self.backend.play_file(self.current_track)
+        self.backend.play_track(self.current_track)
         self.current_track.play()
 
     def pause(self):
@@ -33,17 +33,14 @@ class PlaybackController:
         self.current_track.stop()
         self.current_track = None
 
-    def _play_next_track(self, track):
-        self.play_file(track)
-
     def next(self):
         try:
-            self._play_next_track(self.current_track.playlist_entry.next.track)
+            self.play_track(self.current_track.playlist_entry.next.track)
         except: self.stop()
 
     def prev(self):
         try:
-            self._play_next_track(self.current_track.playlist_entry.prev.track)
+            self.play_track(self.current_track.playlist_entry.prev.track)
         except: self.stop()
 
     def _seek_percentage(self, value):

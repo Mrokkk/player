@@ -10,7 +10,7 @@ class MplayerBackendTests(TestCase):
         self.sut = MplayerBackend(lambda: None, lambda: None)
 
     def test_should_raise_exception_when_no_track_given(self):
-        self.assertRaises(RuntimeError, self.sut.play_file, None)
+        self.assertRaises(RuntimeError, self.sut.play_track, None)
 
     def test_backend_should_be_started_if_no_track_playing(self):
         track = Mock()
@@ -20,7 +20,7 @@ class MplayerBackendTests(TestCase):
                 patch('threading.Thread') as thread_mock:
             mplayer_mock = Mock()
             popen_mock.return_value = mplayer_mock
-            self.sut.play_file(track)
+            self.sut.play_track(track)
             popen_mock.assert_called_once()
             mplayer_mock.stdin.write.assert_not_called()
 
@@ -33,7 +33,7 @@ class MplayerBackendTests(TestCase):
         self.sut.current_track = track
         with patch('subprocess.Popen') as popen_mock, \
                 patch('threading.Thread') as thread_mock:
-            self.sut.play_file(track)
+            self.sut.play_track(track)
             popen_mock.assert_not_called()
             mplayer_mock.stdin.write.assert_called_once_with('seek 20 2 1\n')
 
@@ -49,7 +49,7 @@ class MplayerBackendTests(TestCase):
         track.offset = 0
         with patch('subprocess.Popen') as popen_mock, \
                 patch('threading.Thread') as thread_mock:
-            self.sut.play_file(track)
+            self.sut.play_track(track)
             popen_mock.assert_not_called()
             mplayer_mock.stdin.write.assert_called_once_with('loadfile "some_file.mp3"\n')
 
@@ -65,7 +65,7 @@ class MplayerBackendTests(TestCase):
         track.offset = 20
         with patch('subprocess.Popen') as popen_mock, \
                 patch('threading.Thread') as thread_mock:
-            self.sut.play_file(track)
+            self.sut.play_track(track)
             popen_mock.assert_not_called()
             mplayer_mock.stdin.write.assert_called_once_with('seek 20 2 1\n')
 
@@ -77,7 +77,7 @@ class MplayerBackendTests(TestCase):
                 patch('threading.Thread') as thread_mock:
             mplayer_mock = Mock()
             popen_mock.return_value = mplayer_mock
-            self.sut.play_file(track)
+            self.sut.play_track(track)
             popen_mock.assert_called_once()
             mplayer_mock.stdin.write.assert_called_once_with('seek 215 2 1\n')
 
