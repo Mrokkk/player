@@ -20,8 +20,15 @@ class PlayerController:
             self.context.playlist.add(f)
 
     def update_current_state(self, pos):
+        if pos < 0: return
+        current_track = self.context.playback_controller.current_track
+        if pos - current_track.offset >= current_track.length:
+            last_track = current_track
+            last_track.playlist_entry.set_stopped()
+            current_track = self.context.playback_controller.current_track.playlist_entry.next.track
+            self.context.playback_controller.current_track = current_track
+            current_track.playlist_entry.set_playing()
         if self.context.view.focus_position != 'footer':
-            current_track = self.context.playback_controller.current_track
             time_format = '%H:%M:%S' if current_track.length >= 3600 else '%M:%S'
             with self.context.draw_lock:
                 self.context.command_panel.set_caption('{} : {} / {}'.format(
