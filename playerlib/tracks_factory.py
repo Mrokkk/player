@@ -26,7 +26,7 @@ class TracksFactory:
             cuesheet = CueParser().parse(f, use_taglib=True, parent_dir=os.path.dirname(path))
         tracks = []
         for t in cuesheet.tracks:
-            new_track = Track(os.path.join(os.path.dirname(path), t.file.replace("\\", "\\\\")))
+            new_track = Track(os.path.join(os.path.dirname(path), t.file))
             new_track.artist = ', '.join(cuesheet.title)
             new_track.title = ', '.join(t.title)
             new_track.index = str(t.index)

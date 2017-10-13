@@ -49,7 +49,7 @@ class CueParser:
 
             match = re.match('^FILE \"(.*)\".*$', line)
             if match:
-                current_file = match.group(1)
+                current_file = match.group(1).replace("\\", "\\\\")
                 if cuesheet.file: cuesheet.file = None
                 else: cuesheet.file = current_file
                 continue
@@ -72,7 +72,7 @@ class CueParser:
                         if last_track.file == current_track.file:
                             last_track.length = current_track.offset - last_track.offset
                         elif use_taglib:
-                            f = taglib.File(os.path.join(parent_dir, last_track.file.replace("\\", "\\\\")))
+                            f = taglib.File(os.path.join(parent_dir, last_track.file))
                             last_track.length = f.length - last_track.offset
                 continue
 
@@ -90,7 +90,7 @@ class CueParser:
 
         if current_track:
             if use_taglib:
-                f = taglib.File(os.path.join(parent_dir, current_track.file.replace("\\", "\\\\")))
+                f = taglib.File(os.path.join(parent_dir, current_track.file))
                 current_track.length = f.length - current_track.offset
             cuesheet.tracks.append(current_track)
 
