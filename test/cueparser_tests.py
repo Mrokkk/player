@@ -15,7 +15,6 @@ class CueParserTests(TestCase):
         self.assertEqual(cuesheet.title, ['The Number of the Beast'])
         self.assertEqual(cuesheet.performer, ['Iron Maiden'])
         self.assertEqual(cuesheet.rem, ['GENRE Heavy Metal'])
-        self.assertEqual(cuesheet.file, 'album.flac')
 
     def test_can_parse_tracks(self):
         lines = ['  TRACK 01 AUDIO', '    TITLE "Invaders"', '    PERFORMER "Iron Maiden"', '    INDEX 01 00:00:00',
@@ -45,7 +44,6 @@ class CueParserTests(TestCase):
         self.assertEqual(cuesheet.title, ['The Number of the Beast'])
         self.assertEqual(cuesheet.performer, ['Iron Maiden'])
         self.assertEqual(cuesheet.rem, ['GENRE Heavy Metal'])
-        self.assertEqual(cuesheet.file, 'album.flac')
 
     def test_can_read_tracks_length(self):
         lines = ['  TRACK 01 AUDIO', '    INDEX 01 00:00:00',

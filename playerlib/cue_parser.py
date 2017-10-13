@@ -19,39 +19,37 @@ class CueSheet:
         self.performer = []
         self.artist = []
         self.title = []
-        self.file = None
         self.tracks = []
 
 
 class CueParser:
 
+    def _update_last_track_in_file(self, parent_dir, track):
+        import taglib
+        f = taglib.File(os.path.join(parent_dir, track.file))
+        track.length = f.length - track.offset
+
+    def _add_regex_match_to_list(self, tag_list, regex, line):
+        match = re.match(regex, line)
+        if match:
+            tag_list.append(match.group(1))
+            return True
+
     def parse(self, data, use_taglib=False, parent_dir=None):
-        if use_taglib: import taglib
         cuesheet = CueSheet()
         current_track = None
         current_file = None
         for raw_line in data:
             line = raw_line.rstrip()
-            match = re.match('^REM (.*)$', line)
-            if match:
-                cuesheet.rem.append(match.group(1))
-                continue
 
-            match = re.match('^PERFORMER \"(.*)\"$', line)
-            if match:
-                cuesheet.performer.append(match.group(1))
-                continue
-
-            match = re.match('^TITLE \"(.*)\"$', line)
-            if match:
-                cuesheet.title.append(match.group(1))
+            if self._add_regex_match_to_list(cuesheet.rem, '^REM (.*)$', line) or \
+                self._add_regex_match_to_list(cuesheet.performer, '^PERFORMER \"(.*)\"$', line) or \
+                self._add_regex_match_to_list(cuesheet.title, '^TITLE \"(.*)\"$', line):
                 continue
 
             match = re.match('^FILE \"(.*)\".*$', line)
             if match:
                 current_file = match.group(1).replace("\\", "\\\\")
-                if cuesheet.file: cuesheet.file = None
-                else: cuesheet.file = current_file
                 continue
 
             match = re.match('^  TRACK ([0-9]+) AUDIO$', line)
@@ -72,26 +70,17 @@ class CueParser:
                         if last_track.file == current_track.file:
                             last_track.length = current_track.offset - last_track.offset
                         elif use_taglib:
-                            f = taglib.File(os.path.join(parent_dir, last_track.file))
-                            last_track.length = f.length - last_track.offset
+                            self._update_last_track_in_file(parent_dir, last_track)
                 continue
 
-            match = re.match('^    TITLE \"(.*)\"$', line)
-            if match:
-                if current_track:
-                    current_track.title.append(match.group(1))
-                continue
-
-            match = re.match('^    PERFORMER \"(.*)\"$', line)
-            if match:
-                if current_track:
-                    current_track.performer.append(match.group(1))
-                continue
+            if current_track:
+                if self._add_regex_match_to_list(current_track.title, '^    TITLE \"(.*)\"$', line) or \
+                    self._add_regex_match_to_list(current_track.performer, '^    PERFORMER \"(.*)\"$', line):
+                    continue
 
         if current_track:
             if use_taglib:
-                f = taglib.File(os.path.join(parent_dir, current_track.file))
-                current_track.length = f.length - current_track.offset
+                self._update_last_track_in_file(parent_dir, current_track)
             cuesheet.tracks.append(current_track)
 
         return cuesheet
