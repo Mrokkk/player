@@ -13,5 +13,5 @@ class BackendFactory:
             return MplayerBackend(self.context.playback_controller.next,
                 self.context.player_controller.update_current_state)
         else:
-            raise RuntimeError('Improper backend name')
+            raise RuntimeError('Improper backend name: ' + config.backend)
 
