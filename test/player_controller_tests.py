@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from unittest import TestCase
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import Mock, MagicMock, patch, call
 from playerlib.player_controller import *
 
 from urwid import ExitMainLoop
@@ -21,14 +21,16 @@ class PLayerControllerTests(TestCase):
         self.playback_controller_mock.current_track = self.current_track_mock
 
         self.command_panel_mock = Mock()
-
         self.view_mock = Mock()
+        self.playlist_mock = Mock()
 
         self.context_mock.playback_controller = self.playback_controller_mock
         self.context_mock.command_panel = self.command_panel_mock
         self.context_mock.view = self.view_mock
+        self.context_mock.playlist = self.playlist_mock
 
         self.sut = PlayerController(self.context_mock)
+        self.sut.tracks_factory = Mock()
 
 
     def test_can_quit_program(self):
@@ -111,4 +113,28 @@ class PLayerControllerTests(TestCase):
         self.sut.update_current_state(32)
         self.sut.update_current_state(3)
         self.command_panel_mock.set_caption.assert_not_called()
+
+
+    def test_can_add_tracks_to_playlist(self):
+        track1 = Mock()
+        track2 = Mock()
+        self.sut.tracks_factory.get.return_value = [track1, track2]
+        self.sut.add_to_playlist('/some/path')
+        self.playlist_mock.add.assert_has_calls([call(track1), call(track2)])
+
+
+    def test_can_clear_playlist_and_add_tracks(self):
+        track1 = Mock()
+        track2 = Mock()
+        self.sut.tracks_factory.get.return_value = [track1, track2]
+        self.sut.add_to_playlist('/some/path', clear=True)
+        self.playlist_mock.clear.assert_called_once()
+        self.playlist_mock.add.assert_has_calls([call(track1), call(track2)])
+
+
+    def test_raises_exception_when_no_tracks_returned_from_tracks_factory(self):
+        self.sut.tracks_factory.get.return_value = []
+        self.assertRaises(RuntimeError, self.sut.add_to_playlist, '/some/path')
+        self.sut.tracks_factory.get.return_value = None
+        self.assertRaises(RuntimeError, self.sut.add_to_playlist, '/some/path')
 
