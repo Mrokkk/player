@@ -45,33 +45,42 @@ class CommandPanel(urwid.Edit):
         self.set_edit_text(self.history[self.mode][self.history_index])
         self.set_edit_pos(len(self.edit_text))
 
+    def _handle_enter(self):
+        try:
+            self.history[self.mode].insert(0, self.get_edit_text().strip())
+            self.command_handler.execute(self.caption + self.get_edit_text().strip())
+            self.clear()
+        except (RuntimeError, AttributeError, IndexError, TypeError, KeyError) as exc:
+            self.error(str(exc))
+
+    def _handle_up_arrow(self):
+        try:
+            self.history_index += 1
+            self.history_index = clamp(self.history_index, max_val=len(self.history[self.mode])-1)
+            self._update_panel()
+        except: pass
+        return True
+
+    def _handle_down_arrow(self):
+        if self.history_index < 0: return True
+        self.history_index -= 1
+        self.history_index = clamp(self.history_index, min_val=-1)
+        if self.history_index == -1:
+            self.set_edit_text('')
+            self.set_edit_pos(0)
+            return True
+        self._update_panel()
+        return True
+
     def unhandled_input(self, key):
         if key == 'enter':
-            try:
-                self.history[self.mode].insert(0, self.get_edit_text().strip())
-                self.command_handler.execute(self.caption + self.get_edit_text().strip())
-                self.clear()
-            except (RuntimeError, AttributeError, IndexError, TypeError, KeyError) as exc:
-                self.error(str(exc))
+            self._handle_enter()
         elif key == 'esc':
             self.clear()
         elif key == 'up':
-            try:
-                self.history_index += 1
-                self.history_index = clamp(self.history_index, max_val=len(self.history[self.mode])-1)
-                self._update_panel()
-            except: pass
-            return True
+            return self._handle_up_arrow()
         elif key == 'down':
-            if self.history_index < 0: return True
-            self.history_index -= 1
-            self.history_index = clamp(self.history_index, min_val=-1)
-            if self.history_index == -1:
-                self.set_edit_text('')
-                self.set_edit_pos(0)
-                return True
-            self._update_panel()
-            return True
+            return self._handle_down_arrow()
         else:
             return True
 
