@@ -27,7 +27,9 @@ class MplayerBackend:
                 for row in reader:
                     try:
                         self._update_time_pos(row[0])
-                    except: pass
+                    except Exception as e:
+                        # print(str(e))
+                        pass
             except: pass
             line = self.mplayer.stdout.readline()
             if not line:
@@ -50,27 +52,26 @@ class MplayerBackend:
     def _run_mplayer(self):
         self.output_queue = queue.Queue()
         self.input_queue = queue.Queue()
+        cache = 8192
         if self.current_track.path == 'cdda://':
-            mplayer_args = [
-                'mplayer',
-                '-ao', 'pulse',
-                '-noquiet',
-                '-slave',
-                '-cdrom-device', '/dev/cdrom',
-                '-vo', 'null',
-                '-cache', '8192',
-                self.current_track.path
-            ]
+            demuxer = 'rawaudio'
+        elif self.current_track.path.endswith('.flac') or self.current_track.path.endswith('.ape'):
+            demuxer = 'lavf'
+        elif self.current_track.path.endswith('.mp3'):
+            demuxer = 'audio'
         else:
-            mplayer_args = [
-                'mplayer',
-                '-ao', 'pulse',
-                '-noquiet',
-                '-slave',
-                '-demuxer', 'lavf',
-                '-vo', 'null',
-                self.current_track.path
-            ]
+            demuxer = 'none'
+        mplayer_args = [
+            'mplayer',
+            '-ao', 'pulse',
+            '-noquiet',
+            '-slave',
+            '-cdrom-device', '/dev/cdrom',
+            '-vo', 'null',
+            '-demuxer', demuxer,
+            '-cache', str(cache),
+            self.current_track.path
+        ]
         return subprocess.Popen(mplayer_args,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,

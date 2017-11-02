@@ -50,6 +50,7 @@ class Player:
         context.playlist = playlist
 
         file_browser = FileBrowser(player_controller.add_to_playlist, error_handler)
+        context.file_browser = file_browser
 
         context.view = PlayerView(file_browser, playlist, command_panel)
 

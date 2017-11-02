@@ -22,7 +22,8 @@ class PlayerController:
     def update_current_state(self, pos):
         if pos < 0: return
         current_track = self.context.playback_controller.current_track
-        if pos - current_track.offset >= current_track.length:
+        if (pos - current_track.offset >= current_track.length) and \
+                (current_track.path == current_track.playlist_entry.next.track.path):
             last_track = current_track
             last_track.stop()
             current_track = self.context.playback_controller.current_track.playlist_entry.next.track
