@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 import csv
+import os
 import queue
 import re
+import signal
 import subprocess
 import threading
 
@@ -25,22 +27,16 @@ class MplayerBackend:
             try:
                 reader = csv.reader(self.mplayer.stdout, delimiter='\r')
                 for row in reader:
-                    try:
-                        self._update_time_pos(row[0])
-                    except Exception as e:
-                        # print(str(e))
-                        pass
+                    try: self._update_time_pos(row[0])
+                    except: pass
             except: pass
             line = self.mplayer.stdout.readline()
             if not line:
                 self.mplayer = None
                 self.current_track = None
                 if not self.should_stop:
-                    try:
-                        self.adv_callback()
-                    except:
-                        # self.error(str(e))
-                        pass
+                    try: self.adv_callback()
+                    except: pass
                 self.should_stop = False
                 return
 
@@ -55,7 +51,9 @@ class MplayerBackend:
         cache = 8192
         if self.current_track.path == 'cdda://':
             demuxer = 'rawaudio'
-        elif self.current_track.path.endswith('.flac') or self.current_track.path.endswith('.ape'):
+        elif self.current_track.path.endswith('.flac'):
+            demuxer = 'lavf'
+        elif self.current_track.path.endswith('.ape'):
             demuxer = 'lavf'
         elif self.current_track.path.endswith('.mp3'):
             demuxer = 'audio'
@@ -76,7 +74,8 @@ class MplayerBackend:
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
-            encoding='utf-8')
+            encoding='utf-8',
+            preexec_fn=lambda: os.setpgrp())
 
     def _start_backend(self):
         self.mplayer = self._run_mplayer()
