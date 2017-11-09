@@ -10,9 +10,10 @@ import threading
 
 class MplayerBackend:
 
-    def __init__(self, adv_callback, set_time_callback):
+    def __init__(self, adv_callback, set_time_callback, path):
         self.adv_callback = adv_callback
         self.set_time_callback = set_time_callback
+        self.mplayer_path = path
         self.mplayer = None
         self.current_track = None
         self.should_stop = False
@@ -52,7 +53,7 @@ class MplayerBackend:
         if self.current_track.path == 'cdda://':
             demuxer = 'rawaudio'
         elif self.current_track.path.endswith('.flac'):
-            demuxer = 'lavf'
+            demuxer = 'audio'
         elif self.current_track.path.endswith('.ape'):
             demuxer = 'lavf'
         elif self.current_track.path.endswith('.mp3'):
@@ -60,7 +61,7 @@ class MplayerBackend:
         else:
             demuxer = 'none'
         mplayer_args = [
-            'mplayer',
+            self.mplayer_path,
             '-ao', 'pulse',
             '-noquiet',
             '-slave',

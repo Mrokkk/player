@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 backend = 'mplayer' # Available: mplayer
+# backend_path = '/usr/bin/mplayer'
 
 color_palette = [
     ('head', 'yellow', 'black', '', '#a30', ''),

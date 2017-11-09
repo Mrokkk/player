@@ -9,9 +9,12 @@ class BackendFactory:
         self.context = context
 
     def create(self):
+        backend_path = ''
         if config.backend == 'mplayer':
+            try: backend_path = config.backend_path
+            except: backend_path = 'mplayer'
             return MplayerBackend(self.context.playback_controller.next,
-                self.context.player_controller.update_current_state)
+                self.context.player_controller.update_current_state, backend_path)
         else:
             raise RuntimeError('Improper backend name: ' + config.backend)
 

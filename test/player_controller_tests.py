@@ -84,10 +84,12 @@ class PLayerControllerTests(TestCase):
         self.current_track_mock.offset = 0
         self.current_track_mock.length = 32
         self.current_track_mock.title = 'Some Title'
+        self.current_track_mock.path = '/path'
         next_track_mock = Mock()
         next_track_mock.offset = 32
         next_track_mock.length = 21
         next_track_mock.title = 'Some Other Title'
+        next_track_mock.path = '/path'
         self.current_track_mock.playlist_entry.next.track = next_track_mock
 
         self.sut.update_current_state(10)
