@@ -49,7 +49,7 @@ class Player:
         playlist = Playlist(self.playback_controller.play_track, error_handler)
         context.playlist = playlist
 
-        file_browser = FileBrowser(player_controller.add_to_playlist, error_handler)
+        file_browser = FileBrowser(playlist.add_to_playlist, error_handler)
         context.file_browser = file_browser
 
         context.view = PlayerView(file_browser, playlist, command_panel)

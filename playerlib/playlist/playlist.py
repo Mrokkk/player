@@ -5,6 +5,7 @@ import time
 import urwid
 
 from playerlib.helpers.scrollable import *
+from playerlib.tracks_factory import *
 from .entry import *
 
 class Playlist(urwid.WidgetWrap):
@@ -17,6 +18,7 @@ class Playlist(urwid.WidgetWrap):
         self.listbox = urwid.ListBox(self.content)
         self.header = urwid.AttrWrap(urwid.Text('Unnamed playlist'), 'head')
         self.footer = urwid.AttrWrap(urwid.Text('Playlist'), 'foot')
+        self.tracks_factory = TracksFactory()
         super().__init__(urwid.Frame(
             self.listbox,
             header=self.header,
@@ -41,9 +43,18 @@ class Playlist(urwid.WidgetWrap):
             track.title = os.path.basename(track.path) # FIXME: shouldn't be here
             return '{} {}'.format(track.title, time.strftime('%H:%M:%S', time.gmtime(int(track.length))))
 
-    def add(self, data):
+    def _add_track(self, track):
         last = self.content[-1] if len(self.content) > 0 else None
-        self.content.append(Entry(data, self._get_track_string(data), prev=last))
+        self.content.append(Entry(track, self._get_track_string(track), prev=last))
+
+    def add_to_playlist(self, path, clear=False):
+        tracks = self.tracks_factory.get(path)
+        if not tracks or len(tracks) == 0:
+            raise RuntimeError('No music files to play!')
+        if clear:
+            self.clear()
+        for f in tracks:
+            self._add_track(f)
 
     def clear(self):
         self.content[:] = []

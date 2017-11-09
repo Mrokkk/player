@@ -2,22 +2,11 @@
 
 import urwid
 from time import gmtime, strftime
-from playerlib.tracks_factory import *
 
 class PlayerController:
 
     def __init__(self, context):
         self.context = context
-        self.tracks_factory = TracksFactory()
-
-    def add_to_playlist(self, path, clear=False):
-        tracks = self.tracks_factory.get(path)
-        if not tracks or len(tracks) == 0:
-            raise RuntimeError('No music files to play!')
-        if clear:
-            self.context.playlist.clear()
-        for f in tracks:
-            self.context.playlist.add(f)
 
     def update_current_state(self, pos):
         if pos < 0: return

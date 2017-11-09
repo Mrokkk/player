@@ -15,7 +15,10 @@ class CommandHandler:
             self.Mode.SEARCH_BACKWARD: self._search_backward_mode
         }
         self.player_commands = [
-            'add_to_playlist', 'quit',
+            'quit',
+        ]
+        self.playlist_commands = [
+            'add_to_playlist',
         ]
         self.playback_commands = [
             'pause', 'stop', 'next', 'prev', 'seek'
@@ -40,6 +43,8 @@ class CommandHandler:
             module = 'self.context.player_controller'
         elif command in self.playback_commands:
             module = 'self.context.playback_controller'
+        elif command in self.playlist_commands:
+            module = 'self.context.playlist'
         elif command in self.view_commands:
             module = 'self.context.view'
         if module == None:
