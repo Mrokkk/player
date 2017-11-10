@@ -18,8 +18,9 @@ class TestCommandHandler(TestCase):
         self.sut.execute(':quit')
         self.context_mock.player_controller.quit.assert_called_once()
 
+    def test_can_execute_playlist_commands(self):
         self.sut.execute(':add_to_playlist some_file')
-        self.context_mock.player_controller.add_to_playlist.assert_called_once_with('some_file')
+        self.context_mock.playlist.add_to_playlist.assert_called_once_with('some_file')
 
 
     def test_can_execute_playback_controller_commands(self):
