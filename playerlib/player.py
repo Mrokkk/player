@@ -3,9 +3,10 @@
 import urwid
 import threading
 
-import playerlib.config as config
+from playerlib.backends.backend_factory import *
 from playerlib.command_handler import *
 from playerlib.command_panel import *
+from playerlib.config import *
 from playerlib.file_browser.file_browser import *
 from playerlib.playback_controller import *
 from playerlib.player_context import *
@@ -13,7 +14,6 @@ from playerlib.player_controller import *
 from playerlib.player_view import *
 from playerlib.playlist.playlist import *
 from playerlib.user_input import *
-from playerlib.backends.backend_factory import *
 
 class Loop(urwid.MainLoop):
 
@@ -29,8 +29,12 @@ class Loop(urwid.MainLoop):
 class Player:
 
     def __init__(self, event_loop, screen):
+
         context = PlayerContext()
         context.draw_lock = threading.RLock()
+
+        config = Config()
+        context.config = config
 
         player_controller = PlayerController(context)
         context.player_controller = player_controller

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import playerlib.config as config
 from .mplayer import *
 
 class BackendFactory:
@@ -10,11 +9,9 @@ class BackendFactory:
 
     def create(self):
         backend_path = ''
-        if config.backend == 'mplayer':
-            try: backend_path = config.backend_path
-            except: backend_path = 'mplayer'
+        if self.context.config.backend == 'mplayer':
             return MplayerBackend(self.context.playback_controller.next,
-                self.context.player_controller.update_current_state, backend_path)
+                self.context.player_controller.update_current_state, self.context.config.backend_path)
         else:
-            raise RuntimeError('Improper backend name: ' + config.backend)
+            raise RuntimeError('Improper backend name: ' + self.context.config.backend)
 
