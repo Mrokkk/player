@@ -4,14 +4,14 @@ from .mplayer import *
 
 class BackendFactory:
 
-    def __init__(self, context):
-        self.context = context
+    def __init__(self):
+        pass
 
-    def create(self):
+    def create(self, config, next, update_current_state):
         backend_path = ''
-        if self.context.config.backend == 'mplayer':
-            return MplayerBackend(self.context.playback_controller.next,
-                self.context.playback_controller.update_current_state, self.context.config.backend_path)
+        if config.backend == 'mplayer':
+            return MplayerBackend(next,
+                update_current_state, config.backend_path)
         else:
-            raise RuntimeError('Improper backend name: ' + self.context.config.backend)
+            raise RuntimeError('Improper backend name: ' + config.backend)
 

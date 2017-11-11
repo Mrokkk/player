@@ -6,6 +6,7 @@ import os
 import queue
 import re
 import subprocess
+import sys
 import threading
 
 class MplayerBackend:
@@ -33,7 +34,8 @@ class MplayerBackend:
                 for row in reader:
                     try: self._update_time_pos(row[0])
                     except Exception as e:
-                        self.logger.warning(str(e))
+                        exc_type, exc_obj, exc_tb = sys.exc_info()
+                        self.logger.warning('{}: {}'.format(e.__class__.__name__, str(e)))
             except: pass
             line = self.mplayer.stdout.readline()
             if not line:

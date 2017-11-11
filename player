@@ -10,19 +10,22 @@ def create_screen():
     screen = urwid.raw_display.Screen()
     try:
         screen.set_terminal_properties(256)
-    except:
-        pass
+    except Exception as e:
+        logging.warning('Cannot setup 256 colors: {}'.format(str(e)))
     return screen
 
 def main():
     logging.basicConfig(level=logging.DEBUG,
-        format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-        datefmt='%m-%d %H:%M',
+        format='%(asctime)s %(name)-20s %(levelname)-10s %(message)s',
+        datefmt='%m-%d %H:%M:%S',
         filename='log.log',
         filemode='w')
     logging.info('Starting')
     signal.signal(signal.SIGINT, signal.SIG_IGN)
-    Player(urwid.AsyncioEventLoop(loop=asyncio.get_event_loop()), create_screen()).run()
+    try:
+        Player(urwid.AsyncioEventLoop(loop=asyncio.get_event_loop()), create_screen()).run()
+    except Exception as e:
+        pass
     logging.info('Exitting')
 
 if __name__ == '__main__':
