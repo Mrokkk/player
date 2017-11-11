@@ -15,7 +15,7 @@ def create_screen():
 
 def main():
     signal.signal(signal.SIGINT, signal.SIG_IGN)
-    Player(asyncio.get_event_loop(), create_screen()).run()
+    Player(urwid.AsyncioEventLoop(loop=asyncio.get_event_loop()), create_screen()).run()
 
 if __name__ == '__main__':
     main()

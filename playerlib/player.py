@@ -31,43 +31,29 @@ class Player:
     def __init__(self, event_loop, screen):
 
         context = PlayerContext()
+        self.context = context
+
         context.draw_lock = threading.RLock()
-
-        config = Config()
-        context.config = config
-
-        player_controller = PlayerController(context)
-        context.player_controller = player_controller
-
-        self.playback_controller = PlaybackController(BackendFactory(context))
-        context.playback_controller = self.playback_controller
-
-        command_handler = CommandHandler(context)
-        context.command_handler = command_handler
-
-        command_panel = CommandPanel(command_handler)
-        context.command_panel = command_panel
-
+        context.config = Config()
+        context.player_controller = PlayerController(context)
+        context.playback_controller = PlaybackController(BackendFactory(context))
+        context.command_handler = CommandHandler(context)
+        context.command_panel = CommandPanel(context.command_handler)
         error_handler = context.command_panel.error
-
-        playlist = Playlist(self.playback_controller.play_track, error_handler)
-        context.playlist = playlist
-
-        file_browser = FileBrowser(playlist.add_to_playlist, error_handler)
-        context.file_browser = file_browser
-
-        context.view = PlayerView(file_browser, playlist, command_panel)
+        context.playlist = Playlist(context.playback_controller.play_track, error_handler)
+        context.file_browser = FileBrowser(context.playlist.add_to_playlist, error_handler)
+        context.view = PlayerView(context.file_browser, context.playlist, context.command_panel)
 
         self.main_loop = Loop(
             context.draw_lock,
             context.view,
-            palette=config.color_palette,
-            unhandled_input=UserInput(context.view, command_handler, command_panel, error_handler)
+            palette=context.config.color_palette,
+            unhandled_input=UserInput(context.view, context.command_handler, context.command_panel, error_handler)
                 .handle_input,
-            event_loop=urwid.AsyncioEventLoop(loop=event_loop),
+            event_loop=event_loop,
             screen=screen)
 
     def run(self):
         self.main_loop.run()
-        self.playback_controller.quit()
+        self.context.playback_controller.quit()
 
