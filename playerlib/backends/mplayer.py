@@ -53,7 +53,7 @@ class MplayerBackend:
         if self.current_track.path == 'cdda://':
             demuxer = 'rawaudio'
         elif self.current_track.path.endswith('.flac'):
-            demuxer = 'audio'
+            demuxer = 'lavf'
         elif self.current_track.path.endswith('.ape'):
             demuxer = 'lavf'
         elif self.current_track.path.endswith('.mp3'):

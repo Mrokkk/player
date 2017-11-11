@@ -21,9 +21,7 @@ class TracksFactory:
         return False
 
     def _handle_cue_sheet(self, path):
-        cuesheet = None
-        with open(path, 'r', encoding='latin1') as f:
-            cuesheet = CueParser().parse(f, use_taglib=True, parent_dir=os.path.dirname(path))
+        cuesheet = CueParser().parse(path, use_taglib=True)
         tracks = []
         for t in cuesheet.tracks:
             new_track = Track(os.path.join(os.path.dirname(path), t.file))
