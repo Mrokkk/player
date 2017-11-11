@@ -3,14 +3,12 @@
 import urwid
 import threading
 
-from playerlib.backends.backend_factory import *
 from playerlib.command_handler import *
 from playerlib.command_panel import *
 from playerlib.config import *
 from playerlib.file_browser.file_browser import *
 from playerlib.playback_controller import *
 from playerlib.player_context import *
-from playerlib.player_controller import *
 from playerlib.player_view import *
 from playerlib.playlist.playlist import *
 from playerlib.user_input import *
@@ -26,17 +24,20 @@ class Loop(urwid.MainLoop):
             super().draw_screen(*args, **kwargs)
 
 
+def quit_callback():
+    raise urwid.ExitMainLoop()
+
+
 class Player:
 
     def __init__(self, event_loop, screen):
-
         context = PlayerContext()
         self.context = context
 
+        context.quit = quit_callback
         context.draw_lock = threading.RLock()
         context.config = Config()
-        context.player_controller = PlayerController(context)
-        context.playback_controller = PlaybackController(BackendFactory(context))
+        context.playback_controller = PlaybackController(context)
         context.command_handler = CommandHandler(context)
         context.command_panel = CommandPanel(context.command_handler)
         error_handler = context.command_panel.error
@@ -52,6 +53,7 @@ class Player:
                 .handle_input,
             event_loop=event_loop,
             screen=screen)
+
 
     def run(self):
         self.main_loop.run()

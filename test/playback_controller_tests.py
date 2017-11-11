@@ -9,18 +9,24 @@ from playerlib.playback_controller import *
 class TestPlaybackController(TestCase):
 
     def setUp(self):
+        self.command_panel_mock = Mock()
+        self.view_mock = Mock()
+
+        self.context_mock = Mock()
+        self.context_mock.command_panel = self.command_panel_mock
+        self.context_mock.view = self.view_mock
+        self.context_mock.draw_lock = MagicMock()
+        self.context_mock.config.backend = 'mplayer'
+
+        self.current_track_mock = Mock()
+
+        self.sut = PlaybackController(self.context_mock)
+
         self.backend = Mock()
-        self.backend_factory = Mock()
-        self.backend_factory.create.return_value = self.backend
-        self.sut = PlaybackController(self.backend_factory)
+        self.sut.backend = self.backend
 
     def test_play_will_raise_exception_when_no_track_given(self):
         self.assertRaises(RuntimeError, self.sut.play_track, None)
-
-    def test_play_creates_backend(self):
-        self.sut.play_track(Mock())
-        self.backend_factory.create.assert_called()
-        self.assertNotEqual(self.sut.backend, None)
 
     def test_play_sets_current_track(self):
         self.sut.play_track(Mock())
@@ -41,10 +47,6 @@ class TestPlaybackController(TestCase):
         self.sut.backend = self.backend
         self.sut.quit()
         self.backend.quit.assert_called_once()
-
-    def test_quit_will_do_nothing_if_backend_doesnt_exist(self):
-        self.sut.quit()
-        self.backend.quit.assert_not_called()
 
     def test_stop_will_raise_exception_when_no_track_playing(self):
         self.assertRaises(RuntimeError, self.sut.stop)
@@ -134,4 +136,88 @@ class TestPlaybackController(TestCase):
         self.sut.backend = self.backend
         self.sut.prev()
         self.backend.play_track.assert_called_with(prev_track)
+
+    def test_ignores_negative_value(self):
+        self.sut.current_track = self.current_track_mock
+        self.sut.update_current_state(-1)
+        self.sut.update_current_state(-10)
+        self.sut.update_current_state(-21)
+        self.command_panel_mock.set_caption.assert_not_called()
+
+
+    def test_can_update_current_track_time_position(self):
+        self.current_track_mock.offset = 0
+        self.current_track_mock.length = 20
+        self.current_track_mock.title = 'Some Title'
+        self.sut.current_track = self.current_track_mock
+
+        self.sut.update_current_state(1)
+        self.command_panel_mock.set_caption.assert_called_once_with('Some Title : 00:01 / 00:20')
+        self.command_panel_mock.set_caption.reset_mock()
+
+        self.sut.update_current_state(10)
+        self.command_panel_mock.set_caption.assert_called_once_with('Some Title : 00:10 / 00:20')
+        self.command_panel_mock.set_caption.reset_mock()
+
+        self.sut.update_current_state(11)
+        self.command_panel_mock.set_caption.assert_called_once_with('Some Title : 00:11 / 00:20')
+        self.command_panel_mock.set_caption.reset_mock()
+
+        self.sut.update_current_state(11)
+        self.command_panel_mock.set_caption.assert_called_once_with('Some Title : 00:11 / 00:20')
+        self.command_panel_mock.set_caption.reset_mock()
+
+
+    def test_can_update_current_track_time_position_when_track_length_longer_than_hour(self):
+        self.current_track_mock.offset = 0
+        self.current_track_mock.length = 7200
+        self.current_track_mock.title = 'Some Title'
+        self.sut.current_track = self.current_track_mock
+
+        self.sut.update_current_state(1)
+        self.command_panel_mock.set_caption.assert_called_once_with('Some Title : 00:00:01 / 02:00:00')
+        self.command_panel_mock.set_caption.reset_mock()
+
+        self.sut.update_current_state(100)
+        self.command_panel_mock.set_caption.assert_called_once_with('Some Title : 00:01:40 / 02:00:00')
+        self.command_panel_mock.set_caption.reset_mock()
+
+
+    def test_can_go_to_next_track(self):
+        self.current_track_mock.offset = 0
+        self.current_track_mock.length = 32
+        self.current_track_mock.title = 'Some Title'
+        self.current_track_mock.path = '/path'
+        next_track_mock = Mock()
+        next_track_mock.offset = 32
+        next_track_mock.length = 21
+        next_track_mock.title = 'Some Other Title'
+        next_track_mock.path = '/path'
+        self.current_track_mock.playlist_entry.next.track = next_track_mock
+        self.sut.current_track = self.current_track_mock
+
+        self.sut.update_current_state(10)
+        self.command_panel_mock.set_caption.assert_called_once_with('Some Title : 00:10 / 00:32')
+        self.command_panel_mock.set_caption.reset_mock()
+
+        self.sut.update_current_state(32)
+        self.command_panel_mock.set_caption.assert_called_once_with('Some Other Title : 00:00 / 00:21')
+        self.command_panel_mock.set_caption.reset_mock()
+
+        self.sut.update_current_state(42)
+        self.command_panel_mock.set_caption.assert_called_once_with('Some Other Title : 00:10 / 00:21')
+        self.command_panel_mock.set_caption.reset_mock()
+
+
+    def test_ignores_if_footer_focused(self):
+        self.current_track_mock.offset = 0
+        self.current_track_mock.length = 104
+        self.current_track_mock.title = 'Some Title'
+        self.sut.current_track = self.current_track_mock
+        self.view_mock.focus_position = 'footer'
+
+        self.sut.update_current_state(42)
+        self.sut.update_current_state(32)
+        self.sut.update_current_state(3)
+        self.command_panel_mock.set_caption.assert_not_called()
 

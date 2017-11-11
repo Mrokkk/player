@@ -16,7 +16,8 @@ class TestCommandHandler(TestCase):
 
     def test_can_execute_player_controller_commands(self):
         self.sut.execute(':quit')
-        self.context_mock.player_controller.quit.assert_called_once()
+        self.context_mock.quit.assert_called_once()
+
 
     def test_can_execute_playlist_commands(self):
         self.sut.execute(':add_to_playlist some_file')
@@ -63,7 +64,7 @@ class TestCommandHandler(TestCase):
 
     def test_can_call_mapped_commands(self):
         self.sut.execute(':q')
-        self.context_mock.player_controller.quit.assert_called_once()
+        self.context_mock.quit.assert_called_once()
 
 
     def test_ignores_empty_command(self):

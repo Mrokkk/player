@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import asyncio
+import logging
 import signal
 import urwid
 from playerlib.player import *
@@ -14,8 +15,15 @@ def create_screen():
     return screen
 
 def main():
+    logging.basicConfig(level=logging.DEBUG,
+        format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+        datefmt='%m-%d %H:%M',
+        filename='log.log',
+        filemode='w')
+    logging.info('Starting')
     signal.signal(signal.SIGINT, signal.SIG_IGN)
     Player(urwid.AsyncioEventLoop(loop=asyncio.get_event_loop()), create_screen()).run()
+    logging.info('Exitting')
 
 if __name__ == '__main__':
     main()

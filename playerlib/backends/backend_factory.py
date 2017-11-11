@@ -11,7 +11,7 @@ class BackendFactory:
         backend_path = ''
         if self.context.config.backend == 'mplayer':
             return MplayerBackend(self.context.playback_controller.next,
-                self.context.player_controller.update_current_state, self.context.config.backend_path)
+                self.context.playback_controller.update_current_state, self.context.config.backend_path)
         else:
             raise RuntimeError('Improper backend name: ' + self.context.config.backend)
 

@@ -40,7 +40,7 @@ class CommandHandler:
             command = self.command_mapping[command]
         module = None
         if command in self.player_commands:
-            module = 'self.context.player_controller'
+            module = 'self.context'
         elif command in self.playback_commands:
             module = 'self.context.playback_controller'
         elif command in self.playlist_commands:
