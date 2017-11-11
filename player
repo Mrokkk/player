@@ -22,10 +22,7 @@ def main():
         filemode='w')
     logging.info('Starting')
     signal.signal(signal.SIGINT, signal.SIG_IGN)
-    try:
-        Player(urwid.AsyncioEventLoop(loop=asyncio.get_event_loop()), create_screen()).run()
-    except Exception as e:
-        pass
+    Player(urwid.AsyncioEventLoop(loop=asyncio.get_event_loop()), create_screen()).run()
     logging.info('Exitting')
 
 if __name__ == '__main__':

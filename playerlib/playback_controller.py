@@ -10,7 +10,7 @@ class PlaybackController:
 
     def __init__(self, context):
         self.context = context
-        self.backend = BackendFactory().create(context.config, self.next, self.update_current_state)
+        self.backend = BackendFactory(context.config, self.next, self.update_current_state).create()
         self.current_track = None
         self.logger = logging.getLogger('PlaybackController')
 

@@ -4,14 +4,14 @@ from .mplayer import *
 
 class BackendFactory:
 
-    def __init__(self):
-        pass
+    def __init__(self, config, play_next_track_callback, update_time_callback):
+        self.config = config
+        self.play_next_track_callback = play_next_track_callback
+        self.update_time_callback = update_time_callback
 
-    def create(self, config, next, update_current_state):
-        backend_path = ''
-        if config.backend == 'mplayer':
-            return MplayerBackend(next,
-                update_current_state, config.backend_path)
+    def create(self):
+        if self.config.backend == 'mplayer':
+            return MplayerBackend(self.play_next_track_callback, self.update_time_callback, self.config.backend_path)
         else:
-            raise RuntimeError('Improper backend name: ' + config.backend)
+            raise RuntimeError('Improper backend name: ' + self.config.backend)
 
