@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from unittest import TestCase
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import Mock, MagicMock, patch, mock_open
 from playerlib.cue_parser import *
 
 class CueParserTests(TestCase):
@@ -11,7 +11,11 @@ class CueParserTests(TestCase):
 
     def test_can_parse_simple_album_data(self):
         lines = ['REM GENRE Heavy Metal', 'PERFORMER "Iron Maiden"', 'TITLE "The Number of the Beast"', 'FILE "album.flac" WAVE']
-        cuesheet = self.sut.parse(lines)
+        m = mock_open(read_data='\n'.join(lines))
+        m.return_value.__iter__ = lambda self: self
+        m.return_value.__next__ = lambda self: next(iter(self.readline, ''))
+        with patch('builtins.open', m):
+            cuesheet = self.sut.parse('some/path')
         self.assertEqual(cuesheet.title, ['The Number of the Beast'])
         self.assertEqual(cuesheet.performer, ['Iron Maiden'])
         self.assertEqual(cuesheet.rem, ['GENRE Heavy Metal'])
@@ -19,7 +23,11 @@ class CueParserTests(TestCase):
     def test_can_parse_tracks(self):
         lines = ['  TRACK 01 AUDIO', '    TITLE "Invaders"', '    PERFORMER "Iron Maiden"', '    INDEX 01 00:00:00',
                  '  TRACK 02 AUDIO', '    TITLE "Children of the Damned"', '    PERFORMER "Iron Maiden"', '    INDEX 01 03:23:00']
-        cuesheet = self.sut.parse(lines)
+        m = mock_open(read_data='\n'.join(lines))
+        m.return_value.__iter__ = lambda self: self
+        m.return_value.__next__ = lambda self: next(iter(self.readline, ''))
+        with patch('builtins.open', m):
+            cuesheet = self.sut.parse('path')
         self.assertEqual(len(cuesheet.tracks), 2)
         track1 = cuesheet.tracks[0]
         track2 = cuesheet.tracks[1]
@@ -35,12 +43,20 @@ class CueParserTests(TestCase):
     def test_should_ignore_track_tags_if_no_track_given(self):
         lines = ['    TITLE "Invaders"', '    PERFORMER "Iron Maiden"', '    INDEX 01 00:00:00',
                  '    TITLE "Children of the Damned"', '    PERFORMER "Iron Maiden"', '    INDEX 01 03:23:00']
-        cuesheet = self.sut.parse(lines)
+        m = mock_open(read_data='\n'.join(lines))
+        m.return_value.__iter__ = lambda self: self
+        m.return_value.__next__ = lambda self: next(iter(self.readline, ''))
+        with patch('builtins.open', m):
+            cuesheet = self.sut.parse('path')
         self.assertEqual(len(cuesheet.tracks), 0)
 
     def test_should_ignore_trailing_whitespaces(self):
         lines = ['REM GENRE Heavy Metal  ', 'PERFORMER "Iron Maiden"   ', 'TITLE "The Number of the Beast"  \t', 'FILE "album.flac" WAVE      ']
-        cuesheet = self.sut.parse(lines)
+        m = mock_open(read_data='\n'.join(lines))
+        m.return_value.__iter__ = lambda self: self
+        m.return_value.__next__ = lambda self: next(iter(self.readline, ''))
+        with patch('builtins.open', m):
+            cuesheet = self.sut.parse('path')
         self.assertEqual(cuesheet.title, ['The Number of the Beast'])
         self.assertEqual(cuesheet.performer, ['Iron Maiden'])
         self.assertEqual(cuesheet.rem, ['GENRE Heavy Metal'])
@@ -49,7 +65,11 @@ class CueParserTests(TestCase):
         lines = ['  TRACK 01 AUDIO', '    INDEX 01 00:00:00',
                  '  TRACK 02 AUDIO', '    INDEX 01 03:23:00',
                  '  TRACK 03 AUDIO', '    INDEX 01 05:24:00']
-        cuesheet = self.sut.parse(lines)
+        m = mock_open(read_data='\n'.join(lines))
+        m.return_value.__iter__ = lambda self: self
+        m.return_value.__next__ = lambda self: next(iter(self.readline, ''))
+        with patch('builtins.open', m):
+            cuesheet = self.sut.parse('path')
         self.assertEqual(len(cuesheet.tracks), 3)
         track1 = cuesheet.tracks[0]
         track2 = cuesheet.tracks[1]
@@ -62,7 +82,11 @@ class CueParserTests(TestCase):
         lines = ['FILE "file1.ape"', '  TRACK 01 AUDIO', '    INDEX 01 00:00:00',
                  '  TRACK 02 AUDIO', '    INDEX 01 03:23:00',
                  'FILE "file2.ape"', '  TRACK 03 AUDIO', '    INDEX 01 00:00:00']
-        cuesheet = self.sut.parse(lines)
+        m = mock_open(read_data='\n'.join(lines))
+        m.return_value.__iter__ = lambda self: self
+        m.return_value.__next__ = lambda self: next(iter(self.readline, ''))
+        with patch('builtins.open', m):
+            cuesheet = self.sut.parse('path')
         self.assertEqual(len(cuesheet.tracks), 3)
         track1 = cuesheet.tracks[0]
         track2 = cuesheet.tracks[1]
@@ -81,12 +105,15 @@ class CueParserTests(TestCase):
         lines = ['FILE "file1.ape"', '  TRACK 01 AUDIO', '    INDEX 01 00:00:00',
                  '  TRACK 02 AUDIO', '    INDEX 01 03:23:00',
                  'FILE "file2.ape"', '  TRACK 03 AUDIO', '    INDEX 01 00:00:00']
-        with patch('taglib.File') as taglib_mock:
+        m = mock_open(read_data='\n'.join(lines))
+        m.return_value.__iter__ = lambda self: self
+        m.return_value.__next__ = lambda self: next(iter(self.readline, ''))
+        with patch('taglib.File') as taglib_mock, patch('builtins.open', m):
             file1, file2 = Mock(), Mock()
             file1.length = 300
             file2.length = 400
             taglib_mock.side_effect = [file1, file2]
-            cuesheet = self.sut.parse(lines, use_taglib=True, parent_dir='/some_dir')
+            cuesheet = self.sut.parse('/path', use_taglib=True)
         self.assertEqual(len(cuesheet.tracks), 3)
         track1 = cuesheet.tracks[0]
         track2 = cuesheet.tracks[1]
