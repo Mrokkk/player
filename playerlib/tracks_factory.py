@@ -24,7 +24,8 @@ class TracksFactory:
         cuesheet = CueParser().parse(path, use_taglib=True)
         tracks = []
         for t in cuesheet.tracks:
-            new_track = Track(os.path.join(os.path.dirname(path), t.file))
+            new_track = Track()
+            new_track.path = os.path.join(os.path.dirname(path), t.file)
             new_track.artist = ', '.join(cuesheet.title)
             new_track.title = ', '.join(t.title)
             new_track.index = str(t.index)
@@ -35,7 +36,8 @@ class TracksFactory:
 
     def _handle_file(self, path):
         if not self._is_music_file(path): return None
-        track = Track(path)
+        track = Track()
+        track.path = path
         tags = taglib.File(path)
         try:
             track.title = ', '.join(tags.tags['TITLE'])
@@ -73,7 +75,8 @@ class TracksFactory:
         disc = discid.read(device_name)
         tracks = []
         for cdda_track in disc.tracks:
-            track = Track('cdda://')
+            track = Track()
+            track.path = 'cdda://'
             track.title = 'cdda://' # TODO: read tags from FreeDB
             track.index = cdda_track.number
             track.length = cdda_track.seconds

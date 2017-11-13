@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import json
 import os
 import time
 import urwid
@@ -55,6 +56,22 @@ class Playlist(urwid.WidgetWrap):
             self.clear()
         for f in tracks:
             self._add_track(f)
+
+    class TrackEncoder(json.JSONEncoder):
+        def default(self, o):
+            data = o.__dict__.copy()
+            del data['state']
+            del data['playlist_entry']
+            return data
+
+    def save_playlist(self, filename):
+        tracks = [t.track for t in self.content]
+        with open(filename, 'w') as f:
+            json.dump(tracks, f, cls=self.TrackEncoder, indent=1)
+
+    def load_playlist(self, filename):
+        # TODO
+        pass
 
     def clear(self):
         self.content[:] = []

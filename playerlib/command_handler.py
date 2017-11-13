@@ -18,7 +18,7 @@ class CommandHandler:
             'quit',
         ]
         self.playlist_commands = [
-            'add_to_playlist',
+            'add_to_playlist', 'save_playlist', 'load_playlist',
         ]
         self.playback_commands = [
             'pause', 'stop', 'next', 'prev', 'seek'
