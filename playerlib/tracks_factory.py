@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import discid
-import glob
+import fnmatch
 import os
 import re
 import taglib
@@ -60,7 +60,7 @@ class TracksFactory:
         return f
 
     def _handle_dir(self, path):
-        cue_files = glob.glob(os.path.join(path, '*.cue'))
+        cue_files = fnmatch.filter([os.path.join(path, x) for x in os.listdir(path)], '*.cue')
         if len(cue_files) > 0:
             tracks = []
             for cue in cue_files:
