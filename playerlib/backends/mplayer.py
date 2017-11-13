@@ -79,6 +79,7 @@ class MplayerBackend:
             '-vo', 'null',
             '-demuxer', demuxer,
             '-cache', str(cache),
+            '-ss', str(self.current_track.offset),
             self.current_track.path
         ]
         return subprocess.Popen(mplayer_args,
