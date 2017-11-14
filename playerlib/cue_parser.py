@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import logging
 import os
 import re
 
@@ -24,8 +25,15 @@ class CueSheet:
 
 class CueParser:
 
+    def __init__(self):
+        self.logger = logging.getLogger('CueParser')
+
     def _update_last_track_in_file(self, parent_dir, track):
-        import taglib
+        try:
+            import taglib
+        except:
+            self.logger.warning('Cannot import taglib')
+            return
         f = taglib.File(os.path.join(parent_dir, track.file))
         track.length = f.length - track.offset
 
@@ -86,12 +94,11 @@ class CueParser:
 
     def parse(self, path, use_taglib=False):
         parent_dir = os.path.dirname(path)
-        try:
-            with open(path, 'r', encoding='latin1') as f:
-                return self._parse_file(f, use_taglib, parent_dir)
-        except: pass
-        try:
-            with open(path, 'r', encoding='utf-8') as f:
-                return self._parse_file(f, use_taglib, parent_dir)
-        except: pass
+        encodings = ['latin1', 'utf-8']
+        for encoding in encodings:
+            try:
+                with open(path, 'r', encoding=encoding) as f:
+                    return self._parse_file(f, use_taglib, parent_dir)
+            except:
+                self.logger.warning('Cannot open {} using encoding: {}'.format(path, encoding))
 
