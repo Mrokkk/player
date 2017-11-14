@@ -23,7 +23,7 @@ class MplayerBackend:
 
     def _update_time_pos(self, line):
         if self.stop_updating_time: return
-        match = re.match('A:[ \t]{0,}([0-9]+).*', line)
+        match = re.match('^A:[ \t]{0,}([0-9]+).*$', line)
         if not match: return
         self.set_time_callback(int(match.group(1)))
 
@@ -32,11 +32,13 @@ class MplayerBackend:
             try:
                 reader = csv.reader(self.mplayer.stdout, delimiter='\r')
                 for row in reader:
+                    if len(row) == 0: continue
                     try: self._update_time_pos(row[0])
                     except Exception as e:
                         exc_type, exc_obj, exc_tb = sys.exc_info()
                         self.logger.warning('{}: {}'.format(e.__class__.__name__, str(e)))
-            except: pass
+            except Exception as e:
+                self.logger.warning('{}: {}'.format(e.__class__.__name__, str(e)))
             line = self.mplayer.stdout.readline()
             if not line:
                 self.logger.info('MPlayer exitted')
@@ -56,9 +58,7 @@ class MplayerBackend:
         self.mplayer.stdin.write(command)
         self.mplayer.stdin.flush()
 
-    def _run_mplayer(self):
-        self.output_queue = queue.Queue()
-        self.input_queue = queue.Queue()
+    def _build_mplayer_args(self):
         cache = 8192
         if self.current_track.path == 'cdda://':
             demuxer = 'rawaudio'
@@ -70,7 +70,7 @@ class MplayerBackend:
             demuxer = 'audio'
         else:
             demuxer = 'none'
-        mplayer_args = [
+        return [
             self.mplayer_path,
             '-ao', 'pulse',
             '-noquiet',
@@ -82,15 +82,14 @@ class MplayerBackend:
             '-ss', str(self.current_track.offset),
             self.current_track.path
         ]
-        return subprocess.Popen(mplayer_args,
+
+    def _start_backend(self):
+        self.mplayer = subprocess.Popen(self._build_mplayer_args(),
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
             encoding='utf-8',
             preexec_fn=lambda: os.setpgrp())
-
-    def _start_backend(self):
-        self.mplayer = self._run_mplayer()
         self.thread = threading.Thread(target=self._reader, daemon=True)
         self.thread.start()
 
