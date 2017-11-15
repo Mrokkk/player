@@ -50,7 +50,7 @@ class CommandPanel(urwid.Edit):
             self.history[self.mode].insert(0, self.get_edit_text().strip())
             self.command_handler.execute(self.caption + self.get_edit_text().strip())
             self.clear()
-        except (RuntimeError, AttributeError, IndexError, TypeError, KeyError) as exc:
+        except (RuntimeError, AttributeError, IndexError, TypeError, KeyError, SyntaxError) as exc:
             self.error(str(exc))
 
     def _handle_up_arrow(self):

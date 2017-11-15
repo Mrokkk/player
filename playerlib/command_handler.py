@@ -7,6 +7,42 @@ class CommandHandler:
         SEARCH_FORWARD = 2
         SEARCH_BACKWARD = 3
 
+
+    class Commands:
+        def __init__(self, context):
+            self._context = context
+
+        def quit(self):
+            self._context.quit()
+
+        def add_to_playlist(self, path):
+            self._context.playlist.add_to_playlist(path)
+
+        def save_playlist(self, playlist_file):
+            self._context.playlist.save_playlist(playlist_file)
+
+        def load_playlist(self, playlist_file):
+            self._context.playlist.load_playlist(playlist_file)
+
+        def pause(self):
+            self._context.playback_controller.pause()
+
+        def stop(self):
+            self._context.playback_controller.stop()
+
+        def next(self):
+            self._context.playback_controller.next()
+
+        def prev(self):
+            self._context.playback_controller.prev()
+
+        def seek(self, value):
+            self._context.playback_controller.seek(value)
+
+        def switch_panes(self):
+            self._context.view.switch_panes()
+
+
     def __init__(self, context):
         self.context = context
         self.mode_map = {
@@ -14,23 +50,12 @@ class CommandHandler:
             self.Mode.SEARCH_FORWARD: self._search_forward_mode,
             self.Mode.SEARCH_BACKWARD: self._search_backward_mode
         }
-        self.player_commands = [
-            'quit',
-        ]
-        self.playlist_commands = [
-            'add_to_playlist', 'save_playlist', 'load_playlist',
-        ]
-        self.playback_commands = [
-            'pause', 'stop', 'next', 'prev', 'seek'
-        ]
-        self.view_commands = [
-            'switch_panes',
-        ]
         self.command_mapping = {
             'q': 'quit',
             'qa': 'quit',
             'e': 'add_to_playlist',
         }
+        self.commands = self.Commands(context)
 
     def _command_mode(self, command):
         splitted = command.split()
@@ -38,19 +63,10 @@ class CommandHandler:
         args = splitted[1:]
         if command in self.command_mapping:
             command = self.command_mapping[command]
-        module = None
-        if command in self.player_commands:
-            module = 'self.context'
-        elif command in self.playback_commands:
-            module = 'self.context.playback_controller'
-        elif command in self.playlist_commands:
-            module = 'self.context.playlist'
-        elif command in self.view_commands:
-            module = 'self.context.view'
-        if module == None:
+        if not hasattr(self.commands, command):
             raise RuntimeError('no such command: ' + command)
-        eval('{}.{}({})'.format(module, command,
-            '' if not len(args) else '\'{}\''.format(args[0]))) # FIXME
+        eval('self.commands.{}({})'.format(command,
+            '' if not len(args) else '\'{}\''.format(args[0])))
 
     def _search_forward_mode(self, command):
         self.context.view.focus.search_forward(command)

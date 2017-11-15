@@ -46,10 +46,10 @@ class TestCommandHandler(TestCase):
         self.context_mock.view.switch_panes.assert_called_once()
 
 
-    def test_bad_command_raises_runtime_error(self):
+    def test_bad_command_raises_error(self):
         bad_commands = [':plya', ':run', ':start', ':spot', '::']
         for cmd in bad_commands:
-            self.assertRaises(RuntimeError, self.sut.execute, cmd)
+            self.assertRaises(Exception, self.sut.execute, cmd)
 
 
     def test_can_seek_forward(self):
