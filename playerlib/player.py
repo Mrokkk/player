@@ -5,7 +5,6 @@ import threading
 
 from playerlib.command_handler import *
 from playerlib.command_panel import *
-from playerlib.config import *
 from playerlib.file_browser.file_browser import *
 from playerlib.playback_controller import *
 from playerlib.player_context import *
@@ -30,13 +29,13 @@ def quit_callback():
 
 class Player:
 
-    def __init__(self, event_loop, screen):
+    def __init__(self, event_loop, screen, config):
         context = PlayerContext()
         self.context = context
 
         context.quit = quit_callback
         context.draw_lock = threading.RLock()
-        context.config = Config()
+        context.config = config
         context.playback_controller = PlaybackController(context)
         context.command_handler = CommandHandler(context)
         context.command_panel = CommandPanel(context.command_handler)
@@ -49,8 +48,7 @@ class Player:
             context.draw_lock,
             context.view,
             palette=context.config.color_palette,
-            unhandled_input=UserInput(context.view, context.command_handler, context.command_panel, error_handler)
-                .handle_input,
+            unhandled_input=UserInput(context.view, context.command_handler, context.command_panel).handle_input,
             event_loop=event_loop,
             screen=screen)
 

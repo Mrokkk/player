@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 
-import urwid
-
 class UserInput:
 
-    def __init__(self, view, command_handler, command_panel, error_handler):
-        self.command_handler = command_handler
-        self.error_handler = error_handler
-        self.command_panel = command_panel
+    def __init__(self, view, command_handler, command_panel):
         self.view = view
+        self.command_handler = command_handler
+        self.command_panel = command_panel
+        self.error_handler = command_panel.error
         self.key_to_command_mapping = {
             'h': ':seek -10',
             'l': ':seek +10',

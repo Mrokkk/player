@@ -12,8 +12,8 @@ class TestUserInput(TestCase):
         self.command_panel_mock = Mock()
         self.error_handler_mock = Mock()
         self.command_panel_mock.activation_keys = [':', '/', '?']
-        self.sut = UserInput(self.view_mock, self.command_handler_mock,
-                self.command_panel_mock, self.error_handler_mock)
+        self.command_panel_mock.error = self.error_handler_mock
+        self.sut = UserInput(self.view_mock, self.command_handler_mock, self.command_panel_mock)
         self.sut.key_to_command_mapping = {}
 
     def test_can_handle_not_mapped_key(self):

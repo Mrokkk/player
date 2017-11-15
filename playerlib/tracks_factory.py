@@ -61,14 +61,14 @@ class TracksFactory:
 
     def _handle_dir(self, path):
         cue_files = fnmatch.filter([os.path.join(path, x) for x in os.listdir(path)], '*.cue')
-        if len(cue_files) > 0:
-            tracks = []
-            for cue in cue_files:
-                tracks.extend(self._handle_cue_sheet(cue))
-            return tracks
-        return [self._handle_file(os.path.join(path, f))
-            for f in sorted(os.listdir(path), key=self._predicate)
-                if os.path.isfile(os.path.join(path, f)) and self._is_music_file(f)]
+        if len(cue_files) == 0:
+            return [self._handle_file(os.path.join(path, f))
+                for f in sorted(os.listdir(path), key=self._predicate)
+                    if os.path.isfile(os.path.join(path, f)) and self._is_music_file(f)]
+        tracks = []
+        for cue in cue_files:
+            tracks.extend(self._handle_cue_sheet(cue))
+        return tracks
 
     def _handle_cdda(self):
         device_name = discid.get_default_device()
@@ -77,7 +77,7 @@ class TracksFactory:
         for cdda_track in disc.tracks:
             track = Track()
             track.path = 'cdda://'
-            track.title = 'cdda://' # TODO: read tags from FreeDB
+            track.title = 'CD Audio track' # TODO: read tags from FreeDB
             track.index = cdda_track.number
             track.length = cdda_track.seconds
             try:
