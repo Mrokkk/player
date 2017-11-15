@@ -22,7 +22,7 @@ class Track:
         self.state = self.State.PLAYING
         self.playlist_entry.set_playing()
 
-    def pause(self):
+    def _pause(self):
         self.state = self.State.PAUSED
         self.playlist_entry.set_paused()
 
@@ -30,7 +30,7 @@ class Track:
         if self.state == self.State.PAUSED:
             self.play()
         elif self.state == self.State.PLAYING:
-            self.pause()
+            self._pause()
 
     def stop(self):
         self.state = self.State.STOPPED

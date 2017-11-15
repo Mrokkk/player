@@ -8,6 +8,7 @@ import re
 import subprocess
 import sys
 import threading
+import traceback
 
 class MplayerBackend:
 
@@ -29,28 +30,25 @@ class MplayerBackend:
 
     def _reader(self):
         while True:
-            try:
-                reader = csv.reader(self.mplayer.stdout, delimiter='\r')
-                for row in reader:
-                    if len(row) == 0: continue
-                    try: self._update_time_pos(row[0])
-                    except Exception as e:
-                        exc_type, exc_obj, exc_tb = sys.exc_info()
-                        self.logger.warning('{}: {}'.format(e.__class__.__name__, str(e)))
-            except Exception as e:
-                self.logger.warning('{}: {}'.format(e.__class__.__name__, str(e)))
+            reader = csv.reader(self.mplayer.stdout, delimiter='\r')
+            for row in reader:
+                if len(row) == 0: continue
+                try: self._update_time_pos(row[0])
+                except Exception as e:
+                    tb = traceback.format_exc().split('\n')
+                    for trace in tb:
+                        self.logger.warning(trace)
             line = self.mplayer.stdout.readline()
-            if not line:
-                self.logger.info('MPlayer exitted')
-                self.mplayer = None
-                self.current_track = None
-                if not self.should_stop:
-                    try:
-                        self.logger.info('Starting next track')
-                        self.adv_callback()
-                    except: pass
-                self.should_stop = False
-                return
+            if line: continue
+            self.logger.info('MPlayer exitted')
+            self.mplayer = None
+            self.current_track = None
+            if not self.should_stop:
+                try:
+                    self.logger.info('Starting next track')
+                    self.adv_callback()
+                except: pass
+            self.should_stop = False
 
     def _send_command(self, command):
         if not self.mplayer: return
@@ -84,7 +82,9 @@ class MplayerBackend:
         ]
 
     def _start_backend(self):
-        self.mplayer = subprocess.Popen(self._build_mplayer_args(),
+        mplayer_args = self._build_mplayer_args()
+        self.logger.info('Starting mplayer with args: {}'.format(mplayer_args))
+        self.mplayer = subprocess.Popen(mplayer_args,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
@@ -120,6 +120,7 @@ class MplayerBackend:
 
     def stop(self):
         if not self.current_track: return
+        self.stop_updating_time = True
         self.current_track = None
         self.should_stop = True
         self._send_command('stop\n')
