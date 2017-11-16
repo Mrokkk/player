@@ -6,6 +6,7 @@ import time
 import urwid
 
 from playerlib.helpers.scrollable import *
+from playerlib.track import *
 from playerlib.tracks_factory import *
 from .entry import *
 
@@ -68,10 +69,17 @@ class Playlist(urwid.WidgetWrap):
         tracks = [t.track for t in self.content]
         with open(filename, 'w') as f:
             json.dump(tracks, f, cls=self.TrackEncoder, indent=1)
+        self.header.set_w(urwid.Text(filename))
 
     def load_playlist(self, filename):
-        # TODO
-        pass
+        with open(filename, 'r') as f:
+            raw_tracks = json.load(f)
+        for t in raw_tracks:
+            track = Track()
+            for k, v in t.items():
+                setattr(track, k, v)
+            self._add_track(track)
+        self.header.set_w(urwid.Text(filename))
 
     def clear(self):
         self.content[:] = []
