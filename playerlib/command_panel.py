@@ -1,12 +1,7 @@
 #!/usr/bin/env python3
 
 import urwid
-
-def clamp(value, min_val=-9999, max_val=9999):
-    if value > max_val: return max_val
-    if value < min_val: return min_val
-    return value
-
+from playerlib.helpers.helpers import clamp
 
 class CommandPanel(urwid.Edit):
 
@@ -50,7 +45,7 @@ class CommandPanel(urwid.Edit):
             self.history[self.mode].insert(0, self.get_edit_text().strip())
             self.command_handler.execute(self.caption + self.get_edit_text().strip())
             self.clear()
-        except (RuntimeError, AttributeError, IndexError, TypeError, KeyError, SyntaxError) as exc:
+        except (RuntimeError, AttributeError, IndexError, TypeError, KeyError, SyntaxError, AssertionError) as exc:
             self.error(str(exc))
 
     def _handle_up_arrow(self):

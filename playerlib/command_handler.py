@@ -42,6 +42,12 @@ class CommandHandler:
         def switch_panes(self):
             self._context.view.switch_panes()
 
+        def set(self, key, value):
+            if key == 'volume':
+                self._context.playback_controller.set_volume(value)
+            else:
+                raise RuntimeError('No such key: {}'.format(key))
+
 
     def __init__(self, context):
         self.context = context
@@ -57,6 +63,10 @@ class CommandHandler:
         }
         self.commands = self.Commands(context)
 
+    def _format_arguments(self, args):
+        if len(args) == 0: return ''
+        return ','.join('\'{}\''.format(arg.strip()) for arg in args)
+
     def _command_mode(self, command):
         splitted = command.split()
         command = splitted[0]
@@ -65,8 +75,7 @@ class CommandHandler:
             command = self.command_mapping[command]
         if not hasattr(self.commands, command):
             raise RuntimeError('no such command: ' + command)
-        eval('self.commands.{}({})'.format(command,
-            '' if not len(args) else '\'{}\''.format(args[0])))
+        eval('self.commands.{}({})'.format(command, self._format_arguments(args)))
 
     def _search_forward_mode(self, command):
         self.context.view.focus.search_forward(command)

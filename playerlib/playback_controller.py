@@ -5,6 +5,7 @@ import re
 from time import gmtime, strftime
 
 from playerlib.backends.backend_factory import *
+from playerlib.helpers.helpers import clamp
 
 class PlaybackController:
 
@@ -12,6 +13,7 @@ class PlaybackController:
         self.context = context
         self.backend = BackendFactory(context.config, self.next, self.update_current_state).create()
         self.current_track = None
+        self.volume = 100
         self.logger = logging.getLogger('PlaybackController')
 
     def update_current_state(self, pos):
@@ -19,14 +21,13 @@ class PlaybackController:
         if pos - self.current_track.offset >= self.current_track.length and \
                 self.current_track.path == self.current_track.playlist_entry.next.track.path:
             self.set_next_track_playing()
-        if self.context.view.focus_position != 'footer':
-            if pos - self.current_track.offset < 0: return
-            time_format = '%H:%M:%S' if self.current_track.length >= 3600 else '%M:%S'
-            with self.context.draw_lock:
-                self.context.command_panel.set_caption('{} : {} / {}'.format(
-                    self.current_track.title,
-                    strftime(time_format, gmtime(pos - self.current_track.offset)),
-                    strftime(time_format, gmtime(self.current_track.length))))
+        if self.context.view.focus_position == 'footer' or pos - self.current_track.offset < 0: return
+        time_format = '%H:%M:%S' if self.current_track.length >= 3600 else '%M:%S'
+        with self.context.draw_lock:
+            self.context.command_panel.set_caption('{} : {} / {}'.format(
+                self.current_track.title,
+                strftime(time_format, gmtime(pos - self.current_track.offset)),
+                strftime(time_format, gmtime(self.current_track.length))))
 
     def play_track(self, track):
         if not track:
@@ -86,6 +87,18 @@ class PlaybackController:
         if '%' in value: self._seek_percentage(value)
         elif '+' in value or '-' in value: self._seek_offset(value)
         else: self._seek_absolute(value)
+
+    def set_volume(self, value):
+        old_volume = self.volume
+        if '+' in value:
+            self.volume += int(value[1:])
+        elif '-' in value:
+            self.volume -= int(value[1:])
+        else:
+            self.volume = int(value)
+        self.volume = clamp(self.volume, min_val=0, max_val=100)
+        if self.volume != old_volume:
+            self.backend.set_volume(self.volume)
 
     def quit(self):
         self.backend.quit()

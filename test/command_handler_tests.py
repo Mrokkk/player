@@ -40,6 +40,9 @@ class TestCommandHandler(TestCase):
         self.sut.execute(':seek 50%')
         self.context_mock.playback_controller.seek.assert_called_once_with('50%')
 
+        self.sut.execute(':set volume 20')
+        self.context_mock.playback_controller.set_volume.assert_called_once_with('20')
+
 
     def test_can_execute_view_commands(self):
         self.sut.execute(':switch_panes')

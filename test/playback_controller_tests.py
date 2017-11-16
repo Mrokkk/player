@@ -221,3 +221,25 @@ class TestPlaybackController(TestCase):
         self.sut.update_current_state(3)
         self.command_panel_mock.set_caption.assert_not_called()
 
+
+    def test_can_set_volume(self):
+        self.sut.set_volume('42')
+        self.backend.set_volume.assert_called_once_with(42)
+        self.backend.set_volume.reset_mock()
+        self.sut.set_volume('+42')
+        self.backend.set_volume.assert_called_once_with(84)
+        self.backend.set_volume.reset_mock()
+        self.sut.set_volume('-20')
+        self.backend.set_volume.assert_called_once_with(64)
+        self.backend.set_volume.reset_mock()
+        self.sut.set_volume('100')
+        self.backend.set_volume.assert_called_once_with(100)
+
+
+    def test_volume_level_clamps_to_range_0_100(self):
+        self.sut.set_volume('-102')
+        self.backend.set_volume.assert_called_once_with(0)
+        self.backend.set_volume.reset_mock()
+        self.sut.set_volume('1534')
+        self.backend.set_volume.assert_called_once_with(100)
+
