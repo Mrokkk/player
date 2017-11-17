@@ -72,12 +72,6 @@ class PlaybackController:
         if not match: raise RuntimeError('Bad value!')
         self.backend.seek_percentage(int(match.group(1)))
 
-    def _seek_offset(self, value):
-        if value.startswith('-'):
-            self.backend.seek_backward(int(value[1:]))
-        elif value.startswith('+'):
-            self.backend.seek_forward(int(value[1:]))
-
     def _seek_absolute(self, value):
         self.backend.seek(int(value))
 
@@ -85,7 +79,10 @@ class PlaybackController:
         if not self.current_track:
             raise RuntimeError('No track playing!')
         if '%' in value: self._seek_percentage(value)
-        elif '+' in value or '-' in value: self._seek_offset(value)
+        elif value.startswith('-'):
+            self.backend.seek_backward(int(value[1:]))
+        elif value.startswith('+'):
+            self.backend.seek_forward(int(value[1:]))
         else: self._seek_absolute(value)
 
     def set_volume(self, value):

@@ -6,7 +6,7 @@ from unittest import TestCase
 from unittest.mock import Mock, MagicMock
 from playerlib.playback_controller import *
 
-class TestPlaybackController(TestCase):
+class PlaybackControllerTests(TestCase):
 
     def setUp(self):
         self.command_panel_mock = Mock()
@@ -242,4 +242,12 @@ class TestPlaybackController(TestCase):
         self.backend.set_volume.reset_mock()
         self.sut.set_volume('1534')
         self.backend.set_volume.assert_called_once_with(100)
+
+
+    def test_setting_same_volume_is_ignored(self):
+        self.sut.set_volume('20')
+        self.backend.set_volume.assert_called_once_with(20)
+        self.backend.set_volume.reset_mock()
+        self.sut.set_volume('20')
+        self.backend.set_volume.assert_not_called()
 
