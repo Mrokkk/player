@@ -83,6 +83,12 @@ class CommandHandler:
     def _search_backward_mode(self, command):
         self.context.view.focus.search_backward(command)
 
+    def list_commands(self):
+        import inspect
+        commands = [x[0] for x in inspect.getmembers(self.commands, predicate=inspect.ismethod)]
+        commands.extend(self.command_mapping.keys())
+        return commands
+
     def execute(self, command):
         if not command: return
         if command.startswith(':'):
