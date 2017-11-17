@@ -22,7 +22,7 @@ class Playlist(urwid.WidgetWrap):
         self.header = urwid.AttrWrap(urwid.Text('Unnamed playlist'), 'head')
         self.footer = urwid.AttrWrap(urwid.Text('Playlist'), 'foot')
         self.tracks_factory = TracksFactory()
-        self.logger = logging.getLogger('PLaylist')
+        self.logger = logging.getLogger('Playlist')
         super().__init__(urwid.Frame(
             self.listbox,
             header=self.header,
@@ -44,8 +44,7 @@ class Playlist(urwid.WidgetWrap):
                 track.title,
                 time.strftime('%H:%M:%S', time.gmtime(int(track.length))))
         else:
-            track.title = os.path.basename(track.path) # FIXME: shouldn't be here
-            return '{} {}'.format(track.title, time.strftime('%H:%M:%S', time.gmtime(int(track.length))))
+            return '{} {}'.format(os.path.basename(track.path), time.strftime('%H:%M:%S', time.gmtime(int(track.length))))
 
     def _add_track(self, track):
         last = self.content[-1] if len(self.content) > 0 else None
