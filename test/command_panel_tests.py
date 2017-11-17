@@ -18,6 +18,7 @@ class TestCommandPanel(TestCase):
 
     def setUp(self):
         self.command_handler_mock = Mock()
+        self.command_handler_mock.list_commands.return_value = []
         self.sut = CommandPanel(self.command_handler_mock)
         self.sut.set_edit_text = Mock()
         self.sut.set_caption = Mock()
