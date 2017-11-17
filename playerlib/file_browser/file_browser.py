@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import logging
 import os
 import urwid
 
@@ -19,6 +20,7 @@ class FileBrowser(urwid.WidgetWrap):
         self.listbox = urwid.ListBox(self.content)
         self.header = urwid.AttrWrap(urwid.Text(self.dir_name), 'head')
         self.last_position = 0
+        self.logger = logging.getLogger('FileBrowser')
         super().__init__(urwid.Frame(
             self.listbox,
             header=self.header,
@@ -99,7 +101,7 @@ class FileBrowser(urwid.WidgetWrap):
 
     def _replace_playlist(self):
         try:
-            self.callback(self.content.get_focus()[0].path(), True)
+            self.callback(self.content.get_focus()[0].path(), clear=True)
         except Exception as e:
             self.error_handler(str(e))
 

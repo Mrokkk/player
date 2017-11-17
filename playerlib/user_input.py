@@ -14,8 +14,8 @@ class UserInput:
             'L': ':seek +60',
             ' ': ':pause',
             'ctrl w': ':switch_panes',
-            'r': ':set volume -10',
-            't': ':set volume +10',
+            '[': ':set volume -10',
+            ']': ':set volume +10',
         }
 
     def handle_input(self, key):

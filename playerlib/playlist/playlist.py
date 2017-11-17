@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+import logging
 import os
 import time
 import urwid
@@ -21,6 +22,7 @@ class Playlist(urwid.WidgetWrap):
         self.header = urwid.AttrWrap(urwid.Text('Unnamed playlist'), 'head')
         self.footer = urwid.AttrWrap(urwid.Text('Playlist'), 'foot')
         self.tracks_factory = TracksFactory()
+        self.logger = logging.getLogger('PLaylist')
         super().__init__(urwid.Frame(
             self.listbox,
             header=self.header,
@@ -58,26 +60,17 @@ class Playlist(urwid.WidgetWrap):
         for f in tracks:
             self._add_track(f)
 
-    class TrackEncoder(json.JSONEncoder):
-        def default(self, o):
-            data = o.__dict__.copy()
-            del data['state']
-            del data['playlist_entry']
-            return data
-
     def save_playlist(self, filename):
-        tracks = [t.track for t in self.content]
+        tracks = [t.track.to_dict() for t in self.content]
         with open(filename, 'w') as f:
-            json.dump(tracks, f, cls=self.TrackEncoder, indent=1)
+            json.dump(tracks, f, indent=1)
         self.header.set_w(urwid.Text(filename))
 
     def load_playlist(self, filename):
         with open(filename, 'r') as f:
             raw_tracks = json.load(f)
         for t in raw_tracks:
-            track = Track()
-            for k, v in t.items():
-                setattr(track, k, v)
+            track = Track().from_dict(t)
             self._add_track(track)
         self.header.set_w(urwid.Text(filename))
 

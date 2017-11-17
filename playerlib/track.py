@@ -18,6 +18,17 @@ class Track:
         self.state = self.State.STOPPED
         self.playlist_entry = None
 
+    def to_dict(self):
+        d = self.__dict__.copy()
+        del d['state']
+        del d['playlist_entry']
+        return d
+
+    def from_dict(self, d):
+        for k, v in d.items():
+            setattr(self, k, v)
+        return self
+
     def play(self):
         self.state = self.State.PLAYING
         self.playlist_entry.set_playing()
