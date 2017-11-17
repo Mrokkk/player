@@ -47,8 +47,10 @@ class FileBrowser(urwid.WidgetWrap):
         parent_path = parent.path()
         if not os.path.isdir(parent_path): return
         index = self.listbox.focus_position + 1
-        self.content[index:index] = self._read_dir(parent_path, parent.level + 1)
-        parent.open = True
+        dir_entries = self._read_dir(parent_path, parent.level + 1)
+        if len(dir_entries):
+            self.content[index:index] = dir_entries
+            parent.open = True
 
     def _hide_dir(self, parent):
         index = self.listbox.focus_position + 1
