@@ -53,10 +53,8 @@ class TracksFactory:
 
     def _predicate(self, f):
         if f[0].isdigit():
-            try:
-                a = re.search('[0-9]+', f).group(0)
-                return a.zfill(9)
-            except: pass
+            a = re.search('[0-9]+', f).group(0)
+            return a.zfill(9)
         return f
 
     def _handle_dir(self, path):
