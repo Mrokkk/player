@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import logging
+import sys
 import unittest
 from test.backend_factory_tests import *
 from test.command_handler_tests import *
@@ -15,5 +17,6 @@ from test.tracks_factory_tests import *
 from test.user_input_tests import *
 
 if __name__ == '__main__':
+    logging.basicConfig(stream=sys.stderr)
     unittest.main()
 

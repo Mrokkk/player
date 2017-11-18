@@ -7,7 +7,7 @@ from unittest.mock import Mock, MagicMock, patch
 
 from playerlib.command_handler import *
 
-class TestCommandHandler(TestCase):
+class CommandHandlerTests(TestCase):
 
     def setUp(self):
         self.context_mock = Mock()

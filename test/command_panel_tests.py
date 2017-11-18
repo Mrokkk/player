@@ -7,14 +7,7 @@ from unittest.mock import Mock, MagicMock, patch
 
 from playerlib.command_panel import *
 
-class TestClamp(TestCase):
-    def test_can_clamp_values(self):
-        self.assertEqual(20, clamp(0, min_val=20))
-        self.assertEqual(20, clamp(340, max_val=20))
-        self.assertEqual(20, clamp(340, min_val=20, max_val=20))
-
-
-class TestCommandPanel(TestCase):
+class CommandPanelTests(TestCase):
 
     def setUp(self):
         self.command_handler_mock = Mock()

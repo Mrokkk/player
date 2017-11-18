@@ -4,7 +4,7 @@ from unittest import TestCase
 from unittest.mock import Mock, MagicMock, patch
 from playerlib.user_input import *
 
-class TestUserInput(TestCase):
+class UserInputTests(TestCase):
 
     def setUp(self):
         self.view_mock = Mock()

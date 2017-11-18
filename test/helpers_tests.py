@@ -3,6 +3,7 @@
 from unittest import TestCase
 from unittest.mock import Mock, MagicMock, patch
 from playerlib.helpers.scrollable import *
+from playerlib.helpers.helpers import *
 
 class ScrollableTests(TestCase):
 
@@ -34,4 +35,11 @@ class ScrollableTests(TestCase):
         self.listbox.focus_position = 10
         try_to_scroll(self.listbox, 'a')
         self.listbox.focus_position = 10
+
+
+class ClampTests(TestCase):
+    def test_can_clamp_values(self):
+        self.assertEqual(20, clamp(0, min_val=20))
+        self.assertEqual(20, clamp(340, max_val=20))
+        self.assertEqual(20, clamp(340, min_val=20, max_val=20))
 
