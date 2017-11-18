@@ -23,6 +23,12 @@ class TestCommandHandler(TestCase):
         self.sut.execute(':add_to_playlist some_file')
         self.context_mock.playlist.add_to_playlist.assert_called_once_with('some_file')
 
+        self.sut.execute(':save_playlist some_file')
+        self.context_mock.playlist.save_playlist.assert_called_once_with('some_file')
+
+        self.sut.execute(':load_playlist some_file')
+        self.context_mock.playlist.load_playlist.assert_called_once_with('some_file')
+
 
     def test_can_execute_playback_controller_commands(self):
         self.sut.execute(':pause')
@@ -72,4 +78,17 @@ class TestCommandHandler(TestCase):
 
     def test_ignores_empty_command(self):
         self.sut.execute('')
+
+
+    def test_cannot_set_bad_key(self):
+        self.assertRaises(RuntimeError, self.sut.execute, ':set aaakkkk value')
+        self.assertRaises(RuntimeError, self.sut.execute, ':set key value')
+        self.assertRaises(RuntimeError, self.sut.execute, ':set vcbx value')
+
+
+    def test_can_properly_list_commands(self):
+        commands = self.sut.list_commands()
+        bad_commands = [x for x in commands if x.startswith('_')]
+        self.assertEqual(len(bad_commands), 0)
+        self.assertGreater(len(commands), 0)
 

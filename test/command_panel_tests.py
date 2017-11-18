@@ -110,3 +110,23 @@ class TestCommandPanel(TestCase):
         self.sut.unhandled_input('down')
         self.sut.set_edit_text.assert_called_once_with('command2')
 
+    def test_tab_keypress_calls_completer_for_command_mode(self):
+        self.sut.completer = Mock()
+        self.sut.activate(':')
+        self.sut.unhandled_input('tab')
+        self.sut.completer.complete.assert_called_once()
+
+    def test_tab_keypress_does_not_call_completer_on_other_modes(self):
+        self.sut.completer = Mock()
+        self.sut.activate('/')
+        self.sut.unhandled_input('tab')
+        self.sut.completer.complete.assert_not_called()
+        self.sut.activate('?')
+        self.sut.unhandled_input('tab')
+        self.sut.completer.complete.assert_not_called()
+
+    def test_handle_input_ignores_other_keys(self):
+        self.sut.activate(':')
+        self.assertEqual(self.sut.unhandled_input('a'), True)
+        self.assertEqual(self.sut.unhandled_input('b'), True)
+

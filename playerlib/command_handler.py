@@ -85,7 +85,7 @@ class CommandHandler:
 
     def list_commands(self):
         import inspect
-        commands = [x[0] for x in inspect.getmembers(self.commands, predicate=inspect.ismethod)]
+        commands = [x[0] for x in inspect.getmembers(self.commands, predicate=inspect.ismethod) if not x[0].startswith('_')]
         commands.extend(self.command_mapping.keys())
         return commands
 
