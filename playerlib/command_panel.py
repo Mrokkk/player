@@ -30,14 +30,9 @@ class Completer:
         if context.last_text != edit_text and not edit_text in context.commands:
             self.logger.debug('Context invalidated')
             return self._handle_no_context(edit_text)
-        try:
-            context.index += 1
-            self.edit_widget.set_edit_text(context.commands[context.index])
-            self.edit_widget.set_edit_pos(len(context.commands[context.index]))
-        except:
-            context.index = 0
-            self.edit_widget.set_edit_text(context.commands[context.index])
-            self.edit_widget.set_edit_pos(len(context.commands[context.index]))
+        context.index = 0 if (context.index == len(context.commands) - 1) else context.index + 1
+        self.edit_widget.set_edit_text(context.commands[context.index])
+        self.edit_widget.set_edit_pos(len(context.commands[context.index]))
         return context
 
     def complete(self, context):
