@@ -92,3 +92,7 @@ class CommandHandlerTests(TestCase):
         self.assertEqual(len(bad_commands), 0)
         self.assertGreater(len(commands), 0)
 
+    def test_raises_exception_on_bad_command(self):
+        self.assertRaises(Exception, self.sut.execute, 'set key value')
+        self.assertRaises(Exception, self.sut.execute, '\\fdsfkj')
+

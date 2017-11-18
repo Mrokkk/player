@@ -97,5 +97,6 @@ class CommandHandler:
             mode = self.Mode.SEARCH_FORWARD
         elif command.startswith('?'):
             mode = self.Mode.SEARCH_BACKWARD
+        else: raise RuntimeError('Bad mode!')
         self.mode_map[mode](command[1:])
 
