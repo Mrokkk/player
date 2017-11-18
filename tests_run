@@ -14,6 +14,6 @@ from test.track_tests import *
 from test.tracks_factory_tests import *
 from test.user_input_tests import *
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()
 

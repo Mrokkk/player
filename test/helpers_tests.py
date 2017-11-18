@@ -23,3 +23,15 @@ class ScrollableTests(TestCase):
         try_to_scroll(self.listbox, ('mouse press', 4.0))
         self.assertEqual(self.listbox.focus_position, 8)
 
+    def test_ignores_exceptions(self):
+        self.listbox.focus_position.side_effect = KeyError
+        try_to_scroll(self.listbox, ('mouse press', 4.0))
+
+    def test_ignores_other_keypresses(self):
+        self.listbox.focus_position = 10
+        try_to_scroll(self.listbox, ('mouse press', 6.0))
+        self.assertEqual(self.listbox.focus_position, 10)
+        self.listbox.focus_position = 10
+        try_to_scroll(self.listbox, 'a')
+        self.listbox.focus_position = 10
+
