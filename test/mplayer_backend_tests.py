@@ -137,3 +137,63 @@ class MplayerBackendTests(TestCase):
         self.sut.quit()
         mplayer_mock.stdin.write.assert_called_once_with('quit\n')
 
+    def test_can_seek(self):
+        mplayer_mock = Mock()
+        mplayer_mock.stdout = []
+        self.sut.current_track = Mock()
+        self.sut.mplayer = mplayer_mock
+        self.sut.seek(20)
+        mplayer_mock.stdin.write.assert_called_once_with('seek 20 2 1\n')
+
+    def test_can_seek_percentage(self):
+        mplayer_mock = Mock()
+        mplayer_mock.stdout = []
+        self.sut.current_track = Mock()
+        self.sut.mplayer = mplayer_mock
+        self.sut.seek_percentage(20)
+        mplayer_mock.stdin.write.assert_called_once_with('seek 20 1\n')
+
+    def test_can_seek_forward(self):
+        mplayer_mock = Mock()
+        mplayer_mock.stdout = []
+        self.sut.current_track = Mock()
+        self.sut.mplayer = mplayer_mock
+        self.sut.seek_forward(20)
+        mplayer_mock.stdin.write.assert_called_once_with('seek +20 0\n')
+
+    def test_can_seek_backward(self):
+        mplayer_mock = Mock()
+        mplayer_mock.stdout = []
+        self.sut.current_track = Mock()
+        self.sut.mplayer = mplayer_mock
+        self.sut.seek_backward(20)
+        mplayer_mock.stdin.write.assert_called_once_with('seek -20 0\n')
+
+    def test_seek_should_be_ignored_if_no_track_playing(self):
+        mplayer_mock = Mock()
+        mplayer_mock.stdout = []
+        self.sut.current_track = None
+        self.sut.mplayer = mplayer_mock
+        self.sut.seek(20)
+        self.sut.seek_percentage(20)
+        self.sut.seek_forward(20)
+        self.sut.seek_backward(20)
+        mplayer_mock.stdin.write.assert_not_called()
+
+    def test_can_set_volume(self):
+        mplayer_mock = Mock()
+        mplayer_mock.stdout = []
+        self.sut.current_track = Mock()
+        self.sut.mplayer = mplayer_mock
+        self.sut.set_volume(20)
+        mplayer_mock.stdin.write.assert_called_once_with('volume 20 1\n')
+
+    def test_should_not_send_any_command_if_mplayer_is_not_running(self):
+        mplayer_mock = Mock()
+        mplayer_mock.stdout = []
+        self.sut.current_track = Mock()
+        self.sut.mplayer = None
+        self.sut.set_volume(20)
+        self.sut.seek(20)
+        mplayer_mock.stdin.write.assert_not_called()
+
