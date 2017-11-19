@@ -8,6 +8,7 @@ from test.backend_interface_tests import *
 from test.command_handler_tests import *
 from test.command_panel_completer_tests import *
 from test.command_panel_tests import *
+from test.config_tests import *
 from test.cueparser_tests import *
 from test.file_browser_tests import *
 from test.helpers_tests import *
