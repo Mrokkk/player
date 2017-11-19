@@ -6,56 +6,61 @@ from unittest import TestCase
 from unittest.mock import Mock, MagicMock, patch
 
 from playerlib.command_handler import *
+from playerlib.player_context import *
 
 class CommandHandlerTests(TestCase):
 
     def setUp(self):
-        self.context_mock = Mock()
-        self.sut = CommandHandler(self.context_mock)
+        self.context = PlayerContext()
+        self.context.playlist = Mock()
+        self.context.playback_controller = Mock()
+        self.context.view = Mock()
+        self.context.quit = Mock()
+        self.sut = CommandHandler(self.context)
 
 
     def test_can_execute_player_controller_commands(self):
         self.sut.execute(':quit')
-        self.context_mock.quit.assert_called_once()
+        self.context.quit.assert_called_once()
 
 
     def test_can_execute_playlist_commands(self):
         self.sut.execute(':add_to_playlist some_file')
-        self.context_mock.playlist.add_to_playlist.assert_called_once_with('some_file')
+        self.context.playlist.add_to_playlist.assert_called_once_with('some_file')
 
         self.sut.execute(':save_playlist some_file')
-        self.context_mock.playlist.save_playlist.assert_called_once_with('some_file')
+        self.context.playlist.save_playlist.assert_called_once_with('some_file')
 
         self.sut.execute(':load_playlist some_file')
-        self.context_mock.playlist.load_playlist.assert_called_once_with('some_file')
+        self.context.playlist.load_playlist.assert_called_once_with('some_file')
 
 
     def test_can_execute_playback_controller_commands(self):
         self.sut.execute(':pause')
-        self.context_mock.playback_controller.pause.assert_called_once()
+        self.context.playback_controller.pause.assert_called_once()
 
         self.sut.execute(':stop')
-        self.context_mock.playback_controller.stop.assert_called_once()
+        self.context.playback_controller.stop.assert_called_once()
 
         self.sut.execute(':next')
-        self.context_mock.playback_controller.next.assert_called_once()
+        self.context.playback_controller.next.assert_called_once()
 
         self.sut.execute(':prev')
-        self.context_mock.playback_controller.prev.assert_called_once()
+        self.context.playback_controller.prev.assert_called_once()
 
         self.sut.execute(':seek 50%')
-        self.context_mock.playback_controller.seek.assert_called_once_with('50%')
+        self.context.playback_controller.seek.assert_called_once_with('50%')
 
         self.sut.execute(':set volume 20')
-        self.context_mock.playback_controller.set_volume.assert_called_once_with('20')
+        self.context.playback_controller.set_volume.assert_called_once_with('20')
 
         self.sut.execute(':get volume')
-        self.context_mock.playback_controller.get_volume.assert_called_once()
+        self.context.playback_controller.get_volume.assert_called_once()
 
 
     def test_can_execute_view_commands(self):
         self.sut.execute(':switch_panes')
-        self.context_mock.view.switch_panes.assert_called_once()
+        self.context.view.switch_panes.assert_called_once()
 
 
     def test_bad_command_raises_error(self):
@@ -66,17 +71,17 @@ class CommandHandlerTests(TestCase):
 
     def test_can_seek_forward(self):
         self.sut.execute('/some_string')
-        self.context_mock.view.focus.search_forward.assert_called_with('some_string')
+        self.context.view.focus.search_forward.assert_called_with('some_string')
 
 
     def test_can_seek_backward(self):
         self.sut.execute('?some_string')
-        self.context_mock.view.focus.search_backward.assert_called_with('some_string')
+        self.context.view.focus.search_backward.assert_called_with('some_string')
 
 
     def test_can_call_mapped_commands(self):
         self.sut.execute(':q')
-        self.context_mock.quit.assert_called_once()
+        self.context.quit.assert_called_once()
 
 
     def test_ignores_empty_command(self):
