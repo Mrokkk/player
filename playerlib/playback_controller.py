@@ -97,6 +97,9 @@ class PlaybackController:
         if self.volume != old_volume:
             self.backend.set_volume(self.volume)
 
+    def get_volume(self):
+        return self.volume
+
     def quit(self):
         self.backend.quit()
 

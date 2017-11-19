@@ -251,3 +251,8 @@ class PlaybackControllerTests(TestCase):
         self.sut.set_volume('20')
         self.backend.set_volume.assert_not_called()
 
+
+    def test_can_read_volume(self):
+        self.sut.set_volume('42')
+        self.assertEqual(self.sut.get_volume(), 42)
+

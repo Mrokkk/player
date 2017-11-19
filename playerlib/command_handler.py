@@ -48,6 +48,12 @@ class CommandHandler:
             else:
                 raise RuntimeError('No such key: {}'.format(key))
 
+        def get(self, key):
+            if key == 'volume':
+                return self._context.playback_controller.get_volume()
+            else:
+                raise RuntimeError('No such key: {}'.format(key))
+
 
     def __init__(self, context):
         self.context = context

@@ -49,6 +49,9 @@ class CommandHandlerTests(TestCase):
         self.sut.execute(':set volume 20')
         self.context_mock.playback_controller.set_volume.assert_called_once_with('20')
 
+        self.sut.execute(':get volume')
+        self.context_mock.playback_controller.get_volume.assert_called_once()
+
 
     def test_can_execute_view_commands(self):
         self.sut.execute(':switch_panes')
@@ -86,11 +89,18 @@ class CommandHandlerTests(TestCase):
         self.assertRaises(RuntimeError, self.sut.execute, ':set vcbx value')
 
 
+    def test_cannot_get_bad_key(self):
+        self.assertRaises(RuntimeError, self.sut.execute, ':get aaakkk')
+        self.assertRaises(RuntimeError, self.sut.execute, ':get key')
+        self.assertRaises(RuntimeError, self.sut.execute, ':get vcbx')
+
+
     def test_can_properly_list_commands(self):
         commands = self.sut.list_commands()
         bad_commands = [x for x in commands if x.startswith('_')]
         self.assertEqual(len(bad_commands), 0)
         self.assertGreater(len(commands), 0)
+
 
     def test_raises_exception_on_bad_command(self):
         self.assertRaises(Exception, self.sut.execute, 'set key value')
