@@ -241,3 +241,59 @@ class FileBrowserTests(TestCase):
             self.error_handler_mock.assert_not_called()
             self.assertEqual(sut.content.focus, 4)
 
+    def test_can_search_forward(self):
+        with patch('os.getcwd') as getcwd_mock, \
+                patch('os.path.isdir') as isdir_mock, \
+                patch('os.listdir') as listdir_mock:
+            getcwd_mock.return_value = '/dir'
+            listdir_mock.return_value = ['some_file', 'some_other_file', 'some dir', '1 - music file.mp3', '02 - sound.wav']
+            isdir_mock.side_effect = [False, False, True, False, False]
+            sut = FileBrowser(self.add_to_playlist_mock, self.error_handler_mock)
+            sut.content.set_focus(0)
+            # Order: 'some dir', '1 - music file.mp3', '02 - sound.wav', 'some_file', some_other_file'
+            sut.search_forward('other')
+            self.assertEqual(sut.content.focus, 4)
+            sut.content.set_focus(0)
+            sut.search_forward('some')
+            self.assertEqual(sut.content.focus, 3)
+            sut.search_forward('some')
+            self.assertEqual(sut.content.focus, 4)
+            sut.search_forward('some')
+            self.assertEqual(sut.content.focus, 4)
+
+    def test_can_search_backward(self):
+        with patch('os.getcwd') as getcwd_mock, \
+                patch('os.path.isdir') as isdir_mock, \
+                patch('os.listdir') as listdir_mock:
+            getcwd_mock.return_value = '/dir'
+            listdir_mock.return_value = ['some_file', 'some_other_file', 'some dir', '1 - music file.mp3', '02 - sound.wav']
+            isdir_mock.side_effect = [False, False, True, False, False]
+            sut = FileBrowser(self.add_to_playlist_mock, self.error_handler_mock)
+            sut.content.set_focus(4)
+            # Order: 'some dir', '1 - music file.mp3', '02 - sound.wav', 'some_file', some_other_file'
+            sut.search_backward('other')
+            self.assertEqual(sut.content.focus, 4)
+            sut.search_backward('02')
+            self.assertEqual(sut.content.focus, 2)
+            sut.search_backward('sound')
+            self.assertEqual(sut.content.focus, 2)
+            sut.search_backward('some')
+            self.assertEqual(sut.content.focus, 0)
+            sut.search_backward('some')
+            self.assertEqual(sut.content.focus, 0)
+
+    def test_ignores_other_keys(self):
+        with patch('os.getcwd') as getcwd_mock, \
+                patch('os.path.isdir') as isdir_mock, \
+                patch('os.listdir') as listdir_mock:
+            getcwd_mock.return_value = '/dir'
+            listdir_mock.return_value = ['some_file']
+            isdir_mock.side_effect = [False]
+            sut = FileBrowser(self.add_to_playlist_mock, self.error_handler_mock)
+            sut.content.set_focus(0)
+            sut.unhandled_input('b')
+            sut.unhandled_input('c')
+            sut.unhandled_input('d')
+            self.add_to_playlist_mock.assert_not_called()
+            self.error_handler_mock.assert_not_called()
+
