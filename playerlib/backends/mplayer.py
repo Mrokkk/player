@@ -126,6 +126,7 @@ class MplayerBackend(Backend):
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
             encoding='utf-8',
+            errors='ignore',
             preexec_fn=lambda: os.setpgrp())
 
     def _loadfile(self, path):
