@@ -7,10 +7,10 @@ from playerlib.helpers.helpers import clamp
 class Completer:
 
     class Context:
-        def __init__(self, index, last_text, commands):
+        def __init__(self, index, last_text, completions):
             self.index = index
             self.last_text = last_text
-            self.commands = commands
+            self.completions = completions
 
     def __init__(self, commands, edit_widget):
         self.commands = sorted(commands)
@@ -18,7 +18,6 @@ class Completer:
         self.logger = logging.getLogger('Completer')
 
     def _handle_no_context(self, edit_text):
-        index = 0
         matched_commands = [c for c in self.commands if c.startswith(edit_text)]
         self.logger.debug('For {} found {}'.format(edit_text, matched_commands))
         if len(matched_commands) == 0: return None
@@ -27,20 +26,17 @@ class Completer:
         return context
 
     def _handle_context(self, edit_text, context):
-        if context.last_text != edit_text and not edit_text in context.commands:
+        if context.last_text != edit_text and not edit_text in context.completions:
             self.logger.debug('Context invalidated')
             return self._handle_no_context(edit_text)
-        context.index = 0 if (context.index == len(context.commands) - 1) else context.index + 1
-        self.edit_widget.set_edit_text(context.commands[context.index])
-        self.edit_widget.set_edit_pos(len(context.commands[context.index]))
+        context.index = 0 if (context.index == len(context.completions) - 1) else context.index + 1
+        self.edit_widget.set_edit_text(context.completions[context.index])
+        self.edit_widget.set_edit_pos(len(context.completions[context.index]))
         return context
 
     def complete(self, context):
         edit_text = self.edit_widget.get_edit_text()
-        if context:
-            return self._handle_context(edit_text, context)
-        else:
-            return self._handle_no_context(edit_text)
+        return self._handle_context(edit_text, context) if context else self._handle_no_context(edit_text)
 
 
 class CommandPanel(urwid.Edit):
