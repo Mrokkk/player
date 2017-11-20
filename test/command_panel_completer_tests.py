@@ -12,6 +12,11 @@ class CommandPanelCompleterTests(TestCase):
         self.commands = ['add_to_playlist', 'e', 'load_playlist', 'next', 'pause', 'prev', 'q', 'qa', 'quit', 'save_playlist', 'seek', 'set', 'stop', 'switch_panes']
         self.sut = Completer(self.commands, self.command_panel_mock)
 
+    def test_can_get_first_completion_if_command_panel_is_empty(self):
+        self.command_panel_mock.get_edit_text.return_value = ''
+        self.sut.complete(None)
+        self.command_panel_mock.insert_text.assert_called_once_with('add_to_playlist')
+
     def test_can_complete_with_first_matched_command(self):
         self.command_panel_mock.get_edit_text.return_value = 'p'
         self.sut.complete(None)

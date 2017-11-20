@@ -17,26 +17,39 @@ class Completer:
         self.edit_widget = edit_widget
         self.logger = logging.getLogger('Completer')
 
-    def _handle_no_context(self, edit_text):
-        matched_commands = [c for c in self.commands if c.startswith(edit_text)]
-        self.logger.debug('For {} found {}'.format(edit_text, matched_commands))
+    def _handle_no_context(self, last_word):
+        matched_commands = [c for c in self.commands if c.startswith(last_word)]
+        self.logger.debug('For {} found {}'.format(last_word, matched_commands))
         if len(matched_commands) == 0: return None
-        self.edit_widget.insert_text(matched_commands[0][len(edit_text):])
-        context = self.Context(0, edit_text, matched_commands)
+        self.edit_widget.insert_text(matched_commands[0][len(last_word):])
+        return self.Context(0, last_word, matched_commands)
+
+    def _handle_context(self, context, last_word, edit_text):
+        if context.last_text != last_word and not last_word in context.completions:
+            self.logger.debug('Context invalidated')
+            return self._handle_no_context(last_word)
+        context.index = 0 if (context.index == len(context.completions) - 1) else context.index + 1
+        new_edit_text = self._replace_last_word(edit_text, context.completions[context.index])
+        self.edit_widget.set_edit_text(new_edit_text)
+        self.edit_widget.set_edit_pos(len(new_edit_text))
         return context
 
-    def _handle_context(self, edit_text, context):
-        if context.last_text != edit_text and not edit_text in context.completions:
-            self.logger.debug('Context invalidated')
-            return self._handle_no_context(edit_text)
-        context.index = 0 if (context.index == len(context.completions) - 1) else context.index + 1
-        self.edit_widget.set_edit_text(context.completions[context.index])
-        self.edit_widget.set_edit_pos(len(context.completions[context.index]))
-        return context
+    def _replace_last_word(self, string, word):
+        words = string.split()
+        words[-1] = word
+        return ' '.join(words)
+
+    def _get_last_word(self, string):
+        words = string.split()
+        if len(string):
+            return '' if string[-1] == ' ' else words[-1]
+        else:
+            return ''
 
     def complete(self, context):
         edit_text = self.edit_widget.get_edit_text()
-        return self._handle_context(edit_text, context) if context else self._handle_no_context(edit_text)
+        last_word = self._get_last_word(edit_text)
+        return self._handle_context(context, last_word, edit_text) if context else self._handle_no_context(last_word)
 
 
 class CommandPanel(urwid.Edit):
