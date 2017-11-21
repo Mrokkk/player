@@ -27,9 +27,11 @@ class CommandPanelCompleterTests(TestCase):
         context = self.sut.complete(None)
         self.command_panel_mock.insert_text.assert_called_once_with('ause')
         self.command_panel_mock.insert_text.reset_mock()
+        self.command_panel_mock.get_edit_text.return_value = 'pause'
         context = self.sut.complete(context)
         self.command_panel_mock.set_edit_text.assert_called_once_with('prev')
         self.command_panel_mock.set_edit_text.reset_mock()
+        self.command_panel_mock.get_edit_text.return_value = 'prev'
         context = self.sut.complete(context)
         self.command_panel_mock.set_edit_text.assert_called_once_with('pause')
 
@@ -50,4 +52,44 @@ class CommandPanelCompleterTests(TestCase):
         self.assertEqual(context, None)
         self.command_panel_mock.insert_text.assert_not_called()
         self.command_panel_mock.set_edit_text.assert_not_called()
+
+    def test_can_complete_first_argument(self):
+        self.command_panel_mock.get_edit_text.return_value = 'save_playlist '
+        with patch('os.listdir') as listdir_mock:
+            listdir_mock.return_value = ['file2', 'file1']
+            context = self.sut.complete(None)
+            self.command_panel_mock.insert_text.assert_called_once_with('file1')
+            self.command_panel_mock.insert_text.reset_mock()
+            self.command_panel_mock.get_edit_text.return_value = 'save_playlist file1'
+            context = self.sut.complete(context)
+            self.command_panel_mock.set_edit_text.assert_called_once_with('save_playlist file2')
+            self.command_panel_mock.set_edit_text.reset_mock()
+            self.command_panel_mock.get_edit_text.return_value = 'save_playlist file2'
+            context = self.sut.complete(context)
+            self.command_panel_mock.set_edit_text.assert_called_once_with('save_playlist file1')
+            self.command_panel_mock.set_edit_text.reset_mock()
+            self.command_panel_mock.get_edit_text.return_value = 'save_playlist e'
+            context = self.sut.complete(context)
+            self.assertEqual(context, None)
+            self.command_panel_mock.set_edit_text.assert_not_called()
+
+    def test_can_complete_first_argument_2(self):
+        self.command_panel_mock.get_edit_text.return_value = 'save'
+        with patch('os.listdir') as listdir_mock:
+            listdir_mock.return_value = ['file2', 'file1']
+            context = self.sut.complete(None)
+            self.command_panel_mock.insert_text.assert_called_once_with('_playlist')
+            self.command_panel_mock.insert_text.reset_mock()
+            self.command_panel_mock.get_edit_text.return_value = 'save_playlist '
+            context = self.sut.complete(context)
+            self.command_panel_mock.insert_text.assert_called_once_with('file1')
+            self.command_panel_mock.insert_text.reset_mock()
+            self.command_panel_mock.get_edit_text.return_value = 'save_playlist file1'
+            context = self.sut.complete(context)
+            self.command_panel_mock.set_edit_text.assert_called_once_with('save_playlist file2')
+            self.command_panel_mock.set_edit_text.reset_mock()
+            self.command_panel_mock.get_edit_text.return_value = 'save_playlist e'
+            context = self.sut.complete(context)
+            self.assertEqual(context, None)
+            self.command_panel_mock.set_edit_text.assert_not_called()
 
