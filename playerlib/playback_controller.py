@@ -21,7 +21,7 @@ class PlaybackController:
         if pos - self.current_track.offset >= self.current_track.length and \
                 self.current_track.path == self.current_track.playlist_entry.next.track.path:
             self.set_next_track_playing()
-        if self.context.view.focus_position == 'footer' or pos - self.current_track.offset < 0: return
+        if self.context.command_panel.selectable() or pos - self.current_track.offset < 0: return
         time_format = '%H:%M:%S' if self.current_track.length >= 3600 else '%M:%S'
         with self.context.draw_lock:
             self.context.command_panel.set_caption('{} : {} / {}'.format(

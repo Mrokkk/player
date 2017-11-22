@@ -17,6 +17,7 @@ class PlaybackControllerTests(TestCase):
         self.context_mock.view = self.view_mock
         self.context_mock.draw_lock = MagicMock()
         self.context_mock.config.backend = 'mplayer'
+        self.command_panel_mock.selectable.return_value = False
 
         self.current_track_mock = Mock()
 
@@ -210,6 +211,7 @@ class PlaybackControllerTests(TestCase):
 
 
     def test_ignores_if_footer_focused(self):
+        self.command_panel_mock.selectable.return_value = True
         self.current_track_mock.offset = 0
         self.current_track_mock.length = 104
         self.current_track_mock.title = 'Some Title'

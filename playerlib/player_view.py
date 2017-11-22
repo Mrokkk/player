@@ -33,7 +33,3 @@ class PlayerView(urwid.WidgetWrap):
     def focus(self):
         return self.columns.focus
 
-    @property
-    def focus_position(self):
-        return self._w.focus_position
-
