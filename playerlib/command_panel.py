@@ -135,7 +135,7 @@ class CommandPanel(urwid.Edit):
         elif key == 'tab':
             if self.mode == ':':
                 self.completer_context = self.completer.complete(self.completer_context)
-                return True
+            return True
         else:
             return True
 
