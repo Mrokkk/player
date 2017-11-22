@@ -123,11 +123,16 @@ class CommandPanel(urwid.Edit):
         self._update_panel()
         return True
 
+    def selectable(self):
+        return self.mode != None
+
     def unhandled_input(self, key):
         if key == 'enter':
             self._handle_enter()
+            self.mode = None
         elif key == 'esc':
             self.clear()
+            self.mode = None
         elif key == 'up':
             return self._handle_up_arrow()
         elif key == 'down':

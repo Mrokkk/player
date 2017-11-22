@@ -121,3 +121,16 @@ class CommandPanelTests(TestCase):
         self.assertTrue(self.sut.unhandled_input('a'))
         self.assertTrue(self.sut.unhandled_input('b'))
 
+    def test_should_be_selectable_only_when_active(self):
+        self.assertFalse(self.sut.selectable())
+        self.sut.activate(':')
+        self.assertTrue(self.sut.selectable())
+        self.sut.unhandled_input('esc')
+        self.assertFalse(self.sut.selectable())
+        self.sut.activate('/')
+        self.assertTrue(self.sut.selectable())
+        self.sut.unhandled_input('esc')
+        self.assertFalse(self.sut.selectable())
+        self.sut.activate('?')
+        self.assertTrue(self.sut.selectable())
+
