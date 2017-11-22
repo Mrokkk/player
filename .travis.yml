@@ -1,0 +1,11 @@
+language: python
+python:
+  - 3.6
+install:
+  - sudo apt-get install -y libdiscid0-dev libtag1-dev
+  - pip install -r requirements.txt
+  - pip install coverage codecov
+script:
+  - coverage run ./tests_run
+after_success:
+  - codecov
