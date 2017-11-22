@@ -24,17 +24,13 @@ class Loop(urwid.MainLoop):
             super().draw_screen(*args, **kwargs)
 
 
-def quit_callback():
-    raise urwid.ExitMainLoop()
-
-
 class Player:
 
     def __init__(self, event_loop, screen, config):
         context = PlayerContext()
         self.context = context
 
-        context.quit = quit_callback
+        context.quit = self.quit
         context.draw_lock = threading.RLock()
         context.config = config
         context.playback_controller = PlaybackController(context)
@@ -58,4 +54,8 @@ class Player:
     def run(self):
         self.main_loop.run()
         self.context.playback_controller.quit()
+
+
+    def quit(self):
+        raise urwid.ExitMainLoop()
 
