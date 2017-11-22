@@ -15,6 +15,10 @@ def create_screen():
         logging.warning('Cannot setup 256 colors: {}'.format(str(e)))
     return screen
 
+def hack_urwid_asyncio():
+    # For lower idle CPU usage
+    urwid.AsyncioEventLoop._idle_emulation_delay = 1.0/60
+
 def main():
     logging.basicConfig(level=logging.DEBUG,
         format='%(asctime)s %(name)-20s %(levelname)-10s %(message)s',
@@ -24,6 +28,7 @@ def main():
     logging.info('Starting')
     config = Config()
     signal.signal(signal.SIGINT, signal.SIG_IGN)
+    hack_urwid_asyncio()
     Player(urwid.AsyncioEventLoop(loop=asyncio.get_event_loop()), create_screen(), config).run()
     logging.info('Exitting')
 
