@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
+import logging
+
 class CommandHandler:
 
     class Mode:
         COMMAND = 1
         SEARCH_FORWARD = 2
         SEARCH_BACKWARD = 3
-
 
     class Commands:
         def __init__(self, context):
@@ -103,6 +104,7 @@ class CommandHandler:
             mode = self.Mode.SEARCH_FORWARD
         elif command.startswith('?'):
             mode = self.Mode.SEARCH_BACKWARD
-        else: raise RuntimeError('Bad mode!')
+        else:
+            raise RuntimeError('Bad mode!')
         self.mode_map[mode](command[1:])
 

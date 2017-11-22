@@ -109,6 +109,7 @@ class FileBrowser(urwid.WidgetWrap):
 
     def _add_to_playlist(self):
         try:
+            # self.context.async_caller.call(lambda: self.context.command_handler.commands.add_to_playlist(self.content.get_focus()[0].path()))
             self.callback(self.content.get_focus()[0].path())
         except Exception as e:
             self.error_handler(str(e))
