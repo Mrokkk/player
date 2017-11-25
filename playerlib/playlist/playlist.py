@@ -6,19 +6,19 @@ import os
 import time
 import urwid
 
-from playerlib.helpers.scrollable import *
+from playerlib.helpers.scrollable_listbox import *
 from playerlib.track import *
 from playerlib.tracks_factory import *
 from .entry import *
 
 class Playlist(urwid.WidgetWrap):
 
-    def __init__(self, play_callback, error_handler):
+    def __init__(self, play_callback, command_handler):
         self.callback = play_callback
-        self.error_handler = error_handler
+        self.command_handler = command_handler
         self.list = []
         self.content = urwid.SimpleListWalker([])
-        self.listbox = urwid.ListBox(self.content)
+        self.listbox = ScrollableListBox(self.content)
         self.header = urwid.AttrWrap(urwid.Text('Unnamed playlist'), 'head')
         self.footer = urwid.AttrWrap(urwid.Text('Playlist'), 'foot')
         self.tracks_factory = TracksFactory()
@@ -27,14 +27,6 @@ class Playlist(urwid.WidgetWrap):
             self.listbox,
             header=self.header,
             footer=self.footer))
-
-    def unhandled_input(self, key):
-        try_to_scroll(self.listbox, key)
-        if key == 'enter':
-            try:
-                self.callback(self.listbox.focus.track)
-            except Exception as e:
-                self.error_handler(str(e))
 
     def _get_track_string(self, track):
         if track.title:
@@ -75,4 +67,14 @@ class Playlist(urwid.WidgetWrap):
 
     def clear(self):
         self.content[:] = []
+
+    def searchable_list(self):
+        return self.listbox
+
+    def unhandled_input(self, key):
+        if key == 'enter':
+            try:
+                self.callback(self.listbox.focus.track)
+            except Exception as e:
+                self.command_handler(':error "{}"'.format(str(e)))
 

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 import urwid
+from playerlib.helpers.listbox_entry import *
 
-class Entry(urwid.Button):
+class Entry(ListBoxEntry):
 
     def __init__(self, track, line, prev=None):
         self.track = track
@@ -24,6 +25,6 @@ class Entry(urwid.Button):
     def set_paused(self):
         self._w = urwid.AttrMap(urwid.SelectableIcon(['‖ ', self.line], 0), 'dir', 'dir_focused')
 
-    def keypress(self, size, key):
-        return key
+    def text(self):
+        return self.line
 

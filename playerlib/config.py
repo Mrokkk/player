@@ -16,6 +16,7 @@ class Config:
         ('error', 'dark red', '', '', '#a00', ''),
         ('info', 'dark cyan', '', '', '#06f', ''),
     ]
+    default_bookmarks_file = os.path.expanduser('~') + '/.config/player/bookmarks.json'
 
     def __init__(self):
         import importlib.machinery
@@ -32,4 +33,7 @@ class Config:
 
         try: self.color_palette = config.color_palette
         except: self.color_palette = self.default_color_palette
+
+        try: self.bookmarks_file = config.bookmarks_file
+        except: self.bookmarks_file = self.default_bookmarks_file
 

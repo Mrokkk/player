@@ -3,7 +3,7 @@
 import urwid
 import threading
 
-from playerlib.async_caller import *
+from playerlib.bookmarks.bookmarks import *
 from playerlib.command_handler import *
 from playerlib.command_panel import *
 from playerlib.file_browser.file_browser import *
@@ -36,11 +36,10 @@ class Player:
         context.playback_controller = PlaybackController(context)
         context.command_handler = CommandHandler(context)
         context.command_panel = CommandPanel(context.command_handler)
-        error_handler = context.command_panel.error
-        context.playlist = Playlist(context.playback_controller.play_track, error_handler)
-        context.file_browser = FileBrowser(context.playlist.add_to_playlist, error_handler)
-        context.view = PlayerView(context.file_browser, context.playlist, context.command_panel)
-        # context.async_caller = AsyncCaller()
+        context.bookmarks = Bookmarks(context.config, context.command_handler)
+        context.playlist = Playlist(context.playback_controller.play_track, context.command_handler)
+        context.file_browser = FileBrowser(context.command_handler)
+        context.view = PlayerView(context.file_browser, context.bookmarks, context.playlist, context.command_panel)
 
         self.main_loop = Loop(
             context.draw_lock,

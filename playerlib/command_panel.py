@@ -29,7 +29,7 @@ class Completer:
         return self.Context(0, last_word, matched_commands)
 
     def _handle_context(self, context, last_word, words_count, edit_text):
-        if context.last_text != last_word and not last_word in context.completions:
+        if context.last_text != last_word and not last_word in context.completions or words_count == 0:
             self.logger.debug('Context invalidated')
             return self._handle_no_context(last_word, words_count, edit_text)
         context.index = 0 if (context.index == len(context.completions) - 1) else context.index + 1
@@ -53,7 +53,8 @@ class Completer:
     def complete(self, context):
         edit_text = self.edit_widget.get_edit_text()
         last_word, words_count = self._get_last_word_and_words_count(edit_text)
-        return self._handle_context(context, last_word, words_count, edit_text) if context else self._handle_no_context(last_word, words_count, edit_text)
+        return self._handle_context(context, last_word, words_count, edit_text) \
+                if context else self._handle_no_context(last_word, words_count, edit_text)
 
 
 class CommandPanel(urwid.Edit):
@@ -97,12 +98,9 @@ class CommandPanel(urwid.Edit):
         self.set_edit_pos(len(self.edit_text))
 
     def _handle_enter(self):
-        try:
-            self.history[self.mode].insert(0, self.get_edit_text().strip())
-            self.command_handler.execute(self.caption + self.get_edit_text().strip())
-            self.clear()
-        except (RuntimeError, AttributeError, IndexError, TypeError, KeyError, SyntaxError, AssertionError) as exc:
-            self.error(str(exc))
+        self.history[self.mode].insert(0, self.get_edit_text().strip())
+        self.command_handler(self.caption + self.get_edit_text().strip())
+        self.clear()
 
     def _handle_up_arrow(self):
         try:

@@ -22,12 +22,12 @@ class FileBrowserTests(TestCase):
             isdir_mock.side_effect = [False, False, True, False, False]
             sut = FileBrowser(self.add_to_playlist_mock, self.error_handler_mock)
             self.assertEqual(len(sut.content), 6)
-            self.assertEqual(sut.content[0].text(), '/dir')
-            self.assertEqual(sut.content[1].path(), '/dir/some dir')
-            self.assertEqual(sut.content[2].path(), '/dir/1 - music file.mp3')
-            self.assertEqual(sut.content[3].path(), '/dir/02 - sound.wav')
-            self.assertEqual(sut.content[4].path(), '/dir/some_file')
-            self.assertEqual(sut.content[5].path(), '/dir/some_other_file')
+            self.assertEqual(sut.content[0].text, '/dir')
+            self.assertEqual(sut.content[1].path, '/dir/some dir')
+            self.assertEqual(sut.content[2].path, '/dir/1 - music file.mp3')
+            self.assertEqual(sut.content[3].path, '/dir/02 - sound.wav')
+            self.assertEqual(sut.content[4].path, '/dir/some_file')
+            self.assertEqual(sut.content[5].path, '/dir/some_other_file')
             self.error_handler_mock.assert_not_called()
 
     def test_can_add_to_playlist(self):
@@ -105,18 +105,18 @@ class FileBrowserTests(TestCase):
             sut.content.set_focus(1)
             sut.unhandled_input('enter')
             self.assertEqual(len(sut.content), 6)
-            self.assertEqual(sut.content[0].text(), '/dir')
-            self.assertEqual(sut.content[1].path(), '/dir/some dir')
-            self.assertEqual(sut.content[2].path(), '/dir/some dir/file 2')
-            self.assertEqual(sut.content[3].path(), '/dir/some dir/file in dir')
-            self.assertEqual(sut.content[4].path(), '/dir/some_file')
-            self.assertEqual(sut.content[5].path(), '/dir/some_other_file')
+            self.assertEqual(sut.content[0].text, '/dir')
+            self.assertEqual(sut.content[1].path, '/dir/some dir')
+            self.assertEqual(sut.content[2].path, '/dir/some dir/file 2')
+            self.assertEqual(sut.content[3].path, '/dir/some dir/file in dir')
+            self.assertEqual(sut.content[4].path, '/dir/some_file')
+            self.assertEqual(sut.content[5].path, '/dir/some_other_file')
             sut.unhandled_input('enter')
             self.assertEqual(len(sut.content), 4)
-            self.assertEqual(sut.content[0].text(), '/dir')
-            self.assertEqual(sut.content[1].path(), '/dir/some dir')
-            self.assertEqual(sut.content[2].path(), '/dir/some_file')
-            self.assertEqual(sut.content[3].path(), '/dir/some_other_file')
+            self.assertEqual(sut.content[0].text, '/dir')
+            self.assertEqual(sut.content[1].path, '/dir/some dir')
+            self.assertEqual(sut.content[2].path, '/dir/some_file')
+            self.assertEqual(sut.content[3].path, '/dir/some_other_file')
 
     def test_toggling_empty_dir_does_nothing(self):
         with patch('os.getcwd') as getcwd_mock, \
@@ -131,16 +131,16 @@ class FileBrowserTests(TestCase):
             sut.content.set_focus(1)
             sut.unhandled_input('enter')
             self.assertEqual(len(sut.content), 4)
-            self.assertEqual(sut.content[0].text(), '/dir')
-            self.assertEqual(sut.content[1].path(), '/dir/some dir')
-            self.assertEqual(sut.content[2].path(), '/dir/some_file')
-            self.assertEqual(sut.content[3].path(), '/dir/some_other_file')
+            self.assertEqual(sut.content[0].text, '/dir')
+            self.assertEqual(sut.content[1].path, '/dir/some dir')
+            self.assertEqual(sut.content[2].path, '/dir/some_file')
+            self.assertEqual(sut.content[3].path, '/dir/some_other_file')
             sut.unhandled_input('enter')
             self.assertEqual(len(sut.content), 4)
-            self.assertEqual(sut.content[0].text(), '/dir')
-            self.assertEqual(sut.content[1].path(), '/dir/some dir')
-            self.assertEqual(sut.content[2].path(), '/dir/some_file')
-            self.assertEqual(sut.content[3].path(), '/dir/some_other_file')
+            self.assertEqual(sut.content[0].text, '/dir')
+            self.assertEqual(sut.content[1].path, '/dir/some dir')
+            self.assertEqual(sut.content[2].path, '/dir/some_file')
+            self.assertEqual(sut.content[3].path, '/dir/some_other_file')
 
     def test_toggling_a_file_does_nothing(self):
         with patch('os.getcwd') as getcwd_mock, \
@@ -155,16 +155,16 @@ class FileBrowserTests(TestCase):
             sut.content.set_focus(2)
             sut.unhandled_input('enter')
             self.assertEqual(len(sut.content), 4)
-            self.assertEqual(sut.content[0].text(), '/dir')
-            self.assertEqual(sut.content[1].path(), '/dir/some dir')
-            self.assertEqual(sut.content[2].path(), '/dir/some_file')
-            self.assertEqual(sut.content[3].path(), '/dir/some_other_file')
+            self.assertEqual(sut.content[0].text, '/dir')
+            self.assertEqual(sut.content[1].path, '/dir/some dir')
+            self.assertEqual(sut.content[2].path, '/dir/some_file')
+            self.assertEqual(sut.content[3].path, '/dir/some_other_file')
             sut.unhandled_input('enter')
             self.assertEqual(len(sut.content), 4)
-            self.assertEqual(sut.content[0].text(), '/dir')
-            self.assertEqual(sut.content[1].path(), '/dir/some dir')
-            self.assertEqual(sut.content[2].path(), '/dir/some_file')
-            self.assertEqual(sut.content[3].path(), '/dir/some_other_file')
+            self.assertEqual(sut.content[0].text, '/dir')
+            self.assertEqual(sut.content[1].path, '/dir/some dir')
+            self.assertEqual(sut.content[2].path, '/dir/some_file')
+            self.assertEqual(sut.content[3].path, '/dir/some_other_file')
 
     def test_can_change_dir_to_selected_dir(self):
         with patch('os.getcwd') as getcwd_mock, \
@@ -179,9 +179,9 @@ class FileBrowserTests(TestCase):
             sut.content.set_focus(1)
             sut.unhandled_input('C')
             self.assertEqual(len(sut.content), 3)
-            self.assertEqual(sut.content[0].text(), '/dir/some dir')
-            self.assertEqual(sut.content[1].path(), '/dir/some dir/file 2')
-            self.assertEqual(sut.content[2].path(), '/dir/some dir/file in dir')
+            self.assertEqual(sut.content[0].text, '/dir/some dir')
+            self.assertEqual(sut.content[1].path, '/dir/some dir/file 2')
+            self.assertEqual(sut.content[2].path, '/dir/some dir/file in dir')
 
     def test_cannot_change_dir_to_file(self):
         with patch('os.getcwd') as getcwd_mock, \
@@ -196,12 +196,12 @@ class FileBrowserTests(TestCase):
             sut.content.set_focus(1)
             sut.unhandled_input('C')
             self.assertEqual(len(sut.content), 2)
-            self.assertEqual(sut.content[0].text(), '/dir')
-            self.assertEqual(sut.content[1].path(), '/dir/some file')
+            self.assertEqual(sut.content[0].text, '/dir')
+            self.assertEqual(sut.content[1].path, '/dir/some file')
             sut.unhandled_input('C')
             self.assertEqual(len(sut.content), 2)
-            self.assertEqual(sut.content[0].text(), '/dir')
-            self.assertEqual(sut.content[1].path(), '/dir/some file')
+            self.assertEqual(sut.content[0].text, '/dir')
+            self.assertEqual(sut.content[1].path, '/dir/some file')
 
     def test_can_go_up(self):
         with patch('os.getcwd') as getcwd_mock, \
@@ -216,8 +216,8 @@ class FileBrowserTests(TestCase):
             sut.content.set_focus(1)
             sut.unhandled_input('u')
             self.assertEqual(len(sut.content), 2)
-            self.assertEqual(sut.content[0].text(), '/')
-            self.assertEqual(sut.content[1].path(), '/file')
+            self.assertEqual(sut.content[0].text, '/')
+            self.assertEqual(sut.content[1].path, '/file')
 
     def test_go_back_restores_last_cursor_position(self):
         with patch('os.getcwd') as getcwd_mock, \
@@ -250,7 +250,7 @@ class FileBrowserTests(TestCase):
             sut.content.set_focus(1)
             sut.unhandled_input('R')
             self.assertEqual(len(sut.content), 2)
-            self.assertEqual(sut.content[1].path(), '/dir/file')
+            self.assertEqual(sut.content[1].path, '/dir/file')
 
     def test_can_scroll_to_the_beginning(self):
         with patch('os.getcwd') as getcwd_mock, \
@@ -355,7 +355,7 @@ class FileBrowserTests(TestCase):
             sut = FileBrowser(self.add_to_playlist_mock, self.error_handler_mock)
             sut.unhandled_input('B')
             self.assertEqual(len(sut.bookmarks_view.content), 2)
-            self.assertEqual(sut.bookmarks_view.content[0].text(), 'Bookmarks')
+            self.assertEqual(sut.bookmarks_view.content[0].text, 'Bookmarks')
             self.assertEqual(sut.bookmarks_view[1], '/dir')
 
     def test_cannot_add_same_bookmark_twice(self):

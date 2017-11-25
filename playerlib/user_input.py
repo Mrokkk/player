@@ -6,7 +6,6 @@ class UserInput:
         self.view = view
         self.command_handler = command_handler
         self.command_panel = command_panel
-        self.error_handler = command_panel.error
         self.key_to_command_mapping = {
             'h': ':seek -10',
             'l': ':seek +10',
@@ -16,6 +15,7 @@ class UserInput:
             'ctrl w': ':switch_panes',
             '[': ':set volume -10',
             ']': ':set volume +10',
+            'b': ':toggle_pane_view',
         }
 
     def handle_input(self, key):
@@ -24,10 +24,7 @@ class UserInput:
             self.command_panel.activate(key)
         else:
             if key in self.key_to_command_mapping:
-                try:
-                    self.command_handler.execute(self.key_to_command_mapping[key])
-                except Exception as e:
-                    self.error_handler(str(e))
+                self.command_handler(self.key_to_command_mapping[key])
                 return
             if not self.view.unhandled_input(key):
                 self.view.focus_body()

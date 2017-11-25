@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import logging
+import shlex
+from playerlib.async import *
 
 class CommandHandler:
 
@@ -16,12 +18,18 @@ class CommandHandler:
         def quit(self):
             self._context.quit()
 
+        @async
         def add_to_playlist(self, path):
             self._context.playlist.add_to_playlist(path)
 
+        def clear_playlist(self):
+            self._context.playlist.clear()
+
+        @async
         def save_playlist(self, playlist_file):
             self._context.playlist.save_playlist(playlist_file)
 
+        @async
         def load_playlist(self, playlist_file):
             self._context.playlist.load_playlist(playlist_file)
 
@@ -43,6 +51,16 @@ class CommandHandler:
         def switch_panes(self):
             self._context.view.switch_panes()
 
+        def toggle_pane_view(self):
+            self._context.view.toggle_pane_view()
+
+        def add_bookmark(self, path):
+            self._context.bookmarks.add(path)
+
+        @async
+        def change_dir(self, path):
+            self._context.file_browser.change_dir(path)
+
         def set(self, key, value):
             if key == 'volume':
                 self._context.playback_controller.set_volume(value)
@@ -54,6 +72,13 @@ class CommandHandler:
                 return self._context.playback_controller.get_volume()
             else:
                 raise RuntimeError('No such key: {}'.format(key))
+
+        def error(self, string):
+            self._context.command_panel.error(string)
+
+        def help(self, command):
+            # TODO
+            pass
 
 
     def __init__(self, context):
@@ -69,13 +94,14 @@ class CommandHandler:
             'e': 'add_to_playlist',
         }
         self.commands = self.Commands(context)
+        self.logger = logging.getLogger('CommandHandler')
 
     def _format_arguments(self, args):
         if len(args) == 0: return ''
-        return ','.join('\'{}\''.format(arg.strip()) for arg in args)
+        return ','.join('\'{}\''.format(arg.strip().replace('\'', '\\\'')) for arg in args)
 
     def _command_mode(self, command):
-        splitted = command.split()
+        splitted = shlex.split(command)
         command = splitted[0]
         args = splitted[1:]
         if command in self.command_mapping:
@@ -85,10 +111,10 @@ class CommandHandler:
         eval('self.commands.{}({})'.format(command, self._format_arguments(args)))
 
     def _search_forward_mode(self, command):
-        self.context.view.focus.search_forward(command)
+        self.context.view.focus.searchable_list().search_forward(command)
 
     def _search_backward_mode(self, command):
-        self.context.view.focus.search_backward(command)
+        self.context.view.focus.searchable_list().search_backward(command)
 
     def list_commands(self):
         import inspect
@@ -96,7 +122,7 @@ class CommandHandler:
         commands.extend(self.command_mapping.keys())
         return commands
 
-    def execute(self, command):
+    def __call__(self, command):
         if not command: return
         if command.startswith(':'):
             mode = self.Mode.COMMAND
@@ -106,5 +132,8 @@ class CommandHandler:
             mode = self.Mode.SEARCH_BACKWARD
         else:
             raise RuntimeError('Bad mode!')
-        self.mode_map[mode](command[1:])
+        try:
+            self.mode_map[mode](command[1:])
+        except (RuntimeError, AttributeError, IndexError, TypeError, KeyError, SyntaxError, AssertionError) as exc:
+            self.commands.error(str(exc))
 

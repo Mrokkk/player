@@ -4,29 +4,30 @@ import os
 import re
 import urwid
 
-class DirEntry(urwid.Button):
+from playerlib.helpers.listbox_entry import *
 
-    signals = []
+class DirEntry(ListBoxEntry):
 
     def __init__(self, name, parent_path, is_a_dir=False, level=0):
-        super().__init__(name)
         self.name = name
         self.parent_path = parent_path
         self.isdir = is_a_dir
         self.level = level
         self.open = False
         if is_a_dir:
-            self._w = urwid.AttrMap(urwid.SelectableIcon(['  ' * level, u'▸ ', name, '/'], 0),
+            widget = urwid.AttrMap(urwid.SelectableIcon(['  ' * level, u'▸ ', name, '/'], 0),
                 'dir', 'dir_focused')
         else:
-            self._w = urwid.AttrMap(urwid.SelectableIcon(['  ' * level, '  ', name], 0),
+            widget = urwid.AttrMap(urwid.SelectableIcon(['  ' * level, '  ', name], 0),
                 'file', 'file_focused')
+        super().__init__(widget)
 
-    def keypress(self, size, key):
-        return key
-
+    @property
     def path(self):
         return os.path.join(self.parent_path, self.name).replace("\\", "\\\\")
+
+    def text(self):
+        return self.name
 
     def __lt__(self, other):
         if self.isdir and not other.isdir: return True
