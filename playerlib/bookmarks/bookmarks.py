@@ -23,10 +23,8 @@ class Bookmarks(urwid.WidgetWrap):
 
     def _save_bookmarks(self):
         import json
-        try:
-            with open(self.bookmarks_file, 'w') as f:
-                json.dump([b.path for b in self.content if b.__class__ == self.Bookmark], f)
-        except: pass
+        with open(self.bookmarks_file, 'w') as f:
+            json.dump([b.path for b in self.content if b.__class__ == self.Bookmark], f)
 
     def _load_bookmarks(self):
         import json
@@ -35,6 +33,9 @@ class Bookmarks(urwid.WidgetWrap):
                 bookmarks = json.load(f)
                 for i, b in enumerate(bookmarks):
                     self.content.append(Bookmark(i + 1, b))
+
+    def searchable_list(self):
+        return self.listbox
 
     def add(self, path):
         index = len(self.content)

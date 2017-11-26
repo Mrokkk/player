@@ -4,6 +4,7 @@ import functools
 import logging
 import queue
 import threading
+from playerlib.helpers.helpers import *
 
 def async(f):
     '''Decorator which allows any function to be called asynchronously'''
@@ -11,8 +12,9 @@ def async(f):
     class AsyncCaller:
         class __caller:
             class Thread(threading.Thread):
-                def __init__(self, queue):
+                def __init__(self, queue, logger):
                     self.queue = queue
+                    self.logger = logger
                     super().__init__(daemon=True)
 
                 def run(self):
@@ -22,17 +24,15 @@ def async(f):
                         try:
                             async_job()
                         except:
-                            # FIXME
-                            pass
+                            log_exception(self.logger)
 
             def __init__(self):
-                self.queue = queue.Queue()
-                self.thread = self.Thread(self.queue)
-                self.thread.start()
                 self.logger = logging.getLogger('AsyncCaller')
+                self.queue = queue.Queue()
+                self.thread = self.Thread(self.queue, self.logger)
+                self.thread.start()
 
             def call(self, target):
-                self.logger.debug('Calling async: {}'.format(target))
                 self.queue.put(target)
 
         _instance = None

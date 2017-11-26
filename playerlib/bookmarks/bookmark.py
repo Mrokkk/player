@@ -15,3 +15,6 @@ class Bookmark(ListBoxEntry):
     def path(self):
         return self._path
 
+    def text(self):
+        return self._path
+

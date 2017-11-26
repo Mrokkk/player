@@ -20,18 +20,27 @@ class CommandHandler:
 
         @async
         def add_to_playlist(self, path):
-            self._context.playlist.add_to_playlist(path)
+            try:
+                self._context.playlist.add_to_playlist(path)
+            except Exception as e:
+                self.error(str(e))
 
         def clear_playlist(self):
             self._context.playlist.clear()
 
         @async
         def save_playlist(self, playlist_file):
-            self._context.playlist.save_playlist(playlist_file)
+            try:
+                self._context.playlist.save_playlist(playlist_file)
+            except Exception as e:
+                self.error(str(e))
 
         @async
         def load_playlist(self, playlist_file):
-            self._context.playlist.load_playlist(playlist_file)
+            try:
+                self._context.playlist.load_playlist(playlist_file)
+            except Exception as e:
+                self.error(str(e))
 
         def pause(self):
             self._context.playback_controller.pause()
@@ -59,7 +68,10 @@ class CommandHandler:
 
         @async
         def change_dir(self, path):
-            self._context.file_browser.change_dir(path)
+            try:
+                self._context.file_browser.change_dir(path)
+            except Exception as e:
+                self.error(str(e))
 
         def set(self, key, value):
             if key == 'volume':

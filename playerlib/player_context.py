@@ -3,6 +3,7 @@
 class PlayerContext:
 
     def __init__(self):
+        self.bookmarks = None
         self.command_handler = None
         self.command_panel = None
         self.config = None
