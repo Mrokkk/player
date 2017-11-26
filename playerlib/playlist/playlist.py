@@ -24,10 +24,10 @@ class Playlist(ViewWidget):
         self.footer = urwid.AttrWrap(urwid.Text('Playlist'), 'foot')
         self.tracks_factory = TracksFactory()
         self.logger = logging.getLogger('Playlist')
-        super().__init__(urwid.Frame(
+        super().__init__(
             self.listbox,
             header=self.header,
-            footer=self.footer))
+            footer=self.footer)
         self.callbacks = {
             'enter': lambda: self.callback(self.listbox.focus.track)
         }
@@ -71,7 +71,4 @@ class Playlist(ViewWidget):
 
     def clear(self):
         self.content[:] = []
-
-    def searchable_list(self):
-        return self.listbox
 

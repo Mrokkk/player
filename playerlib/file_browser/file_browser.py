@@ -5,7 +5,6 @@ import os
 import urwid
 
 from playerlib.helpers.header import *
-from playerlib.helpers.helpers import *
 from playerlib.helpers.listbox_entry import *
 from playerlib.helpers.scrollable_listbox import *
 from playerlib.helpers.view_widget import *
@@ -19,12 +18,14 @@ class FileBrowser(ViewWidget):
         self.command_handler = command_handler
         self.dir_name = os.getcwd()
         self.header = Header(self.dir_name)
-        self.content = urwid.SimpleListWalker([self.header])
+        self.content = urwid.SimpleListWalker([])
         self.content.extend(self._read_dir(self.dir_name))
         self.listbox = ScrollableListBox(self.content)
         self.last_position = 0
         self.logger = logging.getLogger('FileBrowser')
-        super().__init__(urwid.Frame(self.listbox, footer=urwid.AttrWrap(urwid.Text(self.footer_text), 'foot')))
+        super().__init__(self.listbox,
+            header=self.header,
+            footer=urwid.AttrWrap(urwid.Text(self.footer_text), 'foot'))
         self.callbacks = {
             'u': self._go_back,
             'enter': lambda: self._toggle_dir(self.content.get_focus()[0]),
@@ -35,6 +36,13 @@ class FileBrowser(ViewWidget):
             'B': lambda: self.command_handler(':add_bookmark \"{}\"'.format(self.dir_name)),
         }
 
+    def change_dir(self, dirname):
+        path = os.path.abspath(os.path.join(self.dir_name, dirname))
+        if not os.path.isdir(path): raise RuntimeError('Not a dir: {}'.format(path))
+        self.dir_name = path
+        self.content[0:] = self._read_dir(self.dir_name)
+        self.header.text = path
+
     def _read_dir(self, path, level=0):
         return sorted([
             DirEntry(
@@ -43,13 +51,6 @@ class FileBrowser(ViewWidget):
                 is_a_dir=os.path.isdir(os.path.join(path, dir_entry)),
                 level=level
             ) for dir_entry in os.listdir(path) if not dir_entry.startswith('.')])
-
-    def change_dir(self, dirname):
-        path = os.path.abspath(os.path.join(self.dir_name, dirname))
-        if not os.path.isdir(path): raise RuntimeError('Not a dir: {}'.format(path))
-        self.dir_name = path
-        self.content[1:] = self._read_dir(self.dir_name)
-        self.header.text = path
 
     def _show_dir(self, parent):
         parent_path = parent.path
@@ -75,15 +76,12 @@ class FileBrowser(ViewWidget):
         else:
             self._show_dir(parent)
 
-    def searchable_list(self):
-        return self.listbox
-
     def _enter_selected_dir(self):
         self.last_position = self.listbox.focus_position
         path = self.content.get_focus()[0].path
         self.change_dir(path)
         try:
-            self.listbox.focus_position = 1
+            self.listbox.focus_position = 0
         except: pass
 
     def _go_back(self):

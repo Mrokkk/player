@@ -17,10 +17,13 @@ class Bookmarks(ViewWidget):
         self.bookmarks_file = config.bookmarks_file
         self.command_handler = command_handler
         self.header = Header('Bookmarks')
-        self.content = urwid.SimpleListWalker([self.header])
+        self.content = urwid.SimpleListWalker([])
         self._load_bookmarks()
         self.listbox = ScrollableListBox(self.content)
-        super().__init__(urwid.Frame(self.listbox, footer=urwid.AttrWrap(urwid.Text(self.footer_text), 'foot')))
+        super().__init__(
+            self.listbox,
+            header=self.header,
+            footer=urwid.AttrWrap(urwid.Text(self.footer_text), 'foot'))
         self.callbacks = {
             'enter': self._handle_enter,
             '1': lambda: self._handle_number(1),
@@ -38,7 +41,7 @@ class Bookmarks(ViewWidget):
     def _save_bookmarks(self):
         import json
         with open(self.bookmarks_file, 'w') as f:
-            json.dump([b.path for b in self.content if b.__class__ == self.Bookmark], f)
+            json.dump([b.path for b in self.content], f)
 
     def _load_bookmarks(self):
         import json
@@ -47,9 +50,6 @@ class Bookmarks(ViewWidget):
                 bookmarks = json.load(f)
                 for i, b in enumerate(bookmarks):
                     self.content.append(Bookmark(i + 1, b))
-
-    def searchable_list(self):
-        return self.listbox
 
     def add(self, path):
         index = len(self.content)
