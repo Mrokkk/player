@@ -8,9 +8,10 @@ from playerlib.helpers.header import *
 from playerlib.helpers.helpers import *
 from playerlib.helpers.listbox_entry import *
 from playerlib.helpers.scrollable_listbox import *
+from playerlib.helpers.view_widget import *
 from .dir_entry import *
 
-class FileBrowser(urwid.WidgetWrap):
+class FileBrowser(ViewWidget):
 
     footer_text = 'Browser'
 
@@ -24,6 +25,15 @@ class FileBrowser(urwid.WidgetWrap):
         self.last_position = 0
         self.logger = logging.getLogger('FileBrowser')
         super().__init__(urwid.Frame(self.listbox, footer=urwid.AttrWrap(urwid.Text(self.footer_text), 'foot')))
+        self.callbacks = {
+            'u': self._go_back,
+            'enter': lambda: self._toggle_dir(self.content.get_focus()[0]),
+            'R': lambda: self.change_dir('.'),
+            'C': self._enter_selected_dir,
+            'a': lambda: self.command_handler(':add_to_playlist \"{}\"'.format(self.content.get_focus()[0].path)),
+            'r': lambda: self.command_handler(':replace_playlist \"{}\"'.format(self.content.get_focus()[0].path)),
+            'B': lambda: self.command_handler(':add_bookmark \"{}\"'.format(self.dir_name)),
+        }
 
     def _read_dir(self, path, level=0):
         return sorted([
@@ -68,9 +78,6 @@ class FileBrowser(urwid.WidgetWrap):
     def searchable_list(self):
         return self.listbox
 
-    def _reload(self):
-        self.change_dir('.')
-
     def _enter_selected_dir(self):
         self.last_position = self.listbox.focus_position
         path = self.content.get_focus()[0].path
@@ -84,21 +91,4 @@ class FileBrowser(urwid.WidgetWrap):
         if self.last_position:
             self.listbox.focus_position = self.last_position
             self.last_position = 0
-
-    def unhandled_input(self, key):
-        if key == 'u':
-            self._go_back()
-        elif key == 'enter':
-            self._toggle_dir(self.content.get_focus()[0])
-        elif key == 'R':
-            self._reload()
-        elif key == 'C':
-            self._enter_selected_dir()
-        elif key == 'a':
-            self.command_handler(':add_to_playlist \"{}\"'.format(self.content.get_focus()[0].path))
-        elif key == 'r':
-            self.command_handler(':clear_playlist')
-            self.command_handler(':add_to_playlist \"{}\"'.format(self.content.get_focus()[0].path))
-        elif key == 'B':
-            self.command_handler(':add_bookmark \"{}\"'.format(self.dir_name))
 

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import urwid
+
 class UserInput:
 
     def __init__(self, view, command_handler, command_panel):
@@ -26,7 +28,11 @@ class UserInput:
             if key in self.key_to_command_mapping:
                 self.command_handler(self.key_to_command_mapping[key])
                 return
-            if not self.view.unhandled_input(key):
-                # FIXME: catch exceptions
-                self.view.focus_body()
+            try:
+                if not self.view.unhandled_input(key):
+                    self.view.focus_body()
+            except urwid.ExitMainLoop:
+                raise
+            except Exception as e:
+                self.command_panel.error(str(e))
 

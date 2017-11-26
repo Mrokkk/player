@@ -12,7 +12,7 @@ class ListBoxEntry(urwid.Button):
 
     def text(self):
         '''Has to be implemented by subclass; used for searching in ListBox'''
-        raise NotImplementedError('')
+        raise NotImplementedError('text() not implemented by widget')
 
     def keypress(self, size, key):
         '''Ignore key presses'''

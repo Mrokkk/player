@@ -6,9 +6,10 @@ import urwid
 from playerlib.helpers.header import *
 from playerlib.helpers.helpers import *
 from playerlib.helpers.scrollable_listbox import *
+from playerlib.helpers.view_widget import *
 from .bookmark import *
 
-class Bookmarks(urwid.WidgetWrap):
+class Bookmarks(ViewWidget):
 
     footer_text = 'Bookmarks'
 
@@ -20,6 +21,19 @@ class Bookmarks(urwid.WidgetWrap):
         self._load_bookmarks()
         self.listbox = ScrollableListBox(self.content)
         super().__init__(urwid.Frame(self.listbox, footer=urwid.AttrWrap(urwid.Text(self.footer_text), 'foot')))
+        self.callbacks = {
+            'enter': self._handle_enter,
+            '1': lambda: self._handle_number(1),
+            '2': lambda: self._handle_number(1),
+            '3': lambda: self._handle_number(3),
+            '4': lambda: self._handle_number(4),
+            '5': lambda: self._handle_number(5),
+            '6': lambda: self._handle_number(6),
+            '7': lambda: self._handle_number(7),
+            '8': lambda: self._handle_number(8),
+            '9': lambda: self._handle_number(9),
+            '0': lambda: self._handle_number(10),
+        }
 
     def _save_bookmarks(self):
         import json
@@ -46,12 +60,11 @@ class Bookmarks(urwid.WidgetWrap):
         self.command_handler(':change_dir {}'.format(bookmark.path))
         self.command_handler(':toggle_pane_view')
 
-    def unhandled_input(self, key):
-        if key == 'enter':
-            self._go_to_bookmark(self.listbox.focus)
-        else:
-            try:
-                index = int(key)
-                self._go_to_bookmark(self.content[index])
-            except: return
+    def _handle_enter(self):
+        self._go_to_bookmark(self.listbox.focus)
+
+    def _handle_number(self, number):
+        try:
+            self._go_to_bookmark(self.content[number])
+        except: self.command_handler(':error "no such bookmark: {}"'.format(number))
 

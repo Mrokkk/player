@@ -42,8 +42,6 @@ class ScrollableListBox(urwid.ListBox):
                     self.focus_position = index
                     return
                 index += 1
-            except NotImplementedError:
-                pass
             except:
                 break
 
@@ -56,8 +54,6 @@ class ScrollableListBox(urwid.ListBox):
                     return
                 index -= 1
                 if index < 0: return
-            except NotImplementedError:
-                pass
             except:
                 break
 

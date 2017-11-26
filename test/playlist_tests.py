@@ -23,8 +23,7 @@ class PlaylistTests(TestCase):
         return track
 
     def test_enter_keypress_should_fail_when_no_tracks_on_playlist(self):
-        self.sut.unhandled_input('enter')
-        self.error_handler_mock.assert_called_once()
+        self.assertRaises(Exception, self.sut.unhandled_input, 'enter')
         self.play_callback_mock.assert_not_called()
 
     def test_enter_keypress_should_call_play_callback_if_track_is_selected(self):

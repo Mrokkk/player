@@ -7,11 +7,12 @@ import time
 import urwid
 
 from playerlib.helpers.scrollable_listbox import *
+from playerlib.helpers.view_widget import *
 from playerlib.track import *
 from playerlib.tracks_factory import *
 from .entry import *
 
-class Playlist(urwid.WidgetWrap):
+class Playlist(ViewWidget):
 
     def __init__(self, play_callback, command_handler):
         self.callback = play_callback
@@ -27,6 +28,9 @@ class Playlist(urwid.WidgetWrap):
             self.listbox,
             header=self.header,
             footer=self.footer))
+        self.callbacks = {
+            'enter': lambda: self.callback(self.listbox.focus.track)
+        }
 
     def _get_track_string(self, track):
         if track.title:
@@ -70,11 +74,4 @@ class Playlist(urwid.WidgetWrap):
 
     def searchable_list(self):
         return self.listbox
-
-    def unhandled_input(self, key):
-        if key == 'enter':
-            try:
-                self.callback(self.listbox.focus.track)
-            except Exception as e:
-                self.command_handler(':error "{}"'.format(str(e)))
 

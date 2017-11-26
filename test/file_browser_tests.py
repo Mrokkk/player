@@ -56,7 +56,7 @@ class FileBrowserTests(TestCase):
             sut = FileBrowser(self.command_handler_mock)
             sut.content.set_focus(1)
             sut.unhandled_input('r')
-            self.command_handler_mock.assert_has_calls([call(':clear_playlist'), call(':add_to_playlist "/dir/some_file"')])
+            self.command_handler_mock.assert_called_once_with(':replace_playlist "/dir/some_file"')
 
     def test_can_toggle_dir(self):
         with patch('os.getcwd') as getcwd_mock, \

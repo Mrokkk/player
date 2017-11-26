@@ -2,6 +2,7 @@
 
 import logging
 import shlex
+import urwid
 from playerlib.async import *
 
 class CommandHandler:
@@ -22,6 +23,13 @@ class CommandHandler:
         def add_to_playlist(self, path):
             try:
                 self._context.playlist.add_to_playlist(path)
+            except Exception as e:
+                self.error(str(e))
+
+        @async
+        def replace_playlist(self, path):
+            try:
+                self._context.playlist.add_to_playlist(path, clear=True)
             except Exception as e:
                 self.error(str(e))
 
@@ -143,9 +151,11 @@ class CommandHandler:
         elif command.startswith('?'):
             mode = self.Mode.SEARCH_BACKWARD
         else:
-            self.commands.error('Bad mode')
+            self.commands.error('bad mode')
         try:
             self.mode_map[mode](command[1:])
-        except (RuntimeError, AttributeError, IndexError, TypeError, KeyError, SyntaxError, AssertionError) as exc:
+        except urwid.ExitMainLoop:
+            raise
+        except Exception as exc:
             self.commands.error(str(exc))
 

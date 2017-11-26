@@ -6,7 +6,7 @@ import unittest
 from test.backend_factory_tests import *
 from test.backend_interface_tests import *
 from test.command_handler_tests import *
-from test.command_panel_completer_tests import *
+from test.completer_tests import *
 from test.command_panel_tests import *
 from test.config_tests import *
 from test.cueparser_tests import *
