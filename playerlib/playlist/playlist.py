@@ -6,6 +6,7 @@ import os
 import time
 import urwid
 
+from playerlib.helpers.header import *
 from playerlib.helpers.scrollable_listbox import *
 from playerlib.helpers.view_widget import *
 from playerlib.track import *
@@ -20,7 +21,7 @@ class Playlist(ViewWidget):
         self.list = []
         self.content = urwid.SimpleListWalker([])
         self.listbox = ScrollableListBox(self.content)
-        self.header = urwid.AttrWrap(urwid.Text('Unnamed playlist'), 'head')
+        self.header = Header('Unnamed playlist')
         self.footer = urwid.AttrWrap(urwid.Text('Playlist'), 'foot')
         self.tracks_factory = TracksFactory()
         self.logger = logging.getLogger('Playlist')
@@ -59,7 +60,7 @@ class Playlist(ViewWidget):
         tracks = [t.track.to_dict() for t in self.content]
         with open(filename, 'w') as f:
             json.dump(tracks, f, indent=1)
-        self.header.set_w(urwid.Text(filename))
+        self.header.text = filename
 
     def load_playlist(self, filename):
         with open(filename, 'r') as f:
@@ -67,7 +68,7 @@ class Playlist(ViewWidget):
         for t in raw_tracks:
             track = Track().from_dict(t)
             self._add_track(track)
-        self.header.set_w(urwid.Text(filename))
+        self.header.text = filename
 
     def clear(self):
         self.content[:] = []

@@ -152,6 +152,7 @@ class CommandHandler:
             mode = self.Mode.SEARCH_BACKWARD
         else:
             self.commands.error('bad mode')
+            return
         try:
             self.mode_map[mode](command[1:])
         except urwid.ExitMainLoop:

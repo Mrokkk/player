@@ -10,7 +10,7 @@ def async(f):
     '''Decorator which allows any function to be called asynchronously'''
 
     class AsyncCaller:
-        class __caller:
+        class _Caller:
             class Thread(threading.Thread):
                 def __init__(self, queue, logger):
                     self.queue = queue
@@ -39,7 +39,7 @@ def async(f):
 
         def __new__(a):
             if AsyncCaller._instance is None:
-                AsyncCaller._instance = AsyncCaller.__caller()
+                AsyncCaller._instance = AsyncCaller._Caller()
             return AsyncCaller._instance
 
 
