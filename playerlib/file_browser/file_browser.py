@@ -36,7 +36,7 @@ class FileBrowser(urwid.WidgetWrap):
 
     def change_dir(self, dirname):
         path = os.path.abspath(os.path.join(self.dir_name, dirname))
-        if not os.path.isdir(path): return
+        if not os.path.isdir(path): raise RuntimeError('Not a dir: {}'.format(path))
         self.dir_name = path
         self.content[1:] = self._read_dir(self.dir_name)
         self.header.text = path

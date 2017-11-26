@@ -42,8 +42,16 @@ class Bookmarks(urwid.WidgetWrap):
         self.content.append(Bookmark(index, path))
         self._save_bookmarks()
 
+    def _go_to_bookmark(self, bookmark):
+        self.command_handler(':change_dir {}'.format(bookmark.path))
+        self.command_handler(':toggle_pane_view')
+
     def unhandled_input(self, key):
         if key == 'enter':
-            self.command_handler(':change_dir {}'.format(self.listbox.focus.path))
-            self.command_handler(':toggle_pane_view')
+            self._go_to_bookmark(self.listbox.focus)
+        else:
+            try:
+                index = int(key)
+                self._go_to_bookmark(self.content[index])
+            except: return
 

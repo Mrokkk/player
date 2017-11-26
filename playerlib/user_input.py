@@ -27,5 +27,6 @@ class UserInput:
                 self.command_handler(self.key_to_command_mapping[key])
                 return
             if not self.view.unhandled_input(key):
+                # FIXME: catch exceptions
                 self.view.focus_body()
 
