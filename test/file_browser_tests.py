@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, call
 
 from playerlib.file_browser.file_browser import *
 
@@ -44,35 +44,19 @@ class FileBrowserTests(TestCase):
             self.command_handler_mock.assert_called_once_with(':add_to_playlist "/dir/some_file"')
 
     # FIXME: add replace_playlist command
-    # def test_can_replace_playlist(self):
-        # with patch('os.getcwd') as getcwd_mock, \
-                # patch('os.path.isdir') as isdir_mock, \
-                # patch('os.path.exists') as exists_mock, \
-                # patch('os.listdir') as listdir_mock:
-            # getcwd_mock.return_value = '/dir'
-            # exists_mock.return_value = False
-            # listdir_mock.return_value = ['some_file']
-            # isdir_mock.side_effect = [False]
-            # sut = FileBrowser(self.command_handler_mock)
-            # sut.content.set_focus(1)
-            # sut.unhandled_input('r')
-            # self.add_to_playlist_mock.assert_called_once_with('/dir/some_file', clear=True)
-            # self.error_handler_mock.assert_not_called()
-
-    # def test_replace_playlist_calls_error_handler_when_exception_occurred(self):
-        # with patch('os.getcwd') as getcwd_mock, \
-                # patch('os.path.isdir') as isdir_mock, \
-                # patch('os.path.exists') as exists_mock, \
-                # patch('os.listdir') as listdir_mock:
-            # getcwd_mock.return_value = '/dir'
-            # exists_mock.return_value = False
-            # listdir_mock.return_value = ['some_file']
-            # isdir_mock.side_effect = [False]
-            # self.add_to_playlist_mock.side_effect = RuntimeError('Some error')
-            # sut = FileBrowser(self.command_handler_mock)
-            # sut.content.set_focus(1)
-            # sut.unhandled_input('r')
-            # self.command_handler_mock.assert_called_once_with(':add_to_playlist /dir/some_file', clear=True)
+    def test_can_replace_playlist(self):
+        with patch('os.getcwd') as getcwd_mock, \
+                patch('os.path.isdir') as isdir_mock, \
+                patch('os.path.exists') as exists_mock, \
+                patch('os.listdir') as listdir_mock:
+            getcwd_mock.return_value = '/dir'
+            exists_mock.return_value = False
+            listdir_mock.return_value = ['some_file']
+            isdir_mock.side_effect = [False]
+            sut = FileBrowser(self.command_handler_mock)
+            sut.content.set_focus(1)
+            sut.unhandled_input('r')
+            self.command_handler_mock.assert_has_calls([call(':clear_playlist'), call(':add_to_playlist "/dir/some_file"')])
 
     def test_can_toggle_dir(self):
         with patch('os.getcwd') as getcwd_mock, \
@@ -99,6 +83,28 @@ class FileBrowserTests(TestCase):
             self.assertEqual(sut.content[1].path, '/dir/some dir')
             self.assertEqual(sut.content[2].path, '/dir/some_file')
             self.assertEqual(sut.content[3].path, '/dir/some_other_file')
+
+    def test_can_toggle_dir_at_the_end(self):
+        with patch('os.getcwd') as getcwd_mock, \
+                patch('os.path.isdir') as isdir_mock, \
+                patch('os.path.exists') as exists_mock, \
+                patch('os.listdir') as listdir_mock:
+            getcwd_mock.return_value = '/dir'
+            exists_mock.return_value = False
+            listdir_mock.side_effect = [['some dir'], ['file in dir', 'file 2']]
+            isdir_mock.side_effect = [True, True, False, False]
+            sut = FileBrowser(self.command_handler_mock)
+            sut.content.set_focus(1)
+            sut.unhandled_input('enter')
+            self.assertEqual(len(sut.content), 4)
+            self.assertEqual(sut.content[0].text, '/dir')
+            self.assertEqual(sut.content[1].path, '/dir/some dir')
+            self.assertEqual(sut.content[2].path, '/dir/some dir/file 2')
+            self.assertEqual(sut.content[3].path, '/dir/some dir/file in dir')
+            sut.unhandled_input('enter')
+            self.assertEqual(len(sut.content), 2)
+            self.assertEqual(sut.content[0].text, '/dir')
+            self.assertEqual(sut.content[1].path, '/dir/some dir')
 
     def test_toggling_empty_dir_does_nothing(self):
         with patch('os.getcwd') as getcwd_mock, \
@@ -164,6 +170,21 @@ class FileBrowserTests(TestCase):
             self.assertEqual(sut.content[0].text, '/dir/some dir')
             self.assertEqual(sut.content[1].path, '/dir/some dir/file 2')
             self.assertEqual(sut.content[2].path, '/dir/some dir/file in dir')
+
+    def test_can_change_dir_to_empty_dir(self):
+        with patch('os.getcwd') as getcwd_mock, \
+                patch('os.path.isdir') as isdir_mock, \
+                patch('os.path.exists') as exists_mock, \
+                patch('os.listdir') as listdir_mock:
+            getcwd_mock.return_value = '/dir'
+            exists_mock.return_value = False
+            listdir_mock.side_effect = [['some dir'], []]
+            isdir_mock.side_effect = [True, True, False, False]
+            sut = FileBrowser(self.command_handler_mock)
+            sut.content.set_focus(1)
+            sut.unhandled_input('C')
+            self.assertEqual(len(sut.content), 1)
+            self.assertEqual(sut.content[0].text, '/dir/some dir')
 
     def test_cannot_change_dir_to_file(self):
         with patch('os.getcwd') as getcwd_mock, \
@@ -263,4 +284,17 @@ class FileBrowserTests(TestCase):
             sut.unhandled_input('d')
             sut.unhandled_input('e')
             self.command_handler_mock.assert_not_called()
+
+    def test_is_searchable(self):
+        with patch('os.getcwd') as getcwd_mock, \
+                patch('os.path.isdir') as isdir_mock, \
+                patch('os.path.exists') as exists_mock, \
+                patch('os.listdir') as listdir_mock:
+            getcwd_mock.return_value = '/dir'
+            exists_mock.return_value = False
+            listdir_mock.return_value = ['some_file']
+            isdir_mock.side_effect = [False]
+            sut = FileBrowser(self.command_handler_mock)
+            self.assertTrue(hasattr(sut, 'searchable_list'))
+            self.assertTrue(sut.searchable_list() != None)
 
