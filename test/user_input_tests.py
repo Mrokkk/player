@@ -34,12 +34,5 @@ class UserInputTests(TestCase):
     def test_can_handle_mapped_key(self):
         self.sut.key_to_command_mapping = {'a': ':some_command'}
         self.sut.handle_input('a')
-        self.command_handler_mock.execute.assert_called_once_with(':some_command')
-
-    def test_calls_error_handler_if_command_raises_exception(self):
-        self.sut.key_to_command_mapping = {'a': ':some_command'}
-        self.command_handler_mock.execute.side_effect = RuntimeError('Some error')
-        self.sut.handle_input('a')
-        self.command_handler_mock.execute.assert_called_once_with(':some_command')
-        self.error_handler_mock.assert_called_once_with('Some error')
+        self.command_handler_mock.assert_called_once_with(':some_command')
 

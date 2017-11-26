@@ -143,7 +143,7 @@ class CommandHandler:
         elif command.startswith('?'):
             mode = self.Mode.SEARCH_BACKWARD
         else:
-            raise RuntimeError('Bad mode!')
+            self.commands.error('Bad mode')
         try:
             self.mode_map[mode](command[1:])
         except (RuntimeError, AttributeError, IndexError, TypeError, KeyError, SyntaxError, AssertionError) as exc:
