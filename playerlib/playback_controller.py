@@ -22,12 +22,11 @@ class PlaybackController:
                 self.current_track.path == self.current_track.playlist_entry.next.track.path:
             self.set_next_track_playing()
         if self.context.command_panel.selectable() or pos - self.current_track.offset < 0: return
-        time_format = '%H:%M:%S' if self.current_track.length >= 3600 else '%M:%S'
         with self.context.draw_lock:
             self.context.command_panel.set_caption('{} : {} / {}'.format(
                 self.current_track.title,
-                strftime(time_format, gmtime(pos - self.current_track.offset)),
-                strftime(time_format, gmtime(self.current_track.length))))
+                strftime(self.current_track.time_format, gmtime(pos - self.current_track.offset)),
+                self.current_track.length_string))
 
     def play_track(self, track):
         if not track:
@@ -37,12 +36,14 @@ class PlaybackController:
         self.current_track = track
         self.backend.play_track(self.current_track)
         self.current_track.play()
+        self.context.track_info.update(self.current_track)
 
     def set_next_track_playing(self):
         last_track = self.current_track
         last_track.stop()
         self.current_track = self.current_track.playlist_entry.next.track
         self.current_track.play()
+        self.context.track_info.update(self.current_track)
 
     def pause(self):
         if not self.current_track:
@@ -56,6 +57,7 @@ class PlaybackController:
         self.backend.stop()
         self.current_track.stop()
         self.current_track = None
+        self.context.track_info.update(None)
 
     def next(self):
         try:

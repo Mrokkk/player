@@ -9,6 +9,15 @@ class TracksFactoryTests(TestCase):
     def setUp(self):
         self.sut = TracksFactory()
 
+    def _prepare_tagfile(self, taglib_file_mock, nr_of_tracks):
+        tracks = []
+        for i in range(0, nr_of_tracks):
+            t = Mock()
+            t.tags = {}
+            t.length = 0
+            tracks.append(t)
+        taglib_file_mock.side_effect = tracks
+
     def test_can_handle_non_music_file(self):
         with patch('os.path.isfile') as isfile_mock, patch('taglib.File') as taglib_file_mock:
             tracks = self.sut.get('some_file')
@@ -64,6 +73,7 @@ class TracksFactoryTests(TestCase):
                 patch('taglib.File') as taglib_file_mock:
             isfile_mock.return_value = True
             isfile_mock.side_effect = [False, True, True]
+            self._prepare_tagfile(taglib_file_mock, 4)
             listdir_mock.return_value = ['some_file.mp3', 'some_other_file.mp3']
             tracks = self.sut.get('some_dir')
             self.assertEqual(len(tracks), 2)
@@ -77,6 +87,7 @@ class TracksFactoryTests(TestCase):
                 patch('taglib.File') as taglib_file_mock:
             isfile_mock.return_value = True
             isfile_mock.side_effect = [False, True, True, True, True]
+            self._prepare_tagfile(taglib_file_mock, 4)
             listdir_mock.return_value = ['03 - some_file.mp3', '2 - some_other_file.mp3', '1 - some_file.mp3', 'some music.mp3']
             tracks = self.sut.get('some_dir')
             self.assertEqual(len(tracks), 4)

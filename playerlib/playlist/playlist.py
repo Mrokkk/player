@@ -22,13 +22,9 @@ class Playlist(ViewWidget):
         self.content = urwid.SimpleListWalker([])
         self.listbox = ScrollableListBox(self.content)
         self.header = Header('Unnamed playlist')
-        self.footer = urwid.AttrWrap(urwid.Text('Playlist'), 'foot')
         self.tracks_factory = TracksFactory()
         self.logger = logging.getLogger('Playlist')
-        super().__init__(
-            self.listbox,
-            header=self.header,
-            footer=self.footer)
+        super().__init__(self.listbox, header=self.header)
         self.callbacks = {
             'enter': lambda: self.callback(self.listbox.focus.track)
         }

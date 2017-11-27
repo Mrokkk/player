@@ -12,6 +12,7 @@ from playerlib.playback_controller import *
 from playerlib.player_context import *
 from playerlib.player_view import *
 from playerlib.playlist.playlist import *
+from playerlib.track_info.track_info import *
 from playerlib.user_input import *
 
 class Loop(urwid.MainLoop):
@@ -39,8 +40,9 @@ class Player:
         context.command_panel = CommandPanel(context.command_handler)
         context.bookmarks = Bookmarks(context.config, context.command_handler)
         context.playlist = Playlist(context.playback_controller.play_track, context.command_handler)
+        context.track_info = TrackInfo()
         context.file_browser = FileBrowser(context.command_handler)
-        context.view = PlayerView(context.file_browser, context.bookmarks, context.playlist, context.command_panel)
+        context.view = PlayerView(context.file_browser, context.bookmarks, context.playlist, context.track_info, context.command_panel)
         AsyncCaller(context.command_panel.error)
 
         self.main_loop = Loop(

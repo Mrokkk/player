@@ -5,9 +5,9 @@ from playerlib.main_view import *
 
 class PlayerView(urwid.WidgetWrap):
 
-    def __init__(self, file_browser, bookmarks, playlist, command_panel):
+    def __init__(self, file_browser, bookmarks, playlist, track_info, command_panel):
         self.command_panel = command_panel
-        self.main_view = MainView(file_browser, bookmarks, playlist)
+        self.main_view = MainView(file_browser, bookmarks, playlist, track_info)
         self.alternate_view = None
         self.view = urwid.WidgetPlaceholder(self.main_view)
         super().__init__(urwid.Frame(self.view, footer=self.command_panel))

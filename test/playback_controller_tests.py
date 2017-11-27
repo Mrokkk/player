@@ -149,6 +149,8 @@ class PlaybackControllerTests(TestCase):
     def test_can_update_current_track_time_position(self):
         self.current_track_mock.offset = 0
         self.current_track_mock.length = 20
+        self.current_track_mock.length_string = '00:20'
+        self.current_track_mock.time_format = '%M:%S'
         self.current_track_mock.title = 'Some Title'
         self.sut.current_track = self.current_track_mock
 
@@ -169,31 +171,20 @@ class PlaybackControllerTests(TestCase):
         self.command_panel_mock.set_caption.reset_mock()
 
 
-    def test_can_update_current_track_time_position_when_track_length_longer_than_hour(self):
-        self.current_track_mock.offset = 0
-        self.current_track_mock.length = 7200
-        self.current_track_mock.title = 'Some Title'
-        self.sut.current_track = self.current_track_mock
-
-        self.sut.update_current_state(1)
-        self.command_panel_mock.set_caption.assert_called_once_with('Some Title : 00:00:01 / 02:00:00')
-        self.command_panel_mock.set_caption.reset_mock()
-
-        self.sut.update_current_state(100)
-        self.command_panel_mock.set_caption.assert_called_once_with('Some Title : 00:01:40 / 02:00:00')
-        self.command_panel_mock.set_caption.reset_mock()
-
-
     def test_can_go_to_next_track(self):
         self.current_track_mock.offset = 0
         self.current_track_mock.length = 32
         self.current_track_mock.title = 'Some Title'
         self.current_track_mock.path = '/path'
+        self.current_track_mock.length_string = '00:32'
+        self.current_track_mock.time_format = '%M:%S'
         next_track_mock = Mock()
         next_track_mock.offset = 32
         next_track_mock.length = 21
         next_track_mock.title = 'Some Other Title'
         next_track_mock.path = '/path'
+        next_track_mock.length_string = '00:21'
+        next_track_mock.time_format = '%M:%S'
         self.current_track_mock.playlist_entry.next.track = next_track_mock
         self.sut.current_track = self.current_track_mock
 

@@ -11,9 +11,11 @@ class PlayerViewTests(TestCase):
         self.file_browser_mock = Mock()
         self.bookmarks_mock = Mock()
         self.playlist_mock = Mock()
+        self.track_info_mock = Mock()
         self.command_panel_mock = Mock()
         self.columns_mock = Mock()
-        self.sut = PlayerView(self.file_browser_mock, self.bookmarks_mock, self.playlist_mock, self.command_panel_mock)
+        self.sut = PlayerView(self.file_browser_mock, self.bookmarks_mock,
+            self.playlist_mock, self.track_info_mock, self.command_panel_mock)
 
     def test_on_start_file_browser_is_focused(self):
         self.assertEqual(self.sut.focus, self.file_browser_mock)
