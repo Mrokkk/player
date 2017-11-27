@@ -94,11 +94,11 @@ class CueParser:
 
     def parse(self, path, use_taglib=False):
         parent_dir = os.path.dirname(path)
-        encodings = ['latin1', 'utf-8']
+        encodings = ['latin1', 'latin2', 'utf-8']
         for encoding in encodings:
             try:
                 with open(path, 'r', encoding=encoding) as f:
                     return self._parse_file(f, use_taglib, parent_dir)
-            except:
-                self.logger.warning('Cannot open {} using encoding: {}'.format(path, encoding))
+            except Exception as e:
+                self.logger.warning('Cannot open {} using encoding {}: {}'.format(path, encoding, str(e)))
 
