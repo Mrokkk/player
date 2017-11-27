@@ -128,35 +128,45 @@ class TracksFactoryTests(TestCase):
             self.assertEqual(tracks[0].offset, 0)
 
     def test_can_handle_empty_cdaudio(self):
-        with patch('discid.get_default_device') as discid_device_mock, \
-                patch('discid.read') as discid_read:
-            disc_mock = Mock()
-            disc_mock.tracks = []
-            discid_read.return_value = disc_mock
-            tracks = self.sut.get('cdda://')
-            self.assertEqual(len(tracks), 0)
+        import sys
+        discid_device_mock = Mock()
+        discid_read = Mock()
+        discid_mock = Mock()
+        discid_mock.get_default_device = discid_device_mock
+        discid_mock.read = discid_read
+        sys.modules['discid'] = discid_mock
+        disc_mock = Mock()
+        disc_mock.tracks = []
+        discid_read.return_value = disc_mock
+        tracks = self.sut.get('cdda://')
+        self.assertEqual(len(tracks), 0)
 
     def test_can_handle_nonempty_cdaudio(self):
-        with patch('discid.get_default_device') as discid_device_mock, \
-                patch('discid.read') as discid_read:
-            track1, track2 = Mock(), Mock()
-            track1.number = 1
-            track1.seconds = 53
-            track2.number = 2
-            track2.seconds = 218
-            disc_mock = Mock()
-            disc_mock.tracks = [track1, track2]
-            discid_read.return_value = disc_mock
-            tracks = self.sut.get('cdda://')
-            self.assertEqual(len(tracks), 2)
-            self.assertEqual(tracks[0].path, 'cdda://')
-            self.assertEqual(tracks[0].index, 1)
-            self.assertEqual(tracks[0].length, 53)
-            self.assertEqual(tracks[0].offset, 0)
-            self.assertEqual(tracks[1].path, 'cdda://')
-            self.assertEqual(tracks[1].index, 2)
-            self.assertEqual(tracks[1].length, 218)
-            self.assertEqual(tracks[1].offset, 53)
+        import sys
+        discid_device_mock = Mock()
+        discid_read = Mock()
+        discid_mock = Mock()
+        discid_mock.get_default_device = discid_device_mock
+        discid_mock.read = discid_read
+        sys.modules['discid'] = discid_mock
+        track1, track2 = Mock(), Mock()
+        track1.number = 1
+        track1.seconds = 53
+        track2.number = 2
+        track2.seconds = 218
+        disc_mock = Mock()
+        disc_mock.tracks = [track1, track2]
+        discid_read.return_value = disc_mock
+        tracks = self.sut.get('cdda://')
+        self.assertEqual(len(tracks), 2)
+        self.assertEqual(tracks[0].path, 'cdda://')
+        self.assertEqual(tracks[0].index, 1)
+        self.assertEqual(tracks[0].length, 53)
+        self.assertEqual(tracks[0].offset, 0)
+        self.assertEqual(tracks[1].path, 'cdda://')
+        self.assertEqual(tracks[1].index, 2)
+        self.assertEqual(tracks[1].length, 218)
+        self.assertEqual(tracks[1].offset, 53)
 
     def test_should_return_none_if_path_is_neither_dir_nor_file(self):
         with patch('os.path.isfile') as isfile_mock, \

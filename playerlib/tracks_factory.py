@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import discid
 import fnmatch
 import os
 import re
@@ -69,6 +68,10 @@ class TracksFactory:
         return tracks
 
     def _handle_cdda(self):
+        try:
+            import discid
+        except:
+            raise RuntimeError('Cannot import discid. Is it installed?')
         device_name = discid.get_default_device()
         disc = discid.read(device_name)
         tracks = []
