@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import logging
-import os
 import urwid
 from playerlib.helpers.helpers import clamp
 from playerlib.completer import *
@@ -22,11 +20,16 @@ class CommandPanel(urwid.Edit):
         self.history_index = -1
         self.completer = Completer(self.command_handler.list_commands(), self)
         self.completer_context = None
-        self.logger = logging.getLogger('CommandPanel')
 
     def _clear_and_set_caption(self, caption):
         self.set_edit_text('')
         self.set_caption(caption)
+
+    def deactivate(self):
+        self.mode = None
+
+    def is_active(self):
+        return self.mode != None
 
     def activate(self, key):
         self.mode = key
@@ -35,15 +38,15 @@ class CommandPanel(urwid.Edit):
 
     def error(self, error):
         self._clear_and_set_caption(('error', 'Error: ' + error))
-        self.mode = None
+        self.deactivate()
 
     def info(self, error):
         self._clear_and_set_caption(('info', 'Info: ' + error))
-        self.mode = None
+        self.deactivate()
 
     def clear(self):
         self._clear_and_set_caption('')
-        self.mode = None
+        self.deactivate()
 
     def _update_panel(self):
         self.set_edit_text(self.history[self.mode][self.history_index])
@@ -52,8 +55,7 @@ class CommandPanel(urwid.Edit):
     def _handle_enter(self):
         self.history[self.mode].insert(0, self.get_edit_text().strip())
         self.command_handler(self.caption + self.get_edit_text().strip())
-        if self.mode:
-            self.clear()
+        if self.is_active(): self.clear()
 
     def _handle_up_arrow(self):
         try:
