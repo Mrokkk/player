@@ -15,6 +15,7 @@ class Config:
         ('dir_focused', 'dark green', 'black', '', '#8a5', 'g11'),
         ('error', 'dark red', '', '', '#a00', ''),
         ('info', 'dark cyan', '', '', '#06f', ''),
+        ('separator', 'black', 'black', '', 'g16', ''),
     ]
     default_bookmarks_file = os.path.expanduser('~') + '/.config/player/bookmarks.json'
 

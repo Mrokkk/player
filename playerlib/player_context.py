@@ -13,5 +13,6 @@ class PlayerContext:
         self.player_controller = None
         self.playlist = None
         self.quit = None
+        self.track_info = None
         self.view = None
 
