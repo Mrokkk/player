@@ -1,0 +1,29 @@
+backend:
+    name: mplayer
+    path: ~/.local/bin/mplayer
+
+colors: 256
+palette:
+    head:
+        fg: 0xa30
+    foot:
+        bg: g11
+    file:
+        fg:
+    file_focused:
+        bg: g11
+    dir:
+        fg: 0x8a5
+    dir_focused:
+        fg: 0x8a5
+        bg: g11
+    error:
+        fg: 0xa00
+    info:
+        fg: 0x06f
+    separator:
+        fg: g16
+
+bookmarks:
+    path: ~/.config/player/bookmarks.json
+
