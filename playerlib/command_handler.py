@@ -81,10 +81,6 @@ class CommandHandler:
         def error(self, string):
             self._context.command_panel.error(string)
 
-        def help(self, command):
-            # TODO
-            pass
-
 
     def __init__(self, context):
         self.context = context
