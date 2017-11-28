@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import yaml
 
 class Config:
 
@@ -20,21 +21,20 @@ class Config:
     default_bookmarks_file = os.path.expanduser('~') + '/.config/player/bookmarks.json'
 
     def __init__(self):
-        import importlib.machinery
         try:
-            config = importlib.machinery.SourceFileLoader('config', os.path.expanduser('~') + '/.config/player/config').load_module()
-        except:
-            config = importlib.machinery.SourceFileLoader('config', os.path.expanduser('~') + '/.playerc').load_module()
+            with open(os.path.expanduser('~') + '/.config/player/config.yml', 'r') as f:
+                config = yaml.load(f.read())
+        except: pass
 
-        try: self.backend = config.backend
+        try: self.backend = config['backend']['name']
         except: self.backend = self.default_backend
 
-        try: self.backend_path = config.backend_path
+        try: self.backend_path = config['backend']['path']
         except: self.backend_path = self.default_backend_path
 
         try: self.color_palette = config.color_palette
         except: self.color_palette = self.default_color_palette
 
-        try: self.bookmarks_file = config.bookmarks_file
+        try: self.bookmarks_file = config.bookmarks.file
         except: self.bookmarks_file = self.default_bookmarks_file
 
