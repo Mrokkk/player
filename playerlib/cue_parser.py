@@ -94,7 +94,7 @@ class CueParser:
 
     def parse(self, path, use_taglib=False):
         parent_dir = os.path.dirname(path)
-        encodings = ['latin1', 'latin2', 'utf-8']
+        encodings = ['utf-8', 'windows-1250', 'latin2']
         for encoding in encodings:
             try:
                 with open(path, 'r', encoding=encoding) as f:

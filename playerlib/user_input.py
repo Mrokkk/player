@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-import urwid
 import logging
+import re
+import urwid
 
 class InputStateMachine:
 
@@ -15,7 +16,9 @@ class InputStateMachine:
             'H': lambda: self.context.command_handler(':seek -60'),
             'L': lambda: self.context.command_handler(':seek +60'),
             ' ': lambda: self.context.command_handler(':pause'),
-            'ctrl w': lambda: self.context.command_handler(':switch_panes'),
+            '<C-w>left': lambda: self.context.view.main_view.switch_left(),
+            '<C-w>right': lambda: self.context.view.main_view.switch_right(),
+            '<C-w><C-w>': lambda: self.context.command_handler(':switch_panes'),
             '[': lambda: self.context.command_handler(':set volume -10'),
             ']': lambda: self.context.command_handler(':set volume +10'),
             'b': lambda: self.context.command_handler(':toggle_pane_view'),
@@ -27,17 +30,25 @@ class InputStateMachine:
         if self.alarm: self.context.event_loop.remove_alarm(self.alarm)
         self.state = ''
 
+    def _convert_key(self, key):
+        if 'meta' in key:
+            return re.sub(r'meta (.)', r'<M-\1>', key)
+        elif 'ctrl' in key:
+            return re.sub(r'ctrl (.)', r'<C-\1>', key)
+        return key
+
     def handle_key(self, key):
+        key = self._convert_key(key)
         if key == 'esc':
             self._clear()
-            return True
+            return False
         self.state = ''.join([self.state, key])
         for k in self.keys:
             if self.state == k:
                 self.keys[self.state]()
                 self._clear()
                 return True
-            elif self.state in k:
+            elif k.startswith(self.state):
                 self.alarm = self.context.event_loop.alarm(1, self._clear)
                 return True
         self._clear()
@@ -58,7 +69,8 @@ class UserInput:
             self.command_panel.activate(key)
         else:
             try:
-                if self.sm.handle_key(key): return
+                if not isinstance(key, tuple):
+                    if self.sm.handle_key(key): return
                 if not self.view.unhandled_input(key):
                     self.view.focus_body()
             except urwid.ExitMainLoop:

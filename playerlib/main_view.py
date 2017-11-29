@@ -21,6 +21,10 @@ class MainView(urwid.WidgetWrap):
         self.columns.set_focus(0)
         super().__init__(self.columns)
 
+    def keypress(self, size, key):
+        if key == 'right' or key == 'left': return key
+        return super().keypress(size, key)
+
     def unhandled_input(self, key):
         if self.columns.focus == self._left_pane:
             return self.columns.focus.original_widget.unhandled_input(key)
@@ -50,6 +54,12 @@ class MainView(urwid.WidgetWrap):
             self._toggle_left_pane()
         else:
             self._toggle_right_pane()
+
+    def switch_left(self):
+        self.columns.set_focus(0)
+
+    def switch_right(self):
+        self.columns.set_focus(2)
 
     @property
     def focus(self):
