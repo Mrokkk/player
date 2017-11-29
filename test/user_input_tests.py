@@ -13,7 +13,12 @@ class UserInputTests(TestCase):
         self.error_handler_mock = Mock()
         self.command_panel_mock.activation_keys = [':', '/', '?']
         self.command_panel_mock.error = self.error_handler_mock
-        self.sut = UserInput(self.view_mock, self.command_handler_mock, self.command_panel_mock)
+        self.context = Mock()
+        self.context.command_handler = self.command_handler_mock
+        self.context.command_panel = self.command_panel_mock
+        self.context.view = self.view_mock
+        self.context.event_loop = MagicMock()
+        self.sut = UserInput(self.context)
         self.sut.key_to_command_mapping = {}
 
     def test_can_handle_not_mapped_key(self):
@@ -32,7 +37,21 @@ class UserInputTests(TestCase):
         self.command_panel_mock.activate.assert_called_once_with(':')
 
     def test_can_handle_mapped_key(self):
-        self.sut.key_to_command_mapping = {'a': ':some_command'}
-        self.sut.handle_input('a')
-        self.command_handler_mock.assert_called_once_with(':some_command')
+        self.sut.handle_input('h')
+        self.command_handler_mock.assert_called_once_with(':seek -10')
+        self.context.event_loop.alarm.assert_not_called()
+
+    def test_can_handle_keys_sequence(self):
+        self.sut.handle_input('g')
+        self.context.event_loop.alarm.assert_called_once()
+        self.sut.handle_input('g')
+        self.context.event_loop.remove_alarm.assert_called_once()
+        self.context.view.focus.searchable_list.assert_called_once()
+
+    def test_can_handle_break_keys_sequence(self):
+        self.sut.handle_input('g')
+        self.context.event_loop.alarm.assert_called_once()
+        self.sut.handle_input('esc')
+        self.context.event_loop.remove_alarm.assert_called_once()
+        self.context.view.focus.searchable_list.assert_not_called()
 

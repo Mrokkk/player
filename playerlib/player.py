@@ -43,13 +43,14 @@ class Player:
         context.track_info = TrackInfo()
         context.file_browser = FileBrowser(context.command_handler)
         context.view = PlayerView(context.file_browser, context.bookmarks, context.playlist, context.track_info, context.command_panel)
+        context.event_loop = event_loop
         AsyncCaller(context.command_panel.error)
 
         self.main_loop = Loop(
             context.draw_lock,
             context.view,
             palette=context.config.color_palette,
-            unhandled_input=UserInput(context.view, context.command_handler, context.command_panel).handle_input,
+            unhandled_input=UserInput(context).handle_input,
             event_loop=event_loop,
             screen=screen)
 

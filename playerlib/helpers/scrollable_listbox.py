@@ -27,12 +27,18 @@ class ScrollableListBox(urwid.ListBox):
     def keypress(self, size, key):
         if key == 'home':
             # FIXME: check if element is selectable
-            self.focus_position = 0
+            self.scroll_beginning()
             return None
         elif key == 'end':
-            self.focus_position = len(self.body) - 1
+            self.scroll_end()
             return None
         return super().keypress(size, key)
+
+    def scroll_beginning(self):
+        self.focus_position = 0
+
+    def scroll_end(self):
+        self.focus_position = len(self.body) - 1
 
     def search_forward(self, pattern):
         index = self.focus_position + 1
