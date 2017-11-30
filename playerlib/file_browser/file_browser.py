@@ -20,7 +20,7 @@ class FileBrowser(ViewWidget):
         self.header = Header(self.dir_name)
         self.content = urwid.SimpleListWalker([])
         self.content.extend(self._read_dir(self.dir_name))
-        self.listbox = ScrollableListBox(self.content)
+        self.listbox = ScrollableListBox(self.content, readonly=True)
         self.last_position = 0
         self.logger = logging.getLogger('FileBrowser')
         super().__init__(self.listbox,

@@ -5,7 +5,8 @@ from playerlib.helpers.helpers import *
 
 class ScrollableListBox(urwid.ListBox):
 
-    def __init__(self, content):
+    def __init__(self, content, readonly=False):
+        self._readonly = readonly
         super().__init__(content)
 
     def _try_to_scroll(self, key):
@@ -62,4 +63,11 @@ class ScrollableListBox(urwid.ListBox):
                 if index < 0: return
             except:
                 break
+
+    def readonly(self):
+        return self._readonly
+
+    def delete(self):
+        if self.readonly(): raise RuntimeError('this widget does not support removing items')
+        del self.body[self.focus_position]
 

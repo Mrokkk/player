@@ -11,6 +11,7 @@ class InputStateMachine:
         self.keys = {
             'gg': lambda: self.context.view.focus.searchable_list().scroll_beginning(),
             'G': lambda: self.context.view.focus.searchable_list().scroll_end(),
+            'dd': lambda: self.context.view.focus.searchable_list().delete(),
             'h': lambda: self.context.command_handler(':seek -10'),
             'l': lambda: self.context.command_handler(':seek +10'),
             'H': lambda: self.context.command_handler(':seek -60'),

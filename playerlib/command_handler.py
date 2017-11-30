@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import enum
 import logging
 import shlex
 import urwid
@@ -7,10 +8,10 @@ from playerlib.async import *
 
 class CommandHandler:
 
-    class Mode:
-        COMMAND = 1
-        SEARCH_FORWARD = 2
-        SEARCH_BACKWARD = 3
+    class Mode(enum.Enum):
+        COMMAND = ':'
+        SEARCH_FORWARD = '/'
+        SEARCH_BACKWARD = '?'
 
     class Commands:
         def __init__(self, context):
@@ -125,17 +126,11 @@ class CommandHandler:
 
     def __call__(self, command):
         if not command: return
-        if command.startswith(':'):
-            mode = self.Mode.COMMAND
-        elif command.startswith('/'):
-            mode = self.Mode.SEARCH_FORWARD
-        elif command.startswith('?'):
-            mode = self.Mode.SEARCH_BACKWARD
-        else:
+        try: mode = [e for e in self.Mode if e.value == command[0]][0]
+        except IndexError:
             self.commands.error('bad mode')
             return
-        try:
-            self.mode_map[mode](command[1:])
+        try: self.mode_map[mode](command[1:])
         except urwid.ExitMainLoop:
             raise
         except Exception as exc:
