@@ -7,29 +7,30 @@ import urwid
 class InputStateMachine:
 
     def __init__(self, context):
-        self.context = context
-        self.keys = {
-            'gg': lambda: self.context.view.focus.searchable_list().scroll_beginning(),
-            'G': lambda: self.context.view.focus.searchable_list().scroll_end(),
-            'dd': lambda: self.context.view.focus.searchable_list().delete(),
-            'h': lambda: self.context.command_handler(':seek -10'),
-            'l': lambda: self.context.command_handler(':seek +10'),
-            'H': lambda: self.context.command_handler(':seek -60'),
-            'L': lambda: self.context.command_handler(':seek +60'),
-            ' ': lambda: self.context.command_handler(':pause'),
-            '<C-w>left': lambda: self.context.view.main_view.switch_left(),
-            '<C-w>right': lambda: self.context.view.main_view.switch_right(),
-            '<C-w><C-w>': lambda: self.context.command_handler(':switch_panes'),
-            '[': lambda: self.context.command_handler(':set volume -10'),
-            ']': lambda: self.context.command_handler(':set volume +10'),
-            'b': lambda: self.context.command_handler(':toggle_pane_view'),
+        self._context = context
+        self._keys = {
+            'gg': lambda: self._context.view.focus.searchable_list().scroll_beginning(),
+            'G': lambda: self._context.view.focus.searchable_list().scroll_end(),
+            'dd': lambda: self._context.view.focus.searchable_list().delete(),
+            'h': lambda: self._context.command_handler(':seek -10'),
+            'l': lambda: self._context.command_handler(':seek +10'),
+            'H': lambda: self._context.command_handler(':seek -60'),
+            'L': lambda: self._context.command_handler(':seek +60'),
+            ' ': lambda: self._context.command_handler(':pause'),
+            '<C-w>left': lambda: self._context.view.main_view.switch_left(),
+            '<C-w>right': lambda: self._context.view.main_view.switch_right(),
+            '<C-w><C-w>': lambda: self._context.command_handler(':switch_panes'),
+            '[': lambda: self._context.command_handler(':set volume -10'),
+            ']': lambda: self._context.command_handler(':set volume +10'),
+            'b': lambda: self._context.command_handler(':toggle_pane_view'),
         }
-        self.state = ''
-        self.alarm = None
+        self._state = ''
+        self._alarm = None
 
     def _clear(self):
-        if self.alarm: self.context.event_loop.remove_alarm(self.alarm)
-        self.state = ''
+        if self._alarm: self._context.event_loop.remove_alarm(self._alarm)
+        self._state = ''
+        self._alarm = None
 
     def _convert_key(self, key):
         if 'meta' in key:
@@ -43,14 +44,14 @@ class InputStateMachine:
         if key == 'esc':
             self._clear()
             return False
-        self.state = ''.join([self.state, key])
-        for k in self.keys:
-            if self.state == k:
-                self.keys[self.state]()
+        self._state = ''.join([self._state, key])
+        for k in self._keys:
+            if self._state == k:
+                self._keys[self._state]()
                 self._clear()
                 return True
-            elif k.startswith(self.state):
-                self.alarm = self.context.event_loop.alarm(1, self._clear)
+            elif k.startswith(self._state):
+                self._alarm = self._context.event_loop.alarm(1, self._clear)
                 return True
         self._clear()
         return False
