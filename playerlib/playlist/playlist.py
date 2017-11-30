@@ -24,10 +24,10 @@ class Playlist(ViewWidget):
         self.header = Header('Unnamed playlist')
         self.tracks_factory = TracksFactory()
         self.logger = logging.getLogger('Playlist')
-        super().__init__(self.listbox, header=self.header)
-        self.callbacks = {
+        callbacks = {
             'enter': lambda: self.callback(self.listbox.focus.track)
         }
+        super().__init__(self.listbox, callbacks, header=self.header)
 
     def _get_track_string(self, track):
         if track.title:

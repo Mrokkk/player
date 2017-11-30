@@ -20,11 +20,7 @@ class Bookmarks(ViewWidget):
         self.content = urwid.SimpleListWalker([])
         self._load_bookmarks()
         self.listbox = ScrollableListBox(self.content)
-        super().__init__(
-            self.listbox,
-            header=self.header,
-            footer=urwid.AttrWrap(urwid.Text(self.footer_text), 'foot'))
-        self.callbacks = {
+        callbacks = {
             'enter': self._handle_enter,
             '1': lambda: self._handle_number(1),
             '2': lambda: self._handle_number(1),
@@ -37,6 +33,11 @@ class Bookmarks(ViewWidget):
             '9': lambda: self._handle_number(9),
             '0': lambda: self._handle_number(10),
         }
+        super().__init__(
+            self.listbox,
+            callbacks,
+            header=self.header,
+            footer=urwid.AttrWrap(urwid.Text(self.footer_text), 'foot'))
 
     def _save_bookmarks(self):
         import json

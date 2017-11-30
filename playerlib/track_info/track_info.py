@@ -18,9 +18,7 @@ class TrackInfo(ViewWidget):
         self.content = urwid.SimpleListWalker([])
         self.listbox = urwid.ListBox(self.content)
         self._no_track_playing()
-        super().__init__(self.listbox, header=self.header)
-        self.callbacks = {
-        }
+        super().__init__(self.listbox, {}, header=self.header)
 
     def _no_track_playing(self):
         self.content[:] = [urwid.Text('No track playing!')]

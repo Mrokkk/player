@@ -23,10 +23,7 @@ class FileBrowser(ViewWidget):
         self.listbox = ScrollableListBox(self.content, readonly=True)
         self.last_position = 0
         self.logger = logging.getLogger('FileBrowser')
-        super().__init__(self.listbox,
-            header=self.header,
-            footer=urwid.AttrWrap(urwid.Text(self.footer_text), 'foot'))
-        self.callbacks = {
+        callbacks = {
             'u': self._go_back,
             'enter': lambda: self._toggle_dir(self.content.get_focus()[0]),
             'R': lambda: self.change_dir('.'),
@@ -35,6 +32,10 @@ class FileBrowser(ViewWidget):
             'r': lambda: self.command_handler(':replace_playlist \"{}\"'.format(self.content.get_focus()[0].path)),
             'B': lambda: self.command_handler(':add_bookmark \"{}\"'.format(self.dir_name)),
         }
+        super().__init__(self.listbox,
+            callbacks,
+            header=self.header,
+            footer=urwid.AttrWrap(urwid.Text(self.footer_text), 'foot'))
 
     def change_dir(self, dirname):
         path = os.path.abspath(os.path.join(self.dir_name, dirname))
