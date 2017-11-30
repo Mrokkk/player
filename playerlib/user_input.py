@@ -62,21 +62,16 @@ class UserInput:
     def __init__(self, context):
         self.view = context.view
         self.command_handler = context.command_handler
-        self.command_panel = context.command_panel
         self.sm = InputStateMachine(context)
 
     def handle_input(self, key):
-        if key in self.command_panel.activation_keys:
-            self.view.focus_command_panel()
-            self.command_panel.activate(key)
-        else:
-            try:
-                if not isinstance(key, tuple):
-                    if self.sm.handle_key(key): return
-                if not self.view.unhandled_input(key):
-                    self.view.focus_body()
-            except urwid.ExitMainLoop:
-                raise
-            except Exception as e:
-                self.command_panel.error(str(e))
+        try:
+            if not isinstance(key, tuple):
+                if self.sm.handle_key(key): return
+            if not self.view.unhandled_input(key):
+                self.view.focus_body()
+        except urwid.ExitMainLoop:
+            raise
+        except Exception as e:
+            self.command_handler(':error \"{}\"'.format(str(e)))
 

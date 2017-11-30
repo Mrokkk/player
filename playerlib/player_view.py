@@ -12,6 +12,13 @@ class PlayerView(urwid.WidgetWrap):
         self.view = urwid.WidgetPlaceholder(self.main_view)
         super().__init__(urwid.Frame(self.view, footer=self.command_panel))
 
+    def keypress(self, size, key):
+        if key in self.command_panel.activation_keys:
+            self.focus_command_panel()
+            self.command_panel.activate(key)
+            return None
+        return super().keypress(size, key)
+
     def unhandled_input(self, key):
         if self._w.focus_position == 'footer':
             return self.command_panel.unhandled_input(key)

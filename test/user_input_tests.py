@@ -31,11 +31,6 @@ class UserInputTests(TestCase):
         self.sut.handle_input('a')
         self.view_mock.unhandled_input.assert_called_once_with('a')
 
-    def test_can_handle_activation_keys(self):
-        self.sut.handle_input(':')
-        self.view_mock.focus_command_panel.assert_called_once()
-        self.command_panel_mock.activate.assert_called_once_with(':')
-
     def test_can_handle_mapped_key(self):
         self.sut.handle_input('h')
         self.command_handler_mock.assert_called_once_with(':seek -10')
