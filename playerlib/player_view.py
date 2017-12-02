@@ -1,23 +1,21 @@
 #!/usr/bin/env python3
 
 import urwid
-from playerlib.main_view import *
 
 class PlayerView(urwid.WidgetWrap):
 
-    def __init__(self, file_browser, bookmarks, playlist, track_info, command_panel):
+    def __init__(self, main_view, command_panel):
+        self.main_view = main_view
         self.command_panel = command_panel
-        self.main_view = MainView(file_browser, bookmarks, playlist, track_info)
-        self.alternate_view = None
         self.view = urwid.WidgetPlaceholder(self.main_view)
         super().__init__(urwid.Frame(self.view, footer=self.command_panel))
 
     def keypress(self, size, key):
         if key in self.command_panel.activation_keys:
-            self.focus_command_panel()
+            self._focus_command_panel()
             self.command_panel.activate(key)
             return None
-        return super().keypress(size, key)
+        return super().keypress(size, key) # pragma: no cover
 
     def unhandled_input(self, key):
         if self._w.focus_position == 'footer':
@@ -30,7 +28,7 @@ class PlayerView(urwid.WidgetWrap):
     def toggle_pane_view(self):
         self.main_view.toggle_pane_view()
 
-    def focus_command_panel(self):
+    def _focus_command_panel(self):
         self._w.focus_position = 'footer'
 
     def focus_body(self):
