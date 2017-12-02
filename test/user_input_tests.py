@@ -16,7 +16,7 @@ class UserInputTests(TestCase):
         self.context = Mock()
         self.context.command_handler = self.command_handler_mock
         self.context.command_panel = self.command_panel_mock
-        self.context.view = self.view_mock
+        self.context.window = self.view_mock
         self.context.event_loop = MagicMock()
         self.sut = UserInput(self.context)
         self.sut.key_to_command_mapping = {}
@@ -41,12 +41,12 @@ class UserInputTests(TestCase):
         self.context.event_loop.alarm.assert_called_once()
         self.sut.handle_input('g')
         self.context.event_loop.remove_alarm.assert_called_once()
-        self.context.view.focus.searchable_list.assert_called_once()
+        self.context.window.focus.searchable_list.assert_called_once()
 
     def test_can_handle_break_keys_sequence(self):
         self.sut.handle_input('g')
         self.context.event_loop.alarm.assert_called_once()
         self.sut.handle_input('esc')
         self.context.event_loop.remove_alarm.assert_called_once()
-        self.context.view.focus.searchable_list.assert_not_called()
+        self.context.window.focus.searchable_list.assert_not_called()
 

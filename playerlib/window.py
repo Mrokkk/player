@@ -2,7 +2,7 @@
 
 import urwid
 
-class PlayerView(urwid.WidgetWrap):
+class Window(urwid.WidgetWrap):
 
     def __init__(self, main_view, command_panel):
         self.main_view = main_view

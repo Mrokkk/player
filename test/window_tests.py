@@ -3,7 +3,7 @@
 from unittest import TestCase
 from unittest.mock import Mock
 
-from playerlib.player_view import *
+from playerlib.window import *
 
 class PlayerViewTests(TestCase):
 
@@ -11,7 +11,7 @@ class PlayerViewTests(TestCase):
         self.main_view_mock = Mock()
         self.command_panel_mock = Mock()
         self.command_panel_mock.activation_keys = [':']
-        self.sut = PlayerView(self.main_view_mock, self.command_panel_mock)
+        self.sut = Window(self.main_view_mock, self.command_panel_mock)
 
     def test_can_switch_focus_between_widgets(self):
         self.sut.switch_panes()

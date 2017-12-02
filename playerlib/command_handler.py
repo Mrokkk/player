@@ -55,10 +55,10 @@ class CommandHandler:
             self._context.playback_controller.seek(value)
 
         def switch_panes(self):
-            self._context.view.switch_panes()
+            self._context.window.switch_panes()
 
         def toggle_pane_view(self):
-            self._context.view.toggle_pane_view()
+            self._context.window.toggle_pane_view()
 
         def add_bookmark(self, path):
             self._context.bookmarks.add(path)
@@ -113,10 +113,10 @@ class CommandHandler:
         eval('self.commands.{}({})'.format(command, self._format_arguments(args)))
 
     def _search_forward_mode(self, command):
-        self.context.view.focus.searchable_list().search_forward(command)
+        self.context.window.focus.searchable_list().search_forward(command)
 
     def _search_backward_mode(self, command):
-        self.context.view.focus.searchable_list().search_backward(command)
+        self.context.window.focus.searchable_list().search_backward(command)
 
     def list_commands(self):
         import inspect

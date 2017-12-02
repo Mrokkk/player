@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-class PlayerContext:
+class Context:
 
     def __init__(self):
         self.bookmarks = None
@@ -10,9 +10,8 @@ class PlayerContext:
         self.draw_lock = None
         self.file_browser = None
         self.playback_controller = None
-        self.player_controller = None
         self.playlist = None
         self.quit = None
         self.track_info = None
-        self.view = None
+        self.window = None
 

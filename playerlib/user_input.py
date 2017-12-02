@@ -9,16 +9,16 @@ class InputStateMachine:
     def __init__(self, context):
         self._context = context
         self._keys = {
-            'gg': lambda: self._context.view.focus.searchable_list().scroll_beginning(),
-            'G': lambda: self._context.view.focus.searchable_list().scroll_end(),
-            'dd': lambda: self._context.view.focus.searchable_list().delete(),
+            'gg': lambda: self._context.window.focus.searchable_list().scroll_beginning(),
+            'G': lambda: self._context.window.focus.searchable_list().scroll_end(),
+            'dd': lambda: self._context.window.focus.searchable_list().delete(),
             'h': lambda: self._context.command_handler(':seek -10'),
             'l': lambda: self._context.command_handler(':seek +10'),
             'H': lambda: self._context.command_handler(':seek -60'),
             'L': lambda: self._context.command_handler(':seek +60'),
             ' ': lambda: self._context.command_handler(':pause'),
-            '<C-w>left': lambda: self._context.view.main_view.switch_left(),
-            '<C-w>right': lambda: self._context.view.main_view.switch_right(),
+            '<C-w>left': lambda: self._context.window.main_view.switch_left(),
+            '<C-w>right': lambda: self._context.window.main_view.switch_right(),
             '<C-w><C-w>': lambda: self._context.command_handler(':switch_panes'),
             '[': lambda: self._context.command_handler(':set volume -10'),
             ']': lambda: self._context.command_handler(':set volume +10'),
@@ -60,7 +60,7 @@ class InputStateMachine:
 class UserInput:
 
     def __init__(self, context):
-        self.view = context.view
+        self.window = context.window
         self.command_handler = context.command_handler
         self.sm = InputStateMachine(context)
 
@@ -68,8 +68,8 @@ class UserInput:
         try:
             if not isinstance(key, tuple):
                 if self.sm.handle_key(key): return
-            if not self.view.unhandled_input(key):
-                self.view.focus_body()
+            if not self.window.unhandled_input(key):
+                self.window.focus_body()
         except urwid.ExitMainLoop:
             raise
         except Exception as e:

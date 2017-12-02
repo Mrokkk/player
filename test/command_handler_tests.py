@@ -2,22 +2,22 @@
 
 import urwid
 from unittest import TestCase
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import Mock, patch
 
-from playerlib.player_context import *
+from playerlib.context import *
 
 class CommandHandlerTests(TestCase):
 
     def setUp(self):
         patch('playerlib.helpers.asynchronous.asynchronous', lambda x: x).start()
         import playerlib.command_handler
-        self.context = PlayerContext()
+        self.context = Context()
         self.context.file_browser = Mock()
         self.context.bookmarks = Mock()
         self.context.playlist = Mock()
         self.context.playback_controller = Mock()
         self.context.command_panel = Mock()
-        self.context.view = Mock()
+        self.context.window = Mock()
         self.context.quit = Mock()
         self.sut = playerlib.command_handler.CommandHandler(self.context)
 
@@ -75,10 +75,10 @@ class CommandHandlerTests(TestCase):
 
     def test_can_execute_view_commands(self):
         self.sut(':switch_panes')
-        self.context.view.switch_panes.assert_called_once()
+        self.context.window.switch_panes.assert_called_once()
 
         self.sut(':toggle_pane_view')
-        self.context.view.toggle_pane_view.assert_called_once()
+        self.context.window.toggle_pane_view.assert_called_once()
 
 
     def test_can_execute_file_browser_commands(self):
@@ -96,17 +96,17 @@ class CommandHandlerTests(TestCase):
 
     def test_can_seek_forward(self):
         list_mock = Mock()
-        self.context.view.focus.searchable_list.return_value = list_mock
+        self.context.window.focus.searchable_list.return_value = list_mock
         self.sut('/some_string')
-        self.context.view.focus.searchable_list.assert_called_once()
+        self.context.window.focus.searchable_list.assert_called_once()
         list_mock.search_forward.assert_called_once_with('some_string')
 
 
     def test_can_seek_backward(self):
         list_mock = Mock()
-        self.context.view.focus.searchable_list.return_value = list_mock
+        self.context.window.focus.searchable_list.return_value = list_mock
         self.sut('?some_string')
-        self.context.view.focus.searchable_list.assert_called_once()
+        self.context.window.focus.searchable_list.assert_called_once()
         list_mock.search_backward.assert_called_once_with('some_string')
 
 
