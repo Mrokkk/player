@@ -4,7 +4,7 @@ import enum
 import logging
 import shlex
 import urwid
-from playerlib.async import *
+from playerlib.helpers.asynchronous import *
 
 class CommandHandler:
 
@@ -20,22 +20,22 @@ class CommandHandler:
         def quit(self):
             self._context.quit()
 
-        @async
+        @asynchronous
         def add_to_playlist(self, path):
             self._context.playlist.add_to_playlist(path)
 
-        @async
+        @asynchronous
         def replace_playlist(self, path):
             self._context.playlist.add_to_playlist(path, clear=True)
 
         def clear_playlist(self):
             self._context.playlist.clear()
 
-        @async
+        @asynchronous
         def save_playlist(self, playlist_file):
             self._context.playlist.save_playlist(playlist_file)
 
-        @async
+        @asynchronous
         def load_playlist(self, playlist_file):
             self._context.playlist.load_playlist(playlist_file)
 
@@ -63,7 +63,7 @@ class CommandHandler:
         def add_bookmark(self, path):
             self._context.bookmarks.add(path)
 
-        @async
+        @asynchronous
         def change_dir(self, path):
             self._context.file_browser.change_dir(path)
 

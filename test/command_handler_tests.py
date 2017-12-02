@@ -9,7 +9,7 @@ from playerlib.player_context import *
 class CommandHandlerTests(TestCase):
 
     def setUp(self):
-        patch('playerlib.async.async', lambda x: x).start()
+        patch('playerlib.helpers.asynchronous.asynchronous', lambda x: x).start()
         import playerlib.command_handler
         self.context = PlayerContext()
         self.context.file_browser = Mock()

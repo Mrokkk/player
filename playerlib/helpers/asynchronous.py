@@ -40,7 +40,7 @@ class AsyncCaller:
         return AsyncCaller._instance
 
 
-def async(f):
+def asynchronous(f):
     '''Decorator which allows any function to be called asynchronously'''
     @functools.wraps(f)
     def _async_call(*args, **kwargs):

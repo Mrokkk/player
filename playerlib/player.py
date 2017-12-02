@@ -3,11 +3,11 @@
 import urwid
 import threading
 
-from playerlib.async import AsyncCaller
 from playerlib.bookmarks.bookmarks import *
 from playerlib.command_handler import *
 from playerlib.command_panel import *
 from playerlib.file_browser.file_browser import *
+from playerlib.helpers.asynchronous import AsyncCaller
 from playerlib.main_view import *
 from playerlib.playback_controller import *
 from playerlib.player_context import *
