@@ -50,3 +50,9 @@ class UserInputTests(TestCase):
         self.context.event_loop.remove_alarm.assert_called_once()
         self.context.window.focus.searchable_list.assert_not_called()
 
+    def test_can_handle_mouse_press(self):
+        self.sut.handle_input(('mouse press', 1))
+        self.context.event_loop.alarm.assert_not_called()
+        self.context.window.focus.searchable_list.assert_not_called()
+        self.view_mock.handle_input.assert_called_once_with(('mouse press', 1))
+
