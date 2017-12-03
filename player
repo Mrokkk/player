@@ -7,12 +7,12 @@ import urwid
 from playerlib.player import *
 from playerlib.config import *
 
-def create_screen():
+def create_screen(colors):
     screen = urwid.raw_display.Screen()
     try:
-        screen.set_terminal_properties(256)
+        screen.set_terminal_properties(colors)
     except Exception as e:
-        logging.warning('Cannot setup 256 colors: {}'.format(str(e)))
+        logging.warning('Cannot setup {} colors: {}'.format(colors, str(e)))
     return screen
 
 def hack_urwid_asyncio():
@@ -29,7 +29,7 @@ def main():
     config = Config()
     signal.signal(signal.SIGINT, signal.SIG_IGN)
     hack_urwid_asyncio()
-    Player(urwid.AsyncioEventLoop(loop=asyncio.get_event_loop()), create_screen(), config).run()
+    Player(urwid.AsyncioEventLoop(loop=asyncio.get_event_loop()), create_screen(config.colors), config).run()
     logging.info('Exitting')
 
 if __name__ == '__main__':

@@ -37,6 +37,9 @@ class Config:
         try: self.backend_path = os.path.expanduser(config['backend']['path'])
         except: self.backend_path = self.default_backend_path
 
+        try: self.colors = config['colors']
+        except: self.colors = 256
+
         try:
             self.color_palette = self._create_palette(config['palette'])
         except:
