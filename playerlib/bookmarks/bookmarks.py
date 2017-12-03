@@ -23,7 +23,7 @@ class Bookmarks(ViewWidget):
         callbacks = {
             'enter': self._handle_enter,
             '1': lambda: self._handle_number(1),
-            '2': lambda: self._handle_number(1),
+            '2': lambda: self._handle_number(2),
             '3': lambda: self._handle_number(3),
             '4': lambda: self._handle_number(4),
             '5': lambda: self._handle_number(5),
@@ -66,6 +66,6 @@ class Bookmarks(ViewWidget):
 
     def _handle_number(self, number):
         try:
-            self._go_to_bookmark(self.content[number])
+            self._go_to_bookmark(self.content[number - 1])
         except: self.command_handler(':error "no such bookmark: {}"'.format(number))
 
