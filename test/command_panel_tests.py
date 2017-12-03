@@ -19,7 +19,7 @@ class CommandPanelTests(TestCase):
     def activate_and_call(self, command):
         self.sut.activate(':')
         self.sut.get_edit_text.return_value = command
-        self.sut.unhandled_input('enter')
+        self.sut.handle_input('enter')
 
     def reset_mocks(self):
         self.sut.set_edit_text.reset_mock()
@@ -48,89 +48,89 @@ class CommandPanelTests(TestCase):
     def test_can_call_command(self):
         self.sut.activate(':')
         self.sut.get_edit_text.return_value = 'command'
-        self.assertFalse(self.sut.unhandled_input('enter'))
+        self.assertFalse(self.sut.handle_input('enter'))
         self.command_handler_mock.assert_called_once_with('command')
 
     # FIXME
     # def test_can_catch_exception_from_command(self):
         # self.sut.activate(':')
         # self.sut.get_edit_text.side_effect = RuntimeError('some error')
-        # self.assertFalse(self.sut.unhandled_input('enter'))
+        # self.assertFalse(self.sut.handle_input('enter'))
         # self.sut.set_caption.assert_called_with(('error', 'Error: some error'))
 
     def test_can_exit(self):
         self.sut.activate(':')
-        self.assertFalse(self.sut.unhandled_input('esc'))
+        self.assertFalse(self.sut.handle_input('esc'))
         self.sut.set_edit_text.assert_called_with('')
         self.sut.set_caption.assert_called_with('')
 
     def test_displays_nothing_when_no_items_in_history(self):
         self.sut.activate(':')
         self.reset_mocks()
-        self.sut.unhandled_input('up')
+        self.sut.handle_input('up')
         self.sut.set_edit_text.assert_not_called()
 
         self.sut.activate(':')
         self.reset_mocks()
-        self.sut.unhandled_input('down')
+        self.sut.handle_input('down')
         self.sut.set_edit_text.assert_not_called()
 
     def test_can_display_previous_history_entry(self):
         self.activate_and_call('command1')
         self.sut.activate(':')
         self.reset_mocks()
-        self.sut.unhandled_input('up')
+        self.sut.handle_input('up')
         self.sut.set_edit_text.assert_called_once_with('command1')
 
     def test_displays_none_when_trying_to_see_current_command(self):
         self.activate_and_call('command1')
         self.sut.activate(':')
         self.reset_mocks()
-        self.assertTrue(self.sut.unhandled_input('up'))
+        self.assertTrue(self.sut.handle_input('up'))
         self.sut.set_edit_text.reset_mock()
         self.sut.set_caption.reset_mock()
-        self.assertTrue(self.sut.unhandled_input('down'))
+        self.assertTrue(self.sut.handle_input('down'))
         self.sut.set_edit_text.assert_called_once_with('')
 
     def test_can_display_next_item_in_history(self):
         self.activate_and_call('command1')
         self.activate_and_call('command2')
         self.sut.activate(':')
-        self.assertTrue(self.sut.unhandled_input('up'))
-        self.assertTrue(self.sut.unhandled_input('up'))
+        self.assertTrue(self.sut.handle_input('up'))
+        self.assertTrue(self.sut.handle_input('up'))
         self.reset_mocks()
-        self.assertTrue(self.sut.unhandled_input('down'))
+        self.assertTrue(self.sut.handle_input('down'))
         self.sut.set_edit_text.assert_called_once_with('command2')
 
     def test_tab_keypress_calls_completer_for_command_mode(self):
         self.sut.completer = Mock()
         self.sut.activate(':')
-        self.assertTrue(self.sut.unhandled_input('tab'))
+        self.assertTrue(self.sut.handle_input('tab'))
         self.sut.completer.complete.assert_called_once()
 
     def test_tab_keypress_does_not_call_completer_on_other_modes(self):
         self.sut.completer = Mock()
         self.sut.activate('/')
-        self.assertTrue(self.sut.unhandled_input('tab'))
+        self.assertTrue(self.sut.handle_input('tab'))
         self.sut.completer.complete.assert_not_called()
         self.sut.activate('?')
-        self.assertTrue(self.sut.unhandled_input('tab'))
+        self.assertTrue(self.sut.handle_input('tab'))
         self.sut.completer.complete.assert_not_called()
 
     def test_handle_input_ignores_other_keys(self):
         self.sut.activate(':')
-        self.assertTrue(self.sut.unhandled_input('a'))
-        self.assertTrue(self.sut.unhandled_input('b'))
+        self.assertTrue(self.sut.handle_input('a'))
+        self.assertTrue(self.sut.handle_input('b'))
 
     def test_should_be_selectable_only_when_active(self):
         self.assertFalse(self.sut.selectable())
         self.sut.activate(':')
         self.assertTrue(self.sut.selectable())
-        self.sut.unhandled_input('esc')
+        self.sut.handle_input('esc')
         self.assertFalse(self.sut.selectable())
         self.sut.activate('/')
         self.assertTrue(self.sut.selectable())
-        self.sut.unhandled_input('esc')
+        self.sut.handle_input('esc')
         self.assertFalse(self.sut.selectable())
         self.sut.activate('?')
         self.assertTrue(self.sut.selectable())

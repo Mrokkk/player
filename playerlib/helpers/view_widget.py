@@ -11,7 +11,7 @@ class ViewWidget(urwid.Frame):
         self._widget = widget
         super().__init__(widget, header=header, footer=footer)
 
-    def unhandled_input(self, key):
+    def handle_input(self, key):
         if key in self._callbacks:
             self._callbacks[key]()
 

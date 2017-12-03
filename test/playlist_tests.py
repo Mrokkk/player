@@ -23,20 +23,20 @@ class PlaylistTests(TestCase):
         return track
 
     def test_enter_keypress_should_fail_when_no_tracks_on_playlist(self):
-        self.assertRaises(Exception, self.sut.unhandled_input, 'enter')
+        self.assertRaises(Exception, self.sut.handle_input, 'enter')
         self.play_callback_mock.assert_not_called()
 
     def test_enter_keypress_should_call_play_callback_if_track_is_selected(self):
         playlist_entry_mock = Mock()
         playlist_entry_mock.track = Mock()
         self.sut.content.append(playlist_entry_mock)
-        self.sut.unhandled_input('enter')
+        self.sut.handle_input('enter')
         self.error_handler_mock.assert_not_called()
         self.play_callback_mock.assert_called_once_with(playlist_entry_mock.track)
 
     def test_other_keypresses_should_be_ignored(self):
         for key in ('a', 'b', 'c', 'd', 'e', ' ', ':'):
-            self.sut.unhandled_input(key)
+            self.sut.handle_input(key)
             self.error_handler_mock.assert_not_called()
             self.play_callback_mock.assert_not_called()
 

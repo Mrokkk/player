@@ -25,11 +25,11 @@ class MainView(urwid.WidgetWrap):
         if key == 'right' or key == 'left': return key
         return super().keypress(size, key)
 
-    def unhandled_input(self, key):
+    def handle_input(self, key):
         if self.columns.focus == self._left_pane:
-            return self.columns.focus.original_widget.unhandled_input(key)
+            return self.columns.focus.original_widget.handle_input(key)
         else:
-            return self._playlist.unhandled_input(key)
+            return self._playlist.handle_input(key)
 
     def switch_panes(self):
         self.columns.set_focus(0 if self.columns.focus_position else 2)

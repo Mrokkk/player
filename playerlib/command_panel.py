@@ -79,7 +79,7 @@ class CommandPanel(urwid.Edit):
     def selectable(self):
         return self.mode != None
 
-    def unhandled_input(self, key):
+    def handle_input(self, key):
         if key == 'enter':
             self._handle_enter()
             self.mode = None

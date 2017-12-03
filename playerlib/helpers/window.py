@@ -17,10 +17,10 @@ class Window(urwid.WidgetWrap):
             return None
         return super().keypress(size, key)
 
-    def unhandled_input(self, key):
+    def handle_input(self, key):
         if self._w.focus_position == 'footer':
-            return self.command_panel.unhandled_input(key)
-        return self.main_view.unhandled_input(key)
+            return self.command_panel.handle_input(key)
+        return self.main_view.handle_input(key)
 
     def switch_panes(self):
         self.main_view.switch_panes()

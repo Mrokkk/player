@@ -22,14 +22,14 @@ class UserInputTests(TestCase):
         self.sut.key_to_command_mapping = {}
 
     def test_can_handle_not_mapped_key(self):
-        self.view_mock.unhandled_input.return_value = True
+        self.view_mock.handle_input.return_value = True
         self.sut.handle_input('a')
-        self.view_mock.unhandled_input.assert_called_once_with('a')
+        self.view_mock.handle_input.assert_called_once_with('a')
 
     def test_can_handle_not_mapped_key_and_change_focus(self):
-        self.view_mock.unhandled_input.return_value = False
+        self.view_mock.handle_input.return_value = False
         self.sut.handle_input('a')
-        self.view_mock.unhandled_input.assert_called_once_with('a')
+        self.view_mock.handle_input.assert_called_once_with('a')
 
     def test_can_handle_mapped_key(self):
         self.sut.handle_input('h')

@@ -18,13 +18,13 @@ class PlayerViewTests(TestCase):
         self.main_view_mock.switch_panes.assert_called_once()
 
     def test_should_pass_keys_to_main_view_if_body_focused(self):
-        self.sut.unhandled_input('a')
-        self.main_view_mock.unhandled_input.assert_called_once_with('a')
+        self.sut.handle_input('a')
+        self.main_view_mock.handle_input.assert_called_once_with('a')
 
     def test_should_pass_keys_to_main_view_if_footer_focused(self):
         self.sut.keypress(None, ':')
-        self.sut.unhandled_input('a')
-        self.command_panel_mock.unhandled_input.assert_called_once_with('a')
+        self.sut.handle_input('a')
+        self.command_panel_mock.handle_input.assert_called_once_with('a')
 
     def test_should_focus_panel_if_command_panel_activation_key_pressed(self):
         self.sut.keypress(None, ':')

@@ -40,7 +40,7 @@ class FileBrowserTests(TestCase):
             isdir_mock.side_effect = [False]
             sut = FileBrowser(self.command_handler_mock)
             sut.content.set_focus(0)
-            sut.unhandled_input('a')
+            sut.handle_input('a')
             self.command_handler_mock.assert_called_once_with(':add_to_playlist "/dir/some_file"')
 
     def test_can_replace_playlist(self):
@@ -54,7 +54,7 @@ class FileBrowserTests(TestCase):
             isdir_mock.side_effect = [False]
             sut = FileBrowser(self.command_handler_mock)
             sut.content.set_focus(0)
-            sut.unhandled_input('r')
+            sut.handle_input('r')
             self.command_handler_mock.assert_called_once_with(':replace_playlist "/dir/some_file"')
 
     def test_can_toggle_dir(self):
@@ -68,7 +68,7 @@ class FileBrowserTests(TestCase):
             isdir_mock.side_effect = [False, False, True, True, False, False]
             sut = FileBrowser(self.command_handler_mock)
             sut.content.set_focus(0)
-            sut.unhandled_input('enter')
+            sut.handle_input('enter')
             self.assertEqual(len(sut.content), 5)
             self.assertEqual(sut.header.text, '/dir')
             self.assertEqual(sut.content[0].path, '/dir/some dir')
@@ -76,7 +76,7 @@ class FileBrowserTests(TestCase):
             self.assertEqual(sut.content[2].path, '/dir/some dir/file in dir')
             self.assertEqual(sut.content[3].path, '/dir/some_file')
             self.assertEqual(sut.content[4].path, '/dir/some_other_file')
-            sut.unhandled_input('enter')
+            sut.handle_input('enter')
             self.assertEqual(len(sut.content), 3)
             self.assertEqual(sut.header.text, '/dir')
             self.assertEqual(sut.content[0].path, '/dir/some dir')
@@ -94,13 +94,13 @@ class FileBrowserTests(TestCase):
             isdir_mock.side_effect = [True, True, False, False]
             sut = FileBrowser(self.command_handler_mock)
             sut.content.set_focus(0)
-            sut.unhandled_input('enter')
+            sut.handle_input('enter')
             self.assertEqual(len(sut.content), 3)
             self.assertEqual(sut.header.text, '/dir')
             self.assertEqual(sut.content[0].path, '/dir/some dir')
             self.assertEqual(sut.content[1].path, '/dir/some dir/file 2')
             self.assertEqual(sut.content[2].path, '/dir/some dir/file in dir')
-            sut.unhandled_input('enter')
+            sut.handle_input('enter')
             self.assertEqual(len(sut.content), 1)
             self.assertEqual(sut.header.text, '/dir')
             self.assertEqual(sut.content[0].path, '/dir/some dir')
@@ -116,13 +116,13 @@ class FileBrowserTests(TestCase):
             isdir_mock.side_effect = [False, False, True, True, True]
             sut = FileBrowser(self.command_handler_mock)
             sut.content.set_focus(0)
-            sut.unhandled_input('enter')
+            sut.handle_input('enter')
             self.assertEqual(len(sut.content), 3)
             self.assertEqual(sut.header.text, '/dir')
             self.assertEqual(sut.content[0].path, '/dir/some dir')
             self.assertEqual(sut.content[1].path, '/dir/some_file')
             self.assertEqual(sut.content[2].path, '/dir/some_other_file')
-            sut.unhandled_input('enter')
+            sut.handle_input('enter')
             self.assertEqual(len(sut.content), 3)
             self.assertEqual(sut.header.text, '/dir')
             self.assertEqual(sut.content[0].path, '/dir/some dir')
@@ -140,13 +140,13 @@ class FileBrowserTests(TestCase):
             isdir_mock.side_effect = [False, False, True, False, False]
             sut = FileBrowser(self.command_handler_mock)
             sut.content.set_focus(1)
-            sut.unhandled_input('enter')
+            sut.handle_input('enter')
             self.assertEqual(len(sut.content), 3)
             self.assertEqual(sut.header.text, '/dir')
             self.assertEqual(sut.content[0].path, '/dir/some dir')
             self.assertEqual(sut.content[1].path, '/dir/some_file')
             self.assertEqual(sut.content[2].path, '/dir/some_other_file')
-            sut.unhandled_input('enter')
+            sut.handle_input('enter')
             self.assertEqual(len(sut.content), 3)
             self.assertEqual(sut.header.text, '/dir')
             self.assertEqual(sut.content[0].path, '/dir/some dir')
@@ -164,7 +164,7 @@ class FileBrowserTests(TestCase):
             isdir_mock.side_effect = [True, True, False, False]
             sut = FileBrowser(self.command_handler_mock)
             sut.content.set_focus(0)
-            sut.unhandled_input('C')
+            sut.handle_input('C')
             self.assertEqual(len(sut.content), 2)
             self.assertEqual(sut.header.text, '/dir/some dir')
             self.assertEqual(sut.content[0].path, '/dir/some dir/file 2')
@@ -181,7 +181,7 @@ class FileBrowserTests(TestCase):
             isdir_mock.side_effect = [True, True, False, False]
             sut = FileBrowser(self.command_handler_mock)
             sut.content.set_focus(0)
-            sut.unhandled_input('C')
+            sut.handle_input('C')
             self.assertEqual(len(sut.content), 0)
             self.assertEqual(sut.header.text, '/dir/some dir')
 
@@ -196,11 +196,11 @@ class FileBrowserTests(TestCase):
             isdir_mock.side_effect = [False, False, False, False]
             sut = FileBrowser(self.command_handler_mock)
             sut.content.set_focus(0)
-            self.assertRaises(RuntimeError, sut.unhandled_input, 'C')
+            self.assertRaises(RuntimeError, sut.handle_input, 'C')
             self.assertEqual(len(sut.content), 1)
             self.assertEqual(sut.header.text, '/dir')
             self.assertEqual(sut.content[0].path, '/dir/some file')
-            self.assertRaises(RuntimeError, sut.unhandled_input, 'C')
+            self.assertRaises(RuntimeError, sut.handle_input, 'C')
             self.assertEqual(len(sut.content), 1)
             self.assertEqual(sut.header.text, '/dir')
             self.assertEqual(sut.content[0].path, '/dir/some file')
@@ -216,7 +216,7 @@ class FileBrowserTests(TestCase):
             isdir_mock.side_effect = [True, True, False, False]
             sut = FileBrowser(self.command_handler_mock)
             sut.content.set_focus(0)
-            sut.unhandled_input('u')
+            sut.handle_input('u')
             self.assertEqual(len(sut.content), 1)
             self.assertEqual(sut.header.text, '/')
             self.assertEqual(sut.content[0].path, '/file')
@@ -232,10 +232,10 @@ class FileBrowserTests(TestCase):
             isdir_mock.side_effect = [True, True, True, True, False, True, True, True, True]
             sut = FileBrowser(self.command_handler_mock)
             sut.content.set_focus(1)
-            sut.unhandled_input('C')
+            sut.handle_input('C')
             self.assertEqual(len(sut.content), 1)
             self.assertEqual(sut.content.focus, 0)
-            sut.unhandled_input('u')
+            sut.handle_input('u')
             self.assertEqual(len(sut.content), 3)
             self.assertEqual(sut.content.focus, 1)
 
@@ -250,7 +250,7 @@ class FileBrowserTests(TestCase):
             isdir_mock.side_effect = [True, True, False, False]
             sut = FileBrowser(self.command_handler_mock)
             sut.content.set_focus(0)
-            sut.unhandled_input('R')
+            sut.handle_input('R')
             self.assertEqual(len(sut.content), 1)
             self.assertEqual(sut.content[0].path, '/dir/file')
 
@@ -265,7 +265,7 @@ class FileBrowserTests(TestCase):
             listdir_mock.return_value = ['some_file', 'some_other_file', 'some dir', '1 - music file.mp3', '02 - sound.wav']
             isdir_mock.side_effect = [False, False, True, False, False]
             sut = FileBrowser(self.command_handler_mock)
-            sut.unhandled_input('B')
+            sut.handle_input('B')
             self.command_handler_mock.assert_called_once_with(':add_bookmark "/dir"')
 
     def test_ignores_other_keys(self):
@@ -279,9 +279,9 @@ class FileBrowserTests(TestCase):
             isdir_mock.side_effect = [False]
             sut = FileBrowser(self.command_handler_mock)
             sut.content.set_focus(0)
-            sut.unhandled_input('c')
-            sut.unhandled_input('d')
-            sut.unhandled_input('e')
+            sut.handle_input('c')
+            sut.handle_input('d')
+            sut.handle_input('e')
             self.command_handler_mock.assert_not_called()
 
     def test_is_searchable(self):
