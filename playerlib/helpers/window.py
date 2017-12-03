@@ -15,7 +15,7 @@ class Window(urwid.WidgetWrap):
             self._focus_command_panel()
             self.command_panel.activate(key)
             return None
-        return super().keypress(size, key) # pragma: no cover
+        return super().keypress(size, key)
 
     def unhandled_input(self, key):
         if self._w.focus_position == 'footer':

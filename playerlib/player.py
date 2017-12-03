@@ -9,12 +9,12 @@ from playerlib.command_panel import *
 from playerlib.context import *
 from playerlib.file_browser.file_browser import *
 from playerlib.helpers.asynchronous import AsyncCaller
+from playerlib.helpers.window import *
 from playerlib.main_view import *
 from playerlib.playback_controller import *
 from playerlib.playlist.playlist import *
 from playerlib.track_info.track_info import *
 from playerlib.user_input import *
-from playerlib.window import *
 
 class Loop(urwid.MainLoop):
 
