@@ -11,10 +11,6 @@ class Bookmark(ListBoxEntry):
         super().__init__(urwid.AttrMap(urwid.SelectableIcon([str(index), ' ', self._path], 0),
             'file', 'file_focused'))
 
-    @property
-    def path(self):
-        return self._path
-
     def text(self):
         return self._path
 
