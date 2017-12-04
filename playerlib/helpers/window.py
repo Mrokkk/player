@@ -19,8 +19,8 @@ class Window(urwid.WidgetWrap):
 
     def handle_input(self, key):
         if self._w.focus_position == 'footer':
-            return self.command_panel.handle_input(key)
-        return self.main_view.handle_input(key)
+            return self.command_panel.handle_input(key, self._focus_body)
+        self.main_view.handle_input(key)
 
     def switch_panes(self):
         self.main_view.switch_panes()
@@ -31,7 +31,7 @@ class Window(urwid.WidgetWrap):
     def _focus_command_panel(self):
         self._w.focus_position = 'footer'
 
-    def focus_body(self):
+    def _focus_body(self):
         self._w.focus_position = 'body'
 
     @property

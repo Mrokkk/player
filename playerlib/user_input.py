@@ -68,8 +68,7 @@ class UserInput:
         try:
             if not isinstance(key, tuple):
                 if self.sm.handle_key(key): return
-            if not self.window.handle_input(key):
-                self.window.focus_body()
+            self.window.handle_input(key)
         except urwid.ExitMainLoop:
             raise
         except Exception as e:

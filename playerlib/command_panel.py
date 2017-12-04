@@ -79,21 +79,18 @@ class CommandPanel(urwid.Edit):
     def selectable(self):
         return self.mode != None
 
-    def handle_input(self, key):
+    def handle_input(self, key, return_focus_callback):
         if key == 'enter':
             self._handle_enter()
-            self.mode = None
+            return_focus_callback()
         elif key == 'esc':
             self.clear()
-            self.mode = None
+            return_focus_callback()
         elif key == 'up':
-            return self._handle_up_arrow()
+            self._handle_up_arrow()
         elif key == 'down':
-            return self._handle_down_arrow()
+            self._handle_down_arrow()
         elif key == 'tab':
             if self.mode == ':':
                 self.completer_context = self.completer.complete(self.completer_context)
-            return True
-        else:
-            return True
 
