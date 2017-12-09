@@ -45,6 +45,7 @@ class InputStateMachine:
             self._clear()
             return False
         self._state = ''.join([self._state, key])
+        logging.info(self._state)
         for k in self._keys:
             if self._state == k:
                 self._keys[self._state]()

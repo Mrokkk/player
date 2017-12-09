@@ -5,8 +5,8 @@ import os
 import urwid
 
 from playerlib.helpers.header import *
+from playerlib.helpers.list_widget import *
 from playerlib.helpers.listbox_entry import *
-from playerlib.helpers.scrollable_listbox import *
 from playerlib.helpers.view_widget import *
 from .dir_entry import *
 
@@ -20,7 +20,7 @@ class FileBrowser(ViewWidget):
         self.header = Header(self.dir_name)
         self.content = urwid.SimpleListWalker([])
         self.content.extend(self._read_dir(self.dir_name))
-        self.listbox = ScrollableListBox(self.content, readonly=True)
+        self.listbox = ListWidget(self.content, readonly=True)
         self.last_position = 0
         self.logger = logging.getLogger('FileBrowser')
         callbacks = {
@@ -34,8 +34,8 @@ class FileBrowser(ViewWidget):
         }
         super().__init__(self.listbox,
             callbacks,
-            header=self.header,
-            footer=urwid.AttrWrap(urwid.Text(self.footer_text), 'foot'))
+            'File browser',
+            header=self.header)
 
     def change_dir(self, dirname):
         path = os.path.abspath(os.path.join(self.dir_name, dirname))

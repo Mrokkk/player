@@ -21,12 +21,15 @@ class PlayerViewTests(TestCase):
         self.sut.handle_input('a')
         self.main_view_mock.handle_input.assert_called_once_with('a')
 
-    def test_should_pass_keys_to_main_view_if_footer_focused(self):
+    def test_should_pass_keys_to_command_panel_if_footer_focused(self):
+        self.command_panel_mock.is_active.return_value = False
         self.sut.keypress(None, ':')
+        self.command_panel_mock.is_active.return_value = True
         self.sut.handle_input('a')
         self.command_panel_mock.handle_input.assert_called_once_with('a', ANY)
 
     def test_should_focus_panel_if_command_panel_activation_key_pressed(self):
+        self.command_panel_mock.is_active.return_value = False
         self.sut.keypress(None, ':')
         self.command_panel_mock.activate.assert_called_once_with(':')
 

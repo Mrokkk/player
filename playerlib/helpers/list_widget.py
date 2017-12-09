@@ -3,7 +3,7 @@
 import urwid
 from playerlib.helpers.helpers import *
 
-class ScrollableListBox(urwid.ListBox):
+class ListWidget(urwid.ListBox):
 
     def __init__(self, content, readonly=False):
         self._readonly = readonly

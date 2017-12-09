@@ -7,7 +7,7 @@ import time
 import urwid
 
 from playerlib.helpers.header import *
-from playerlib.helpers.scrollable_listbox import *
+from playerlib.helpers.list_widget import *
 from playerlib.helpers.view_widget import *
 from playerlib.track import *
 from playerlib.tracks_factory import *
@@ -20,14 +20,14 @@ class Playlist(ViewWidget):
         self.command_handler = command_handler
         self.list = []
         self.content = urwid.SimpleListWalker([])
-        self.listbox = ScrollableListBox(self.content)
+        self.listbox = ListWidget(self.content)
         self.header = Header('Unnamed playlist')
         self.tracks_factory = TracksFactory()
         self.logger = logging.getLogger('Playlist')
         callbacks = {
             'enter': lambda: self.callback(self.listbox.focus.track)
         }
-        super().__init__(self.listbox, callbacks, header=self.header)
+        super().__init__(self.listbox, callbacks, 'Playlist', header=self.header)
 
     def _get_track_string(self, track):
         if track.title:

@@ -9,8 +9,8 @@ from playerlib.command_panel import *
 from playerlib.context import *
 from playerlib.file_browser.file_browser import *
 from playerlib.helpers.asynchronous import AsyncCaller
+from playerlib.helpers.vertical_box import *
 from playerlib.helpers.window import *
-from playerlib.main_view import *
 from playerlib.playback_controller import *
 from playerlib.playlist.playlist import *
 from playerlib.track_info.track_info import *
@@ -44,7 +44,7 @@ class Player:
         context.playlist = Playlist(context.playback_controller.play_track, context.command_handler)
         context.track_info = TrackInfo()
         context.file_browser = FileBrowser(context.command_handler)
-        context.main_view = MainView(context.file_browser, context.bookmarks, context.playlist, context.track_info)
+        context.main_view = VerticalBox([[context.file_browser, context.bookmarks], context.playlist])
         context.window = Window(context.main_view, context.command_panel)
         AsyncCaller(context.command_panel.error)
 

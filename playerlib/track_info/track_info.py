@@ -7,7 +7,6 @@ from time import gmtime, strftime
 
 from playerlib.helpers.header import *
 from playerlib.helpers.listbox_entry import *
-from playerlib.helpers.scrollable_listbox import *
 from playerlib.helpers.view_widget import *
 
 class TrackInfo(ViewWidget):
@@ -18,7 +17,7 @@ class TrackInfo(ViewWidget):
         self.content = urwid.SimpleListWalker([])
         self.listbox = urwid.ListBox(self.content)
         self._no_track_playing()
-        super().__init__(self.listbox, {}, header=self.header)
+        super().__init__(self.listbox, {}, 'Track info', header=self.header)
 
     def _no_track_playing(self):
         self.content[:] = [urwid.Text('No track playing!')]

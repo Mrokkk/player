@@ -5,7 +5,7 @@ import urwid
 
 from playerlib.helpers.header import *
 from playerlib.helpers.helpers import *
-from playerlib.helpers.scrollable_listbox import *
+from playerlib.helpers.list_widget import *
 from playerlib.helpers.view_widget import *
 from .bookmark import *
 
@@ -19,7 +19,7 @@ class Bookmarks(ViewWidget):
         self.header = Header('Bookmarks')
         self.content = urwid.SimpleListWalker([])
         self._load_bookmarks()
-        self.listbox = ScrollableListBox(self.content)
+        self.listbox = ListWidget(self.content)
         callbacks = {
             'enter': self._handle_enter,
             '1': lambda: self._handle_number(1),
@@ -36,8 +36,8 @@ class Bookmarks(ViewWidget):
         super().__init__(
             self.listbox,
             callbacks,
-            header=self.header,
-            footer=urwid.AttrWrap(urwid.Text(self.footer_text), 'foot'))
+            self.footer_text,
+            header=self.header)
 
     def _save_bookmarks(self):
         import json
