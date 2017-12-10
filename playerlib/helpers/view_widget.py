@@ -6,11 +6,11 @@ from playerlib.helpers.list_widget import *
 
 class ViewWidget(urwid.Frame):
 
-    def __init__(self, widget, callbacks, name, header=None, footer=None):
+    def __init__(self, widget, callbacks, name, header=None):
         self._callbacks = callbacks
         self._widget = widget
         self._name = name
-        super().__init__(widget, header=header, footer=footer)
+        super().__init__(widget, header=header)
 
     def handle_input(self, key):
         if key in self._callbacks:
