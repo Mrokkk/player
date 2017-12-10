@@ -7,15 +7,15 @@ from playerlib.helpers.header import *
 from playerlib.helpers.helpers import *
 from playerlib.helpers.list_widget import *
 from playerlib.helpers.view_widget import *
+from playerlib.helpers.app import *
 from .bookmark import *
 
 class Bookmarks(ViewWidget):
 
     footer_text = 'Bookmarks'
 
-    def __init__(self, config, command_handler):
+    def __init__(self, config):
         self.bookmarks_file = config.bookmarks_file
-        self.command_handler = command_handler
         self.header = Header('Bookmarks')
         self.content = urwid.SimpleListWalker([])
         self._load_bookmarks()
@@ -58,8 +58,8 @@ class Bookmarks(ViewWidget):
         self._save_bookmarks()
 
     def _go_to_bookmark(self, bookmark):
-        self.command_handler(':change_dir {}'.format(bookmark.text()))
-        self.command_handler(':toggle_pane_view')
+        App().command_handler(':change_dir {}'.format(bookmark.text()))
+        App().command_handler(':toggle_pane_view')
 
     def _handle_enter(self):
         self._go_to_bookmark(self.listbox.focus)
@@ -67,5 +67,5 @@ class Bookmarks(ViewWidget):
     def _handle_number(self, number):
         try:
             self._go_to_bookmark(self.content[number - 1])
-        except: self.command_handler(':error "no such bookmark: {}"'.format(number))
+        except: App().command_handler(':error "no such bookmark: {}"'.format(number))
 

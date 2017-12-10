@@ -15,9 +15,8 @@ from .entry import *
 
 class Playlist(ViewWidget):
 
-    def __init__(self, play_callback, command_handler):
+    def __init__(self, play_callback):
         self.callback = play_callback
-        self.command_handler = command_handler
         self.list = []
         self.content = urwid.SimpleListWalker([])
         self.listbox = ListWidget(self.content)

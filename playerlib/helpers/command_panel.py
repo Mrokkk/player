@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import urwid
-from playerlib.helpers.helpers import clamp
-from playerlib.completer import *
+from .helpers import clamp
+from .completer import *
 
 class CommandPanel(urwid.Edit):
 

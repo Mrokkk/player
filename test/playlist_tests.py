@@ -10,7 +10,7 @@ class PlaylistTests(TestCase):
         self.play_callback_mock = Mock()
         self.error_handler_mock = Mock()
         self.tracks_factory_mock = Mock()
-        self.sut = Playlist(self.play_callback_mock, self.error_handler_mock)
+        self.sut = Playlist(self.play_callback_mock)
         self.sut.tracks_factory = self.tracks_factory_mock
 
     def _create_track(self, title=None, artist=None, index=0, length=0):

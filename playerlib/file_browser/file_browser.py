@@ -4,6 +4,8 @@ import logging
 import os
 import urwid
 
+from playerlib.helpers.app import *
+from playerlib.helpers.asynchronous import *
 from playerlib.helpers.header import *
 from playerlib.helpers.list_widget import *
 from playerlib.helpers.listbox_entry import *
@@ -14,8 +16,7 @@ class FileBrowser(ViewWidget):
 
     footer_text = 'Browser'
 
-    def __init__(self, command_handler):
-        self.command_handler = command_handler
+    def __init__(self):
         self.dir_name = os.getcwd()
         self.header = Header(self.dir_name)
         self.content = urwid.SimpleListWalker([])
@@ -28,9 +29,9 @@ class FileBrowser(ViewWidget):
             'enter': lambda: self._toggle_dir(self.content.get_focus()[0]),
             'R': lambda: self.change_dir('.'),
             'C': self._enter_selected_dir,
-            'a': lambda: self.command_handler(':add_to_playlist \"{}\"'.format(self.content.get_focus()[0].path)),
-            'r': lambda: self.command_handler(':replace_playlist \"{}\"'.format(self.content.get_focus()[0].path)),
-            'B': lambda: self.command_handler(':add_bookmark \"{}\"'.format(self.dir_name)),
+            'a': lambda: App().command_handler(':add_to_playlist \"{}\"'.format(self.content.get_focus()[0].path)),
+            'r': lambda: App().command_handler(':replace_playlist \"{}\"'.format(self.content.get_focus()[0].path)),
+            'B': lambda: App().command_handler(':add_bookmark \"{}\"'.format(self.dir_name)),
         }
         super().__init__(self.listbox,
             callbacks,
@@ -71,6 +72,7 @@ class FileBrowser(ViewWidget):
             except: break
         parent.open = False
 
+    @asynchronous
     def _toggle_dir(self, parent):
         if parent.open:
             self._hide_dir(parent)

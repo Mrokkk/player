@@ -2,7 +2,6 @@
 
 import logging
 import os
-import urwid
 from playerlib.helpers.helpers import clamp
 
 class Completer:
