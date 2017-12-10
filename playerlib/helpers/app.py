@@ -8,7 +8,7 @@ import urwid
 
 from .command_handler import *
 from .command_panel import *
-from .user_input import *
+from .input_state_machine import *
 from .window import *
 
 class App:
@@ -17,16 +17,18 @@ class App:
 
     class _App(urwid.MainLoop):
         def __init__(self, widget, commands=None, keys_mapping=None, palette=None, unhandled_input=None, screen=None):
+            widget = widget if widget else urwid.ListBox([])
             self._hack_urwid_asyncio()
             self._draw_lock = threading.RLock()
             self._event_loop = urwid.AsyncioEventLoop(loop=asyncio.get_event_loop())
             self._command_handler = CommandHandler(commands)
             self._command_panel = CommandPanel(self._command_handler)
             self._window = Window(widget, self._command_panel)
+            self._sm = InputStateMachine(keys_mapping)
             self.logger = logging.getLogger('App')
             super().__init__(self._window,
                 palette=palette,
-                unhandled_input=UserInput(keys_mapping).handle_input,
+                unhandled_input=self._handle_input,
                 event_loop=self._event_loop,
                 screen=self._create_screen(256))
 
@@ -41,6 +43,16 @@ class App:
             except Exception as e:
                 self.logger.warning('Cannot setup {} colors: {}'.format(colors, str(e)))
             return screen
+
+        def _handle_input(self, key):
+            try:
+                if not isinstance(key, tuple):
+                    if self._sm.handle_key(key): return
+                self._window.handle_input(key)
+            except urwid.ExitMainLoop:
+                raise
+            except Exception as e:
+                self._command_panel.error(str(e))
 
         def draw_screen(self, *args, **kwargs):
             with self.draw_lock:

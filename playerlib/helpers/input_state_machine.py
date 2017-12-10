@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-import logging
 import re
-import urwid
 import playerlib.helpers.app
 
 class InputStateMachine:
@@ -51,19 +49,4 @@ class InputStateMachine:
         self._clear()
         return False
 
-
-class UserInput:
-
-    def __init__(self, keys_mapping):
-        self.sm = InputStateMachine(keys_mapping)
-
-    def handle_input(self, key):
-        try:
-            if not isinstance(key, tuple):
-                if self.sm.handle_key(key): return
-            playerlib.helpers.app.App().window.handle_input(key)
-        except urwid.ExitMainLoop:
-            raise
-        except Exception as e:
-            playerlib.helpers.app.App().command_panel.error(str(e))
 
