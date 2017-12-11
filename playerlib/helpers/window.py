@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import urwid
+from .vertical_box import *
 
 class Window(urwid.WidgetWrap):
 
@@ -36,5 +37,7 @@ class Window(urwid.WidgetWrap):
 
     @property
     def focus(self):
-        return self.main_view.focus
+        if isinstance(self.main_view, VerticalBox):
+            return self.main_view.focus
+        else: return self.main_view
 

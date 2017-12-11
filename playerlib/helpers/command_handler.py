@@ -43,7 +43,6 @@ class CommandHandler:
         eval('self.commands.{}({})'.format(command, self._format_arguments(args)))
 
     def _search_forward_mode(self, command):
-        self.logger.info(dir())
         playerlib.helpers.app.App().window.focus.searchable_list().search_forward(command)
 
     def _search_backward_mode(self, command):

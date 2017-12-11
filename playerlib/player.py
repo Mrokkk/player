@@ -35,11 +35,11 @@ class Player:
         context.playlist = Playlist(context.playback_controller.play_track)
         context.track_info = TrackInfo()
         context.file_browser = FileBrowser()
-        context.main_view = VerticalBox([[context.file_browser, context.bookmarks],
+        main_view = VerticalBox([[context.file_browser, context.bookmarks],
             [context.playlist, context.track_info]])
 
         self.app = App(
-            context.main_view,
+            main_view,
             commands=Commands(context),
             keys_mapping=self.keys_mapping,
             palette=context.config.color_palette)
