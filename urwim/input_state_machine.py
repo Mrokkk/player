@@ -15,8 +15,9 @@ class InputStateMachine:
             '<C-w><C-w>': lambda: urwim.app.App().window.switch_panes(),
             'b': lambda: urwim.app.App().window.toggle_pane_view(),
         }
-        for k, v in keys_mapping.items():
-            self._keys[k] = lambda v=v: urwim.app.App().command_handler(v)
+        if keys_mapping is not None:
+            for k, v in keys_mapping.items():
+                self._keys[k] = lambda v=v: urwim.app.App().command_handler(v)
         self._state = ''
         self._alarm = None
 

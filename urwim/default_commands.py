@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 
-from .app import *
+import urwim.app
 
 class DefaultCommands:
 
     def error(self, string):
-        App().command_panel.error(string)
+        urwim.App().command_panel.error(string)
 
     def switch_panes(self):
-        App().window.switch_panes()
+        urwim.App().window.switch_panes()
 
     def toggle_pane_view(self):
-        App().window.toggle_pane_view()
+        urwim.App().window.toggle_pane_view()
 
     def quit(self):
-        App().quit()
+        urwim.App().quit()
 

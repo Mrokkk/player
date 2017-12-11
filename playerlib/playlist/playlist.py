@@ -4,7 +4,6 @@ import json
 import logging
 import os
 import time
-import urwid
 import urwim
 
 from playerlib.track import *
@@ -16,7 +15,7 @@ class Playlist(urwim.ViewWidget):
     def __init__(self, play_callback):
         self.callback = play_callback
         self.list = []
-        self.content = urwid.SimpleListWalker([])
+        self.content = urwim.SimpleListWalker([])
         self.listbox = urwim.ListWidget(self.content)
         self.header = urwim.Header('Unnamed playlist')
         self.tracks_factory = TracksFactory()

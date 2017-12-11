@@ -22,7 +22,6 @@ class CommandHandlerTests(TestCase):
         patch('urwim.asynchronous', lambda x: x).start()
         patch('urwim.App', self.app_mock).start()
         patch('urwim.app.App', self.app_mock).start()
-        patch('urwim.default_commands.App', self.app_mock).start()
         import playerlib.commands
         import urwim.command_handler
         self.context = Context()

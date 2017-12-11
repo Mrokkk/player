@@ -6,6 +6,7 @@ import shlex
 import urwid
 import urwim.app
 from .asynchronous import *
+from .default_commands import *
 
 class CommandHandler:
 
@@ -15,7 +16,7 @@ class CommandHandler:
         SEARCH_BACKWARD = '?'
 
     def __init__(self, commands):
-        self.commands = commands
+        self.commands = commands if commands else DefaultCommands()
         self.mode_map = {
             self.Mode.COMMAND: self._command_mode,
             self.Mode.SEARCH_FORWARD: lambda c: self._search_forward_mode(c),

@@ -16,7 +16,7 @@ class App:
     _instance = None
 
     class _App(urwid.MainLoop):
-        def __init__(self, widget, commands=None, keys_mapping=None, palette=None, unhandled_input=None, screen=None):
+        def __init__(self, widget, commands=None, keys_mapping=None, palette=None):
             widget = widget if widget else urwid.ListBox([])
             self._hack_urwid_asyncio()
             self._draw_lock = threading.RLock()

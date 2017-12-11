@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import urwid
 import urwim
 from .bookmark import *
 
@@ -12,7 +11,7 @@ class Bookmarks(urwim.ViewWidget):
     def __init__(self, config):
         self.bookmarks_file = config.bookmarks_file
         self.header = urwim.Header('Bookmarks')
-        self.content = urwid.SimpleListWalker([])
+        self.content = urwim.SimpleListWalker([])
         self._load_bookmarks()
         self.listbox = urwim.ListWidget(self.content)
         callbacks = {

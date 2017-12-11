@@ -2,7 +2,6 @@
 
 import logging
 import os
-import urwid
 import urwim
 
 from .dir_entry import *
@@ -14,7 +13,7 @@ class FileBrowser(urwim.ViewWidget):
     def __init__(self):
         self.dir_name = os.getcwd()
         self.header = urwim.Header(self.dir_name)
-        self.content = urwid.SimpleListWalker([])
+        self.content = urwim.SimpleListWalker([])
         self.content.extend(self._read_dir(self.dir_name))
         self.listbox = urwim.ListWidget(self.content, readonly=True)
         self.last_position = 0
