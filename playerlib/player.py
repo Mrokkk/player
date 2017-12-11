@@ -44,8 +44,6 @@ class Player:
 
         # TODO: remove
         context.draw_lock = self.app.draw_lock
-        context.command_panel = self.app.command_panel
-        context.command_handler = self.app.command_handler
 
 
     def run(self):

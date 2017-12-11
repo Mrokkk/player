@@ -7,8 +7,7 @@ class Bookmark(urwim.ListBoxEntry):
     def __init__(self, index, path):
         self.index = index
         self._path = path
-        super().__init__(urwid.AttrMap(urwid.SelectableIcon([str(index), ' ', self._path], 0),
-            'file', 'file_focused'))
+        super().__init__([str(index), ' ', self._path], 'file', 'file_focused')
 
     def text(self):
         return self._path

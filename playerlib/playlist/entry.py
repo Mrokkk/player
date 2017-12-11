@@ -17,13 +17,13 @@ class Entry(urwim.ListBoxEntry):
             prev.next = self
 
     def set_playing(self):
-        self._w = urwid.AttrMap(urwid.SelectableIcon(['▸ ', self.line], 0), 'dir', 'dir_focused')
+        self.update(['▸ ', self.line], 'dir', 'dir_focused')
 
     def set_stopped(self):
-        self._w = urwid.AttrMap(urwid.SelectableIcon(['  ', self.line], 0), 'file', 'file_focused')
+        self.update(['  ', self.line], 'file', 'file_focused')
 
     def set_paused(self):
-        self._w = urwid.AttrMap(urwid.SelectableIcon(['‖ ', self.line], 0), 'dir', 'dir_focused')
+        self.update(['‖ ', self.line], 'dir', 'dir_focused')
 
     def text(self):
         return self.line

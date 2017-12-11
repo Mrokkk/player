@@ -14,12 +14,9 @@ class DirEntry(urwim.ListBoxEntry):
         self.level = level
         self.open = False
         if is_a_dir:
-            widget = urwid.AttrMap(urwid.SelectableIcon(['  ' * level, u'▸ ', name, '/'], 0),
-                'dir', 'dir_focused')
+            super().__init__(['  ' * level, u'▸ ', name, '/'], 'dir', 'dir_focused')
         else:
-            widget = urwid.AttrMap(urwid.SelectableIcon(['  ' * level, '  ', name], 0),
-                'file', 'file_focused')
-        super().__init__(widget)
+            super().__init__(['  ' * level, '  ', name], 'file', 'file_focused')
 
     @property
     def path(self):
