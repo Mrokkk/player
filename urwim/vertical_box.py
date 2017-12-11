@@ -2,9 +2,9 @@
 
 import logging
 import urwid
-from playerlib.helpers.footer import *
-from playerlib.helpers.helpers import *
-from playerlib.helpers.separators import *
+from .footer import *
+from .helpers import *
+from .separators import *
 
 class VerticalBox(urwid.WidgetPlaceholder):
 

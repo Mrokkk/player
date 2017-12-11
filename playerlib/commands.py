@@ -1,29 +1,28 @@
 #!/usr/bin/env python3
 
-from playerlib.helpers.asynchronous import *
-from playerlib.helpers.default_commands import *
+import urwim
 
-class Commands(DefaultCommands):
+class Commands(urwim.DefaultCommands):
     def __init__(self, context):
         self._context = context
         super().__init__()
 
-    @asynchronous
+    @urwim.asynchronous
     def add_to_playlist(self, path):
         self._context.playlist.add_to_playlist(path)
 
-    @asynchronous
+    @urwim.asynchronous
     def replace_playlist(self, path):
         self._context.playlist.add_to_playlist(path, clear=True)
 
     def clear_playlist(self):
         self._context.playlist.clear()
 
-    @asynchronous
+    @urwim.asynchronous
     def save_playlist(self, playlist_file):
         self._context.playlist.save_playlist(playlist_file)
 
-    @asynchronous
+    @urwim.asynchronous
     def load_playlist(self, playlist_file):
         self._context.playlist.load_playlist(playlist_file)
 
@@ -45,7 +44,7 @@ class Commands(DefaultCommands):
     def add_bookmark(self, path):
         self._context.bookmarks.add(path)
 
-    @asynchronous
+    @urwim.asynchronous
     def change_dir(self, path):
         self._context.file_browser.change_dir(path)
 

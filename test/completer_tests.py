@@ -3,7 +3,7 @@
 from unittest import TestCase
 from unittest.mock import Mock, MagicMock, patch
 
-from playerlib.helpers.completer import *
+from urwim.completer import *
 
 class CompleterTests(TestCase):
 

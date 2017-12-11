@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 import urwid
-from playerlib.helpers.listbox_entry import *
+import urwim
 
-class Entry(ListBoxEntry):
+class Entry(urwim.ListBoxEntry):
 
     def __init__(self, track, line, prev=None):
         self.track = track

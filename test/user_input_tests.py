@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 from unittest.mock import Mock, MagicMock, patch
-from playerlib.helpers.user_input import *
+from urwim.user_input import *
 
 class UserInputTests(TestCase):
 

@@ -2,24 +2,19 @@
 
 import os
 import urwid
-
-from playerlib.helpers.header import *
-from playerlib.helpers.helpers import *
-from playerlib.helpers.list_widget import *
-from playerlib.helpers.view_widget import *
-from playerlib.helpers.app import *
+import urwim
 from .bookmark import *
 
-class Bookmarks(ViewWidget):
+class Bookmarks(urwim.ViewWidget):
 
     footer_text = 'Bookmarks'
 
     def __init__(self, config):
         self.bookmarks_file = config.bookmarks_file
-        self.header = Header('Bookmarks')
+        self.header = urwim.Header('Bookmarks')
         self.content = urwid.SimpleListWalker([])
         self._load_bookmarks()
-        self.listbox = ListWidget(self.content)
+        self.listbox = urwim.ListWidget(self.content)
         callbacks = {
             'enter': self._handle_enter,
             '1': lambda: self._handle_number(1),
@@ -58,8 +53,8 @@ class Bookmarks(ViewWidget):
         self._save_bookmarks()
 
     def _go_to_bookmark(self, bookmark):
-        App().command_handler(':change_dir {}'.format(bookmark.text()))
-        App().command_handler(':toggle_pane_view')
+        urwim.App().command_handler(':change_dir {}'.format(bookmark.text()))
+        urwim.App().command_handler(':toggle_pane_view')
 
     def _handle_enter(self):
         self._go_to_bookmark(self.listbox.focus)
@@ -67,5 +62,5 @@ class Bookmarks(ViewWidget):
     def _handle_number(self, number):
         try:
             self._go_to_bookmark(self.content[number - 1])
-        except: App().command_handler(':error "no such bookmark: {}"'.format(number))
+        except: urwim.App().command_handler(':error "no such bookmark: {}"'.format(number))
 

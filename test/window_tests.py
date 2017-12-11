@@ -3,7 +3,7 @@
 from unittest import TestCase
 from unittest.mock import Mock, ANY
 
-from playerlib.helpers.window import *
+from urwim.window import *
 
 class PlayerViewTests(TestCase):
 

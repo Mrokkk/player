@@ -3,7 +3,7 @@
 from unittest import TestCase
 from unittest.mock import Mock
 
-from playerlib.helpers.command_panel import *
+from urwim.command_panel import *
 
 class CommandPanelTests(TestCase):
 

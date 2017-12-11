@@ -4,15 +4,12 @@ import logging
 import os
 import urwid
 from time import gmtime, strftime
+import urwim
 
-from playerlib.helpers.header import *
-from playerlib.helpers.listbox_entry import *
-from playerlib.helpers.view_widget import *
-
-class TrackInfo(ViewWidget):
+class TrackInfo(urwim.ViewWidget):
 
     def __init__(self):
-        self.header = Header('Track info')
+        self.header = urwim.Header('Track info')
         self.footer = urwid.AttrWrap(urwid.Text('Track info'), 'foot')
         self.content = urwid.SimpleListWalker([])
         self.listbox = urwid.ListBox(self.content)

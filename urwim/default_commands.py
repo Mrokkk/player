@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from playerlib.helpers.app import *
+from .app import *
 
 class DefaultCommands:
 

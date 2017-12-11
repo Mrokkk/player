@@ -2,7 +2,7 @@
 
 import logging
 import os
-from playerlib.helpers.helpers import clamp
+from .helpers import clamp
 
 class Completer:
 

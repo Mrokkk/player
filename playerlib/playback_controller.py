@@ -5,7 +5,7 @@ import re
 from time import gmtime, strftime
 
 from playerlib.backends.backend_factory import *
-from playerlib.helpers.helpers import clamp
+from urwim import clamp
 
 class PlaybackController:
 

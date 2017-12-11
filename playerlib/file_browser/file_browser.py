@@ -3,25 +3,20 @@
 import logging
 import os
 import urwid
+import urwim
 
-from playerlib.helpers.app import *
-from playerlib.helpers.asynchronous import *
-from playerlib.helpers.header import *
-from playerlib.helpers.list_widget import *
-from playerlib.helpers.listbox_entry import *
-from playerlib.helpers.view_widget import *
 from .dir_entry import *
 
-class FileBrowser(ViewWidget):
+class FileBrowser(urwim.ViewWidget):
 
     footer_text = 'Browser'
 
     def __init__(self):
         self.dir_name = os.getcwd()
-        self.header = Header(self.dir_name)
+        self.header = urwim.Header(self.dir_name)
         self.content = urwid.SimpleListWalker([])
         self.content.extend(self._read_dir(self.dir_name))
-        self.listbox = ListWidget(self.content, readonly=True)
+        self.listbox = urwim.ListWidget(self.content, readonly=True)
         self.last_position = 0
         self.logger = logging.getLogger('FileBrowser')
         callbacks = {
@@ -29,9 +24,9 @@ class FileBrowser(ViewWidget):
             'enter': lambda: self._toggle_dir(self.content.get_focus()[0]),
             'R': lambda: self.change_dir('.'),
             'C': self._enter_selected_dir,
-            'a': lambda: App().command_handler(':add_to_playlist \"{}\"'.format(self.content.get_focus()[0].path)),
-            'r': lambda: App().command_handler(':replace_playlist \"{}\"'.format(self.content.get_focus()[0].path)),
-            'B': lambda: App().command_handler(':add_bookmark \"{}\"'.format(self.dir_name)),
+            'a': lambda: urwim.App().command_handler(':add_to_playlist \"{}\"'.format(self.content.get_focus()[0].path)),
+            'r': lambda: urwim.App().command_handler(':replace_playlist \"{}\"'.format(self.content.get_focus()[0].path)),
+            'B': lambda: urwim.App().command_handler(':add_bookmark \"{}\"'.format(self.dir_name)),
         }
         super().__init__(self.listbox,
             callbacks,
@@ -72,7 +67,7 @@ class FileBrowser(ViewWidget):
             except: break
         parent.open = False
 
-    @asynchronous
+    @urwim.asynchronous
     def _toggle_dir(self, parent):
         if parent.open:
             self._hide_dir(parent)

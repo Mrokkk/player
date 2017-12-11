@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 from unittest.mock import Mock
-from playerlib.helpers.helpers import *
+from urwim.helpers import *
 
 class ClampTests(TestCase):
     def test_can_clamp_values(self):

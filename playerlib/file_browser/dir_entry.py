@@ -4,9 +4,9 @@ import os
 import re
 import urwid
 
-from playerlib.helpers.listbox_entry import *
+import urwim
 
-class DirEntry(ListBoxEntry):
+class DirEntry(urwim.ListBoxEntry):
 
     def __init__(self, name, parent_path, is_a_dir=False, level=0):
         self.name = name

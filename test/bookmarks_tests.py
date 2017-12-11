@@ -15,9 +15,8 @@ class BookmarksTests(TestCase):
         self.app_instance.window = self.window_mock
         self.app_mock = Mock()
         self.app_mock.return_value = self.app_instance
-        patch('playerlib.helpers.asynchronous.asynchronous', lambda x: x).start()
-        patch('playerlib.helpers.app.App', self.app_mock).start()
-        patch('playerlib.bookmarks.bookmarks.App', self.app_mock).start()
+        patch('urwim.asynchronous', lambda x: x).start()
+        patch('urwim.App', self.app_mock).start()
         import playerlib.bookmarks.bookmarks
         self.Bookmarks = playerlib.bookmarks.bookmarks.Bookmarks
         self.config_mock = Mock()

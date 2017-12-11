@@ -3,7 +3,7 @@
 import os
 import yaml
 import logging
-from playerlib.helpers.helpers import *
+from urwim import log_exception
 
 class Config:
 

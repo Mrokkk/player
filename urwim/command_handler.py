@@ -4,8 +4,8 @@ import enum
 import logging
 import shlex
 import urwid
-import playerlib.helpers.app
-from playerlib.helpers.asynchronous import *
+import urwim.app
+from .asynchronous import *
 
 class CommandHandler:
 
@@ -43,10 +43,10 @@ class CommandHandler:
         eval('self.commands.{}({})'.format(command, self._format_arguments(args)))
 
     def _search_forward_mode(self, command):
-        playerlib.helpers.app.App().window.focus.searchable_list().search_forward(command)
+        urwim.app.App().window.focus.searchable_list().search_forward(command)
 
     def _search_backward_mode(self, command):
-        playerlib.helpers.app.App().window.focus.searchable_list().search_backward(command)
+        urwim.app.App().window.focus.searchable_list().search_backward(command)
 
     def list_commands(self):
         import inspect

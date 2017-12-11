@@ -7,8 +7,8 @@ import re
 import subprocess
 import threading
 
+from urwim import log_exception
 from .backend_interface import *
-from playerlib.helpers.helpers import *
 
 class MplayerReader(threading.Thread):
 

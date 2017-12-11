@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 import urwid
-from playerlib.helpers.helpers import *
-from playerlib.helpers.list_widget import *
+from .list_widget import *
 
 class ViewWidget(urwid.Frame):
 

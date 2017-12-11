@@ -19,11 +19,12 @@ class CommandHandlerTests(TestCase):
         self.app_mock = Mock()
         self.app_mock.return_value = self.app_instance
 
-        patch('playerlib.helpers.asynchronous.asynchronous', lambda x: x).start()
-        patch('playerlib.helpers.app.App', self.app_mock).start()
-        patch('playerlib.helpers.default_commands.App', self.app_mock).start()
+        patch('urwim.asynchronous', lambda x: x).start()
+        patch('urwim.App', self.app_mock).start()
+        patch('urwim.app.App', self.app_mock).start()
+        patch('urwim.default_commands.App', self.app_mock).start()
         import playerlib.commands
-        import playerlib.helpers.command_handler
+        import urwim.command_handler
         self.context = Context()
         self.context.file_browser = Mock()
         self.context.bookmarks = Mock()
@@ -33,7 +34,7 @@ class CommandHandlerTests(TestCase):
         self.context.window = Mock()
         self.context.quit = Mock()
         self.commands = playerlib.commands.Commands(self.context)
-        self.sut = playerlib.helpers.command_handler.CommandHandler(self.commands)
+        self.sut = urwim.command_handler.CommandHandler(self.commands)
 
 
     def test_can_execute_player_controller_commands(self):

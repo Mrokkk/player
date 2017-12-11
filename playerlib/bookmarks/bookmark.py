@@ -2,9 +2,9 @@
 
 import urwid
 
-from playerlib.helpers.listbox_entry import *
+import urwim
 
-class Bookmark(ListBoxEntry):
+class Bookmark(urwim.ListBoxEntry):
     def __init__(self, index, path):
         self.index = index
         self._path = path

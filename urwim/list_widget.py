@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import urwid
-from playerlib.helpers.helpers import *
+from .helpers import *
 
 class ListWidget(urwid.ListBox):
 
