@@ -20,6 +20,7 @@ from test.track_tests import *
 from test.tracks_factory_tests import *
 # from test.user_input_tests import *
 from test.window_tests import *
+from test.rdb_tests import *
 
 if __name__ == '__main__':
     logging.basicConfig(stream=unittest.mock.Mock())
