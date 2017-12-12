@@ -25,7 +25,6 @@ class Player:
 
     def __init__(self):
         context = Context()
-        self.context = context
 
         context.config = Config()
         context.playback_controller = PlaybackController(context)
@@ -35,15 +34,13 @@ class Player:
         context.file_browser = FileBrowser()
         main_view = urwim.VerticalBox([[context.file_browser, context.bookmarks],
             [context.playlist, context.track_info]])
+        self.context = context
 
         self.app = urwim.App(
             main_view,
             commands=Commands(context),
             keys_mapping=self.keys_mapping,
             palette=context.config.color_palette)
-
-        # TODO: remove
-        context.draw_lock = self.app.draw_lock
 
 
     def run(self):

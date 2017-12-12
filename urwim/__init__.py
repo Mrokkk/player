@@ -10,6 +10,7 @@ from .list_widget import *
 from .listbox_entry import *
 from .vertical_box import *
 from .view_widget import *
+from .rdb import *
 
 # FIXME
 from urwid import Text, SimpleListWalker, ListBox

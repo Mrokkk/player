@@ -5,7 +5,7 @@ import re
 from time import gmtime, strftime
 
 from playerlib.backends.backend_factory import *
-from urwim import clamp
+from urwim import clamp, App, Rdb, ConstrainedValue
 
 class PlaybackController:
 
@@ -15,15 +15,21 @@ class PlaybackController:
         self.current_track = None
         self.volume = 100
         self.logger = logging.getLogger('PlaybackController')
+        Rdb()['volume'] = ConstrainedValue(100, 0, 100)
+        Rdb().subscribe('volume', self._volume_change)
+
+    def _volume_change(self, new):
+        self.backend.set_volume(new)
 
     def update_current_state(self, pos):
         if pos < 0: return
+        app = App()
         if pos - self.current_track.offset >= self.current_track.length and \
                 self.current_track.path == self.current_track.playlist_entry.next.track.path:
             self.set_next_track_playing()
-        if self.context.command_panel.selectable() or pos - self.current_track.offset < 0: return
-        with self.context.draw_lock:
-            self.context.command_panel.set_caption('{} : {} / {}'.format(
+        if app.command_panel.selectable() or pos - self.current_track.offset < 0: return
+        with app.draw_lock:
+            app.command_panel.set_caption('{} : {} / {}'.format(
                 self.current_track.title,
                 strftime(self.current_track.time_format, gmtime(pos - self.current_track.offset)),
                 self.current_track.length_string))
@@ -86,21 +92,6 @@ class PlaybackController:
         elif value.startswith('+'):
             self.backend.seek_forward(int(value[1:]))
         else: self._seek_absolute(value)
-
-    def set_volume(self, value):
-        old_volume = self.volume
-        if '+' in value:
-            self.volume += int(value[1:])
-        elif '-' in value:
-            self.volume -= int(value[1:])
-        else:
-            self.volume = int(value)
-        self.volume = clamp(self.volume, min_val=0, max_val=100)
-        if self.volume != old_volume:
-            self.backend.set_volume(self.volume)
-
-    def get_volume(self):
-        return self.volume
 
     def quit(self):
         self.backend.quit()

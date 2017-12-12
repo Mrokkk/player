@@ -5,7 +5,6 @@ class Context:
     def __init__(self):
         self.bookmarks = None
         self.config = None
-        self.draw_lock = None
         self.file_browser = None
         self.playback_controller = None
         self.playlist = None

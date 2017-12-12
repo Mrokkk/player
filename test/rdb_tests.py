@@ -20,10 +20,10 @@ class RdbTests(TestCase):
         callback_mock = Mock()
         self.sut.subscribe('aaa', callback_mock)
         self.sut['aaa'] = 'ccc'
-        callback_mock.assert_called_once_with('bbb', 'ccc')
+        callback_mock.assert_called_once_with('ccc')
 
         callback_mock.reset_mock()
         self.sut.subscribe('ddd', callback_mock)
         self.sut['ddd'] = 'ggg'
-        callback_mock.assert_called_once_with(None, 'ggg')
+        callback_mock.assert_called_once_with('ggg')
 

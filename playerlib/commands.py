@@ -48,15 +48,3 @@ class Commands(urwim.DefaultCommands):
     def change_dir(self, path):
         self._context.file_browser.change_dir(path)
 
-    def set(self, key, value):
-        if key == 'volume':
-            self._context.playback_controller.set_volume(value)
-        else:
-            raise RuntimeError('No such key: {}'.format(key))
-
-    def get(self, key):
-        if key == 'volume':
-            return self._context.playback_controller.get_volume()
-        else:
-            raise RuntimeError('No such key: {}'.format(key))
-

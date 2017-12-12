@@ -75,11 +75,11 @@ class CommandHandlerTests(TestCase):
         self.sut(':seek 50%')
         self.context.playback_controller.seek.assert_called_once_with('50%')
 
-        self.sut(':set volume 20')
-        self.context.playback_controller.set_volume.assert_called_once_with('20')
+        # self.sut(':set volume 20')
+        # self.context.playback_controller.set_volume.assert_called_once_with('20')
 
-        self.sut(':get volume')
-        self.context.playback_controller.get_volume.assert_called_once()
+        # self.sut(':get volume')
+        # self.context.playback_controller.get_volume.assert_called_once()
 
 
     def test_can_execute_bookmarks_commands(self):
