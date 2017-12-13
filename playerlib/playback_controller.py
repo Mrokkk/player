@@ -42,14 +42,14 @@ class PlaybackController:
         self.current_track = track
         self.backend.play_track(self.current_track)
         self.current_track.play()
-        self.context.track_info.update(self.current_track)
+        rdb['track'] = self.current_track
 
     def set_next_track_playing(self):
         last_track = self.current_track
         last_track.stop()
         self.current_track = self.current_track.playlist_entry.next.track
         self.current_track.play()
-        self.context.track_info.update(self.current_track)
+        rdb['track'] = self.current_track
 
     def pause(self):
         if not self.current_track:
@@ -63,7 +63,7 @@ class PlaybackController:
         self.backend.stop()
         self.current_track.stop()
         self.current_track = None
-        self.context.track_info.update(None)
+        rdb['track'] = self.current_track
 
     def next(self):
         try:

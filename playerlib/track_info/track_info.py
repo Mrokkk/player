@@ -13,11 +13,12 @@ class TrackInfo(urwim.ViewWidget):
         self.listbox = urwim.ListBox(self.content)
         self._no_track_playing()
         super().__init__(self.listbox, {}, 'Track info', header=self.header)
+        urwim.rdb.subscribe('track', self._update)
 
     def _no_track_playing(self):
         self.content[:] = [urwim.Text('No track playing!')]
 
-    def update(self, track):
+    def _update(self, track):
         if track == None: return self._no_track_playing()
         self.content[:] = [
             urwim.Text('Artist: {}'.format(track.artist)),
