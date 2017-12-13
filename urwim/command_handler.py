@@ -28,6 +28,7 @@ class CommandHandler:
             'e': 'add_to_playlist',
         }
         self.logger = logging.getLogger('CommandHandler')
+        self._search_context = None
 
     def _format_arguments(self, args):
         if len(args) == 0: return ''
@@ -44,10 +45,10 @@ class CommandHandler:
         eval('self.commands.{}({})'.format(command, self._format_arguments(args)))
 
     def _search_forward_mode(self, command):
-        urwim.app.App().window.focus.searchable_list().search_forward(command)
+        urwim.App().window.focus.searchable_list().search_forward(command)
 
     def _search_backward_mode(self, command):
-        urwim.app.App().window.focus.searchable_list().search_backward(command)
+        urwim.App().window.focus.searchable_list().search_backward(command)
 
     def list_commands(self):
         import inspect
