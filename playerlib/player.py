@@ -27,7 +27,7 @@ class Player:
         context = Context()
 
         context.config = Config()
-        context.playback_controller = PlaybackController(context)
+        context.playback_controller = PlaybackController(context.config)
         context.bookmarks = Bookmarks(context.config)
         context.playlist = Playlist(context.playback_controller.play_track)
         context.track_info = TrackInfo()

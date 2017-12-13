@@ -19,16 +19,15 @@ class PlaybackControllerTests(TestCase):
         self.app_mock = Mock()
         self.app_mock.return_value = self.app_instance
 
-        self.context_mock = Mock()
-        self.context_mock.command_panel = self.command_panel_mock
-        self.context_mock.config.backend = 'mplayer'
+        self.config_mock = Mock()
+        self.config_mock.backend = 'mplayer'
         self.command_panel_mock.selectable.return_value = False
 
         self.current_track_mock = Mock()
 
         patch('playerlib.playback_controller.App', self.app_mock).start()
         import playerlib.playback_controller
-        self.sut = playerlib.playback_controller.PlaybackController(self.context_mock)
+        self.sut = playerlib.playback_controller.PlaybackController(self.config_mock)
 
         self.backend = Mock()
         self.sut.backend = self.backend

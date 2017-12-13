@@ -9,11 +9,9 @@ from urwim import clamp, App, rdb, ConstrainedValue
 
 class PlaybackController:
 
-    def __init__(self, context):
-        self.context = context
-        self.backend = BackendFactory(context.config, self.next, self.update_current_state).create()
+    def __init__(self, config):
+        self.backend = BackendFactory(config, self.next, self.update_current_state).create()
         self.current_track = None
-        self.volume = 100
         self.logger = logging.getLogger('PlaybackController')
         rdb['volume'] = ConstrainedValue(100, 0, 100)
         rdb.subscribe('volume', self._volume_change)
