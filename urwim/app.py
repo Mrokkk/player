@@ -26,7 +26,6 @@ class App:
             self._command_panel = CommandPanel(self._command_handler)
             self._window = Window(widget, self._command_panel)
             self._sm = InputStateMachine(keys_mapping)
-            self._rdb = Rdb()
             self.logger = logging.getLogger('App')
             super().__init__(self._window,
                 palette=palette,

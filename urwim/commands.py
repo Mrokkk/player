@@ -3,7 +3,7 @@
 import urwim.app
 import urwim.rdb
 
-class DefaultCommands:
+class Commands:
 
     def error(self, string):
         urwim.App().command_panel.error(string)
@@ -21,17 +21,17 @@ class DefaultCommands:
         urwim.App().quit()
 
     def get(self, key):
-        value = urwim.Rdb()[key]
+        value = urwim.rdb[key]
         self.info('{}: {}'.format(key, value))
         return value
 
     def set(self, key, value):
-        old_value = urwim.Rdb()[key]
+        old_value = urwim.rdb[key]
         if '+' in value:
             new_value = old_value + int(value[1:])
         elif '-' in value:
             new_value = old_value - int(value[1:])
         else:
             new_value = int(value)
-        urwim.Rdb()[key] = new_value
+        urwim.rdb[key] = new_value
 

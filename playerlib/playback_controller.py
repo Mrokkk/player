@@ -5,7 +5,7 @@ import re
 from time import gmtime, strftime
 
 from playerlib.backends.backend_factory import *
-from urwim import clamp, App, Rdb, ConstrainedValue
+from urwim import clamp, App, rdb, ConstrainedValue
 
 class PlaybackController:
 
@@ -15,8 +15,8 @@ class PlaybackController:
         self.current_track = None
         self.volume = 100
         self.logger = logging.getLogger('PlaybackController')
-        Rdb()['volume'] = ConstrainedValue(100, 0, 100)
-        Rdb().subscribe('volume', self._volume_change)
+        rdb['volume'] = ConstrainedValue(100, 0, 100)
+        rdb.subscribe('volume', self._volume_change)
 
     def _volume_change(self, new):
         self.backend.set_volume(new)

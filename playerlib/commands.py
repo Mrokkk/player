@@ -2,7 +2,7 @@
 
 import urwim
 
-class Commands(urwim.DefaultCommands):
+class Commands(urwim.Commands):
     def __init__(self, context):
         self._context = context
         super().__init__()
