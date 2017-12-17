@@ -23,6 +23,11 @@ palette:
         fg: 0x06f
     separator:
         fg: g16
+    tab_inactive:
+        fg: 0xa30
+    tab_active:
+        bg: 0x0ad
+        fg: 0x000
 
 bookmarks:
     path: ~/.config/player/bookmarks.json

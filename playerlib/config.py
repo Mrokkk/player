@@ -20,6 +20,8 @@ class Config:
         ('error', 'dark red', '', '', '#a00', ''),
         ('info', 'dark cyan', '', '', '#06f', ''),
         ('separator', 'black', 'black', '', 'g16', ''),
+        ('tab_inactive', '', '', '', '', ''),
+        ('tab_active', 'black', 'blue', '', '#000', '#0ad'),
     ]
 
 
@@ -68,7 +70,7 @@ class Config:
 
     def _create_palette(self, palette):
         color_palette = []
-        for name in ('head', 'foot', 'file', 'file_focused', 'dir', 'dir_focused', 'error', 'info', 'separator'):
+        for name in ('head', 'foot', 'file', 'file_focused', 'dir', 'dir_focused', 'error', 'info', 'separator', 'tab_inactive', 'tab_active'):
             try: color_palette.append(self._create_palette_entry(256, name, palette))
             except:
                 log_exception(logging)

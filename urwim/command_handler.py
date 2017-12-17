@@ -45,10 +45,10 @@ class CommandHandler:
         eval('self.commands.{}({})'.format(command, self._format_arguments(args)))
 
     def _search_forward_mode(self, command):
-        urwim.App().window.focus.searchable_list().search_forward(command)
+        urwim.App().window.searchable_list().search_forward(command)
 
     def _search_backward_mode(self, command):
-        urwim.App().window.focus.searchable_list().search_backward(command)
+        urwim.App().window.searchable_list().search_backward(command)
 
     def list_commands(self):
         import inspect

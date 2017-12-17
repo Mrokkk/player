@@ -5,8 +5,9 @@ import urwid
 from .footer import *
 from .helpers import *
 from .separators import *
+from .wrapper import *
 
-class VerticalBox(urwid.WidgetPlaceholder):
+class VerticalBox(urwid.WidgetPlaceholder, Wrapper):
 
     def __init__(self, widget_list):
         self._widgets = []

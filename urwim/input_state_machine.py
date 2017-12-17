@@ -7,13 +7,15 @@ class InputStateMachine:
 
     def __init__(self, keys_mapping):
         self._keys = {
-            'gg': lambda: urwim.App().window.focus.searchable_list().scroll_beginning(),
-            'G': lambda: urwim.App().window.focus.searchable_list().scroll_end(),
-            'dd': lambda: urwim.App().window.focus.searchable_list().delete(),
-            '<C-w>left': lambda: urwim.App().window.main_view.switch_left(),
-            '<C-w>right': lambda: urwim.App().window.main_view.switch_right(),
+            'gg': lambda: urwim.App().window.searchable_list().scroll_beginning(),
+            'G': lambda: urwim.App().window.searchable_list().scroll_end(),
+            'dd': lambda: urwim.App().window.searchable_list().delete(),
+            '<C-w>left': lambda: urwim.App().window.switch_left(),
+            '<C-w>right': lambda: urwim.App().window.switch_right(),
             '<C-w><C-w>': lambda: urwim.App().window.switch_panes(),
             'b': lambda: urwim.App().window.toggle_pane_view(),
+            ',h': lambda: urwim.App().window.prev_tab(),
+            ',l': lambda: urwim.App().window.next_tab(),
         }
         if keys_mapping is not None:
             for k, v in keys_mapping.items():

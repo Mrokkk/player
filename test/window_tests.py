@@ -5,10 +5,11 @@ from unittest.mock import Mock, ANY
 
 from urwim.window import *
 
-class PlayerViewTests(TestCase):
+class WindowTests(TestCase):
 
     def setUp(self):
         self.main_view_mock = Mock()
+        self.main_view_mock.name = ''
         self.command_panel_mock = Mock()
         self.command_panel_mock.activation_keys = [':']
         self.sut = Window(self.main_view_mock, self.command_panel_mock)

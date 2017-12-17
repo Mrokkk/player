@@ -35,3 +35,12 @@ class Commands:
             new_value = int(value)
         urwim.rdb[key] = new_value
 
+    def tabnew(self):
+        raise NotImplementedError('not implemented')
+
+    def tabn(self):
+        urwim.App().window.next_tab()
+
+    def tabp(self):
+        urwim.App().window.prev_tab()
+
