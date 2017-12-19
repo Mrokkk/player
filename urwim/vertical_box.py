@@ -24,9 +24,13 @@ class VerticalBox(urwid.WidgetPlaceholder, Wrapper):
         for i, widget in enumerate(widget_list):
             if self.focus == widget:
                 try:
-                    self.original_widget.focus.original_widget = urwid.Frame(widget_list[i + 1], footer=Footer(''))
+                    self.original_widget.focus.original_widget = urwid.Frame(
+                        widget_list[i + 1],
+                        footer=Footer(widget_list[i + 1].name))
                 except:
-                    self.original_widget.focus.original_widget = urwid.Frame(widget_list[0], footer=Footer(''))
+                    self.original_widget.focus.original_widget = urwid.Frame(
+                        widget_list[0],
+                        footer=Footer(widget_list[0].name))
                 return True
 
     def toggle_pane_view(self):
