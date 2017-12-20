@@ -3,13 +3,14 @@
 from unittest import TestCase
 from unittest.mock import Mock
 
-from playerlib.command_panel import *
+from urwim.command_panel import *
 
 class CommandPanelTests(TestCase):
 
     def setUp(self):
         self.command_handler_mock = Mock()
         self.command_handler_mock.list_commands.return_value = []
+        self.return_focus_callback_mock = Mock()
         self.sut = CommandPanel(self.command_handler_mock)
         self.sut.set_edit_text = Mock()
         self.sut.set_caption = Mock()
@@ -19,7 +20,7 @@ class CommandPanelTests(TestCase):
     def activate_and_call(self, command):
         self.sut.activate(':')
         self.sut.get_edit_text.return_value = command
-        self.sut.unhandled_input('enter')
+        self.sut.handle_input('enter', self.return_focus_callback_mock)
 
     def reset_mocks(self):
         self.sut.set_edit_text.reset_mock()
@@ -48,88 +49,92 @@ class CommandPanelTests(TestCase):
     def test_can_call_command(self):
         self.sut.activate(':')
         self.sut.get_edit_text.return_value = 'command'
-        self.assertFalse(self.sut.unhandled_input('enter'))
-        self.command_handler_mock.execute.assert_called_once_with('command')
-
-    def test_can_catch_exception_from_command(self):
-        self.sut.activate(':')
-        self.sut.get_edit_text.side_effect = RuntimeError('some error')
-        self.assertFalse(self.sut.unhandled_input('enter'))
-        self.sut.set_caption.assert_called_with(('error', 'Error: some error'))
+        self.sut.handle_input('enter', self.return_focus_callback_mock)
+        self.command_handler_mock.assert_called_once_with('command')
 
     def test_can_exit(self):
         self.sut.activate(':')
-        self.assertFalse(self.sut.unhandled_input('esc'))
+        self.sut.handle_input('esc', self.return_focus_callback_mock)
         self.sut.set_edit_text.assert_called_with('')
         self.sut.set_caption.assert_called_with('')
+        self.return_focus_callback_mock.assert_called_once()
 
     def test_displays_nothing_when_no_items_in_history(self):
         self.sut.activate(':')
         self.reset_mocks()
-        self.sut.unhandled_input('up')
+        self.sut.handle_input('up', self.return_focus_callback_mock)
         self.sut.set_edit_text.assert_not_called()
 
         self.sut.activate(':')
         self.reset_mocks()
-        self.sut.unhandled_input('down')
+        self.sut.handle_input('down', self.return_focus_callback_mock)
         self.sut.set_edit_text.assert_not_called()
+
+        self.return_focus_callback_mock.assert_not_called()
 
     def test_can_display_previous_history_entry(self):
         self.activate_and_call('command1')
         self.sut.activate(':')
         self.reset_mocks()
-        self.sut.unhandled_input('up')
+        self.sut.handle_input('up', self.return_focus_callback_mock)
         self.sut.set_edit_text.assert_called_once_with('command1')
 
     def test_displays_none_when_trying_to_see_current_command(self):
         self.activate_and_call('command1')
         self.sut.activate(':')
         self.reset_mocks()
-        self.assertTrue(self.sut.unhandled_input('up'))
+        self.sut.handle_input('up', self.return_focus_callback_mock)
         self.sut.set_edit_text.reset_mock()
         self.sut.set_caption.reset_mock()
-        self.assertTrue(self.sut.unhandled_input('down'))
+        self.sut.handle_input('down', self.return_focus_callback_mock)
         self.sut.set_edit_text.assert_called_once_with('')
 
     def test_can_display_next_item_in_history(self):
         self.activate_and_call('command1')
         self.activate_and_call('command2')
         self.sut.activate(':')
-        self.assertTrue(self.sut.unhandled_input('up'))
-        self.assertTrue(self.sut.unhandled_input('up'))
+        self.sut.handle_input('up', self.return_focus_callback_mock)
+        self.sut.handle_input('up', self.return_focus_callback_mock)
         self.reset_mocks()
-        self.assertTrue(self.sut.unhandled_input('down'))
+        self.sut.handle_input('down', self.return_focus_callback_mock)
         self.sut.set_edit_text.assert_called_once_with('command2')
 
     def test_tab_keypress_calls_completer_for_command_mode(self):
         self.sut.completer = Mock()
         self.sut.activate(':')
-        self.assertTrue(self.sut.unhandled_input('tab'))
+        self.sut.handle_input('tab', self.return_focus_callback_mock)
         self.sut.completer.complete.assert_called_once()
+        self.return_focus_callback_mock.assert_not_called()
 
     def test_tab_keypress_does_not_call_completer_on_other_modes(self):
         self.sut.completer = Mock()
         self.sut.activate('/')
-        self.assertTrue(self.sut.unhandled_input('tab'))
+        self.sut.handle_input('tab', self.return_focus_callback_mock)
         self.sut.completer.complete.assert_not_called()
         self.sut.activate('?')
-        self.assertTrue(self.sut.unhandled_input('tab'))
+        self.sut.handle_input('tab', self.return_focus_callback_mock)
         self.sut.completer.complete.assert_not_called()
+        self.return_focus_callback_mock.assert_not_called()
 
     def test_handle_input_ignores_other_keys(self):
         self.sut.activate(':')
-        self.assertTrue(self.sut.unhandled_input('a'))
-        self.assertTrue(self.sut.unhandled_input('b'))
+        self.sut.handle_input('a', self.return_focus_callback_mock)
+        self.sut.handle_input('b', self.return_focus_callback_mock)
+        self.return_focus_callback_mock.assert_not_called()
 
     def test_should_be_selectable_only_when_active(self):
         self.assertFalse(self.sut.selectable())
         self.sut.activate(':')
         self.assertTrue(self.sut.selectable())
-        self.sut.unhandled_input('esc')
+        self.sut.handle_input('esc', self.return_focus_callback_mock)
+        self.return_focus_callback_mock.assert_called_once()
+        self.return_focus_callback_mock.reset_mock()
         self.assertFalse(self.sut.selectable())
         self.sut.activate('/')
         self.assertTrue(self.sut.selectable())
-        self.sut.unhandled_input('esc')
+        self.sut.handle_input('esc', self.return_focus_callback_mock)
+        self.return_focus_callback_mock.assert_called_once()
+        self.return_focus_callback_mock.reset_mock()
         self.assertFalse(self.sut.selectable())
         self.sut.activate('?')
         self.assertTrue(self.sut.selectable())

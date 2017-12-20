@@ -5,29 +5,32 @@ import re
 from time import gmtime, strftime
 
 from playerlib.backends.backend_factory import *
-from playerlib.helpers.helpers import clamp
+from urwim import clamp, App, rdb, ConstrainedValue
 
 class PlaybackController:
 
-    def __init__(self, context):
-        self.context = context
-        self.backend = BackendFactory(context.config, self.next, self.update_current_state).create()
+    def __init__(self, config):
+        self.backend = BackendFactory(config, self.next, self.update_current_state).create()
         self.current_track = None
-        self.volume = 100
         self.logger = logging.getLogger('PlaybackController')
+        rdb['volume'] = ConstrainedValue(100, 0, 100)
+        rdb.subscribe('volume', self._volume_change)
+
+    def _volume_change(self, new):
+        self.backend.set_volume(new)
 
     def update_current_state(self, pos):
         if pos < 0: return
+        app = App()
         if pos - self.current_track.offset >= self.current_track.length and \
                 self.current_track.path == self.current_track.playlist_entry.next.track.path:
             self.set_next_track_playing()
-        if self.context.command_panel.selectable() or pos - self.current_track.offset < 0: return
-        time_format = '%H:%M:%S' if self.current_track.length >= 3600 else '%M:%S'
-        with self.context.draw_lock:
-            self.context.command_panel.set_caption('{} : {} / {}'.format(
+        if app.command_panel.selectable() or pos - self.current_track.offset < 0: return
+        with app.draw_lock:
+            app.command_panel.set_caption('{} : {} / {}'.format(
                 self.current_track.title,
-                strftime(time_format, gmtime(pos - self.current_track.offset)),
-                strftime(time_format, gmtime(self.current_track.length))))
+                strftime(self.current_track.time_format, gmtime(pos - self.current_track.offset)),
+                self.current_track.length_string))
 
     def play_track(self, track):
         if not track:
@@ -37,12 +40,14 @@ class PlaybackController:
         self.current_track = track
         self.backend.play_track(self.current_track)
         self.current_track.play()
+        rdb['track'] = self.current_track
 
     def set_next_track_playing(self):
         last_track = self.current_track
         last_track.stop()
         self.current_track = self.current_track.playlist_entry.next.track
         self.current_track.play()
+        rdb['track'] = self.current_track
 
     def pause(self):
         if not self.current_track:
@@ -56,6 +61,7 @@ class PlaybackController:
         self.backend.stop()
         self.current_track.stop()
         self.current_track = None
+        rdb['track'] = self.current_track
 
     def next(self):
         try:
@@ -84,21 +90,6 @@ class PlaybackController:
         elif value.startswith('+'):
             self.backend.seek_forward(int(value[1:]))
         else: self._seek_absolute(value)
-
-    def set_volume(self, value):
-        old_volume = self.volume
-        if '+' in value:
-            self.volume += int(value[1:])
-        elif '-' in value:
-            self.volume -= int(value[1:])
-        else:
-            self.volume = int(value)
-        self.volume = clamp(self.volume, min_val=0, max_val=100)
-        if self.volume != old_volume:
-            self.backend.set_volume(self.volume)
-
-    def get_volume(self):
-        return self.volume
 
     def quit(self):
         self.backend.quit()

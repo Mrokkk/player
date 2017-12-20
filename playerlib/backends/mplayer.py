@@ -7,8 +7,8 @@ import re
 import subprocess
 import threading
 
+from urwim import log_exception
 from .backend_interface import *
-from playerlib.helpers.helpers import *
 
 class MplayerReader(threading.Thread):
 
@@ -63,7 +63,7 @@ class MplayerBackend(Backend):
         if not self.current_track:
             self.logger.warning('Trying to update time for stopped track!')
             return
-        match = re.match('^A:[ \t]{0,}([0-9]+).*$', line)
+        match = re.match('^A:[ \t]{0,}(\d+)', line)
         if not match: return
         self.set_time_callback(int(match.group(1)))
 

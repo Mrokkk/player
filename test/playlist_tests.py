@@ -10,7 +10,7 @@ class PlaylistTests(TestCase):
         self.play_callback_mock = Mock()
         self.error_handler_mock = Mock()
         self.tracks_factory_mock = Mock()
-        self.sut = Playlist(self.play_callback_mock, self.error_handler_mock)
+        self.sut = Playlist(self.play_callback_mock)
         self.sut.tracks_factory = self.tracks_factory_mock
 
     def _create_track(self, title=None, artist=None, index=0, length=0):
@@ -23,21 +23,20 @@ class PlaylistTests(TestCase):
         return track
 
     def test_enter_keypress_should_fail_when_no_tracks_on_playlist(self):
-        self.sut.unhandled_input('enter')
-        self.error_handler_mock.assert_called_once()
+        self.assertRaises(Exception, self.sut.handle_input, 'enter')
         self.play_callback_mock.assert_not_called()
 
     def test_enter_keypress_should_call_play_callback_if_track_is_selected(self):
         playlist_entry_mock = Mock()
         playlist_entry_mock.track = Mock()
         self.sut.content.append(playlist_entry_mock)
-        self.sut.unhandled_input('enter')
+        self.sut.handle_input('enter')
         self.error_handler_mock.assert_not_called()
         self.play_callback_mock.assert_called_once_with(playlist_entry_mock.track)
 
     def test_other_keypresses_should_be_ignored(self):
         for key in ('a', 'b', 'c', 'd', 'e', ' ', ':'):
-            self.sut.unhandled_input(key)
+            self.sut.handle_input(key)
             self.error_handler_mock.assert_not_called()
             self.play_callback_mock.assert_not_called()
 

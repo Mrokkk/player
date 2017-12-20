@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 import urwid
+import urwim
 
-class Entry(urwid.Button):
+class Entry(urwim.ListBoxEntry):
 
     def __init__(self, track, line, prev=None):
         self.track = track
@@ -16,14 +17,15 @@ class Entry(urwid.Button):
             prev.next = self
 
     def set_playing(self):
-        self._w = urwid.AttrMap(urwid.SelectableIcon(['▸ ', self.line], 0), 'dir', 'dir_focused')
+        self.update(['▸ ', self.line], 'dir', 'dir_focused')
 
     def set_stopped(self):
-        self._w = urwid.AttrMap(urwid.SelectableIcon(['  ', self.line], 0), 'file', 'file_focused')
+        self.update(['  ', self.line], 'file', 'file_focused')
 
     def set_paused(self):
-        self._w = urwid.AttrMap(urwid.SelectableIcon(['‖ ', self.line], 0), 'dir', 'dir_focused')
+        self.update(['‖ ', self.line], 'dir', 'dir_focused')
 
-    def keypress(self, size, key):
-        return key
+    @property
+    def text(self):
+        return self.line
 

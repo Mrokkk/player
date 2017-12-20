@@ -7,14 +7,26 @@ from playerlib.config import *
 class ConfigTests(TestCase):
 
     def test_can_read_simple_config(self):
-        config_mock = Mock()
-        config_mock.backend = 'some_backend'
-        config_mock.backend_path = '/path/to/some_backend'
-        with patch('importlib.machinery.SourceFileLoader') as loader_class_mock:
-            loader_mock = Mock()
-            loader_mock.load_module.return_value = config_mock
-            loader_class_mock.return_value = loader_mock
+        config = {
+            'backend': {
+                'name': 'some_backend',
+                'path': '/path/to/some_backend'
+            }
+        }
+        with patch('builtins.open') as open_mock, patch('yaml.load') as yaml_load_mock:
+            yaml_load_mock.return_value = config
             sut = Config()
+            open_mock.assert_called_once()
+            yaml_load_mock.assert_called_once()
             self.assertEqual(sut.backend, 'some_backend')
             self.assertEqual(sut.backend_path, '/path/to/some_backend')
+
+    def test_have_default_configuration_when_no_config_yml(self):
+        with patch('builtins.open') as open_mock, patch('yaml.load') as yaml_load_mock:
+            open_mock.side_effect = RuntimeError
+            sut = Config()
+            open_mock.assert_called_once()
+            yaml_load_mock.assert_not_called()
+            self.assertEqual(sut.backend, 'mplayer')
+            self.assertEqual(sut.backend_path, '/usr/bin/mplayer')
 

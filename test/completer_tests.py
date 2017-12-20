@@ -3,9 +3,9 @@
 from unittest import TestCase
 from unittest.mock import Mock, MagicMock, patch
 
-from playerlib.command_panel import *
+from urwim.completer import *
 
-class CommandPanelCompleterTests(TestCase):
+class CompleterTests(TestCase):
 
     def setUp(self):
         self.command_panel_mock = Mock()

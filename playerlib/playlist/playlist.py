@@ -4,37 +4,26 @@ import json
 import logging
 import os
 import time
-import urwid
+import urwim
 
-from playerlib.helpers.scrollable import *
 from playerlib.track import *
 from playerlib.tracks_factory import *
 from .entry import *
 
-class Playlist(urwid.WidgetWrap):
+class Playlist(urwim.ViewWidget):
 
-    def __init__(self, play_callback, error_handler):
+    def __init__(self, play_callback):
         self.callback = play_callback
-        self.error_handler = error_handler
         self.list = []
-        self.content = urwid.SimpleListWalker([])
-        self.listbox = urwid.ListBox(self.content)
-        self.header = urwid.AttrWrap(urwid.Text('Unnamed playlist'), 'head')
-        self.footer = urwid.AttrWrap(urwid.Text('Playlist'), 'foot')
+        self.content = urwim.SimpleListWalker([])
+        self.listbox = urwim.ListWidget(self.content)
+        self.header = urwim.Header('Unnamed playlist')
         self.tracks_factory = TracksFactory()
         self.logger = logging.getLogger('Playlist')
-        super().__init__(urwid.Frame(
-            self.listbox,
-            header=self.header,
-            footer=self.footer))
-
-    def unhandled_input(self, key):
-        try_to_scroll(self.listbox, key)
-        if key == 'enter':
-            try:
-                self.callback(self.listbox.focus.track)
-            except Exception as e:
-                self.error_handler(str(e))
+        callbacks = {
+            'enter': lambda: self.callback(self.listbox.focus.track)
+        }
+        super().__init__(self.listbox, callbacks, 'Playlist', header=self.header)
 
     def _get_track_string(self, track):
         if track.title:
@@ -63,7 +52,7 @@ class Playlist(urwid.WidgetWrap):
         tracks = [t.track.to_dict() for t in self.content]
         with open(filename, 'w') as f:
             json.dump(tracks, f, indent=1)
-        self.header.set_w(urwid.Text(filename))
+        self.header.text = filename
 
     def load_playlist(self, filename):
         with open(filename, 'r') as f:
@@ -71,7 +60,7 @@ class Playlist(urwid.WidgetWrap):
         for t in raw_tracks:
             track = Track().from_dict(t)
             self._add_track(track)
-        self.header.set_w(urwid.Text(filename))
+        self.header.text = filename
 
     def clear(self):
         self.content[:] = []
