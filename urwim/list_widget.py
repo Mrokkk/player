@@ -45,7 +45,7 @@ class ListWidget(urwid.ListBox):
         index = self.focus_position + 1
         while True:
             try:
-                if pattern in self.body[index].text():
+                if pattern in self.body[index].text:
                     self.focus_position = index
                     return
                 index += 1
@@ -56,7 +56,7 @@ class ListWidget(urwid.ListBox):
         index = self.focus_position - 1
         while True:
             try:
-                if pattern in self.body[index].text():
+                if pattern in self.body[index].text:
                     self.focus_position = index
                     return
                 index -= 1

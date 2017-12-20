@@ -25,6 +25,7 @@ class Entry(urwim.ListBoxEntry):
     def set_paused(self):
         self.update(['‖ ', self.line], 'dir', 'dir_focused')
 
+    @property
     def text(self):
         return self.line
 

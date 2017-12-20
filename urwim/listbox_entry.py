@@ -10,6 +10,7 @@ class ListBoxEntry(urwid.Button):
         super().__init__('')
         self.update(text, unfocused, focused)
 
+    @property
     def text(self):
         '''Has to be implemented by subclass; used for searching in ListBox'''
         raise NotImplementedError('text() not implemented by widget')

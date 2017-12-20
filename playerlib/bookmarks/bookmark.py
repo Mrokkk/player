@@ -9,6 +9,7 @@ class Bookmark(urwim.ListBoxEntry):
         self._path = path
         super().__init__([str(index), ' ', self._path], 'file', 'file_focused')
 
+    @property
     def text(self):
         return self._path
 

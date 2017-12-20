@@ -36,7 +36,7 @@ class Bookmarks(urwim.ViewWidget):
     def _save_bookmarks(self):
         import json
         with open(self.bookmarks_file, 'w') as f:
-            json.dump([b.text() for b in self.content], f)
+            json.dump([b.text for b in self.content], f)
 
     def _load_bookmarks(self):
         import json
@@ -52,7 +52,7 @@ class Bookmarks(urwim.ViewWidget):
         self._save_bookmarks()
 
     def _go_to_bookmark(self, bookmark):
-        urwim.App().command_handler(':change_dir {}'.format(bookmark.text()))
+        urwim.App().command_handler(':change_dir {}'.format(bookmark.text))
         urwim.App().command_handler(':toggle_pane_view')
 
     def _handle_enter(self):

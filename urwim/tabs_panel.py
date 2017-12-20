@@ -4,39 +4,43 @@ import urwid
 
 class TabsPanel(urwid.WidgetWrap):
 
+    class Tab(urwid.WidgetWrap):
+        def __init__(self, index, name, active=False):
+            super().__init__(urwid.AttrMap(
+                urwid.Text(' {} {} '.format(index, name)), 'tab_active' if active else 'tab_inactive'
+            ))
+
+
     def __init__(self, tabs):
         self._tabs = tabs
         super().__init__(urwid.Columns([], dividechars=1))
         for i, t in enumerate(tabs):
             self.add_tab(t, selected=i==0)
 
-    def _selected_tab(self, index, name):
-        return (
-            urwid.AttrMap(urwid.SelectableIcon(' ' + str(index + 1) + ' ' +  name + ' '), 'tab_active'),
-            self._w.options('pack')
-        )
-
-    def _unselected_tab(self, index, name):
-        return (
-            urwid.AttrMap(urwid.SelectableIcon(' ' + str(index + 1) + ' ' +  name + ' '), 'tab_inactive'),
-            self._w.options('pack')
-        )
-
     def add_tab(self, tab, selected=False):
-        if selected:
-            self._w.contents.append(self._selected_tab(len(self._w.contents), tab.name))
-        else:
-            self._w.contents.append(self._unselected_tab(len(self._w.contents), tab.name))
+        self._w.contents.append((
+            self.Tab(len(self._w.contents) + 1, tab.name, active=selected),
+            self._w.options('pack')
+        ))
 
     def select(self, index):
         for i, t in enumerate(self._tabs):
             if index == i:
-                self._w.contents[i] = self._selected_tab(i, t.name)
+                self._w.contents[i] = (
+                    self.Tab(index + 1, self._tabs[index].name, active=True),
+                    self._w.options('pack')
+                )
             else:
-                self._w.contents[i] = self._unselected_tab(i, t.name)
+                self._w.contents[i] = (
+                    self.Tab(index + 1, self._tabs[index].name, active=False),
+                    self._w.options('pack')
+                )
 
     def update(self, index):
-        self._w.contents[index] = self._selected_tab(index, self._tabs[index].name)
+        self._w.contents[index] = (
+            self.Tab(index + 1, self._tabs[index].name, active=True),
+            self._w.options('pack')
+        )
 
     def selectable(self):
         return False

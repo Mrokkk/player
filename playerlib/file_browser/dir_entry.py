@@ -22,6 +22,7 @@ class DirEntry(urwim.ListBoxEntry):
     def path(self):
         return os.path.join(self.parent_path, self.name).replace("\\", "\\\\")
 
+    @property
     def text(self):
         return self.name
 
