@@ -3,7 +3,18 @@
 import os
 import yaml
 import logging
-from urwim import log_exception
+from urwim import log_exception, YamlConfigReader, JsonConfigReader
+
+class obj(object):
+    def __init__(self, d):
+        for a, b in d.items():
+            if isinstance(b, (list, tuple)):
+               setattr(self, a, [obj(x) if isinstance(x, dict) else x for x in b])
+            else:
+               setattr(self, a, obj(b) if isinstance(b, dict) else b)
+
+    def __repr__(self):
+        return str(self.__dict__)
 
 class Config:
 
@@ -27,30 +38,17 @@ class Config:
     }
 
     def __init__(self):
-        config = {}
-        try:
-            with open(os.path.expanduser('~') + '/.config/player/config.yml', 'r') as f:
-                config = yaml.load(f.read())
-        except: log_exception(logging)
-        logging.debug(config)
-
-        try: self.backend = config['backend']['name']
-        except: self.backend = self.defaults['backend']['name']
-
-        try: self.backend_path = os.path.expanduser(config['backend']['path'])
-        except: self.backend_path = self.defaults['backend']['path']
-
-        try: self.colors = config['colors']
-        except: self.colors = self.defaults['colors']
-
-        try:
-            self.color_palette = self._create_palette(config['palette'])
-        except:
-            self.color_palette = self.defaults['color_palette']
-        logging.debug(self.color_palette)
-
-        try: self.bookmarks_file = os.path.expanduser(config['bookmarks']['path'])
-        except: self.bookmarks_file = self.defaults['bookmarks']['path']
+        config = Config.defaults
+        path = os.path.expanduser('~/.config/player/config.yml')
+        if os.path.exists(path):
+            config.update(YamlConfigReader().read(path))
+        c = obj(config)
+        logging.debug(c)
+        self.backend = os.path.expanduser(c.backend.name)
+        self.backend_path = os.path.expanduser(c.backend.path)
+        self.bookmarks_file = os.path.expanduser(c.bookmarks.path)
+        self.color_palette = self._create_palette(config['palette'])
+        self.colors = c.colors
 
 
     def _convert_color(self, color):
