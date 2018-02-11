@@ -13,8 +13,11 @@ class ConfigTests(TestCase):
                 'path': '/path/to/some_backend'
             }
         }
-        with patch('builtins.open') as open_mock, patch('yaml.load') as yaml_load_mock:
+        with patch('builtins.open') as open_mock, \
+                patch('yaml.load') as yaml_load_mock, \
+                patch('os.path.exists') as exists_mock:
             yaml_load_mock.return_value = config
+            exists_mock.return_value = True
             sut = Config()
             open_mock.assert_called_once()
             yaml_load_mock.assert_called_once()
@@ -22,10 +25,11 @@ class ConfigTests(TestCase):
             self.assertEqual(sut.backend_path, '/path/to/some_backend')
 
     def test_have_default_configuration_when_no_config_yml(self):
-        with patch('builtins.open') as open_mock, patch('yaml.load') as yaml_load_mock:
-            open_mock.side_effect = RuntimeError
+        with patch('builtins.open') as open_mock, \
+                patch('yaml.load') as yaml_load_mock, \
+                patch('os.path.exists') as exists_mock:
+            exists_mock.return_value = False
             sut = Config()
-            open_mock.assert_called_once()
             yaml_load_mock.assert_not_called()
             self.assertEqual(sut.backend, 'mplayer')
             self.assertEqual(sut.backend_path, '/usr/bin/mplayer')

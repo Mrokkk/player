@@ -5,7 +5,7 @@ import yaml
 import logging
 from urwim import log_exception, YamlConfigReader, JsonConfigReader
 
-class obj(object):
+class obj:
     def __init__(self, d):
         for a, b in d.items():
             if isinstance(b, (list, tuple)):
@@ -38,16 +38,19 @@ class Config:
     }
 
     def __init__(self):
-        config = Config.defaults
+        config = Config.defaults.copy()
         path = os.path.expanduser('~/.config/player/config.yml')
         if os.path.exists(path):
-            config.update(YamlConfigReader().read(path))
+            yaml_config = YamlConfigReader().read(path)
+            if yaml_config:
+                config.update(yaml_config)
         c = obj(config)
         logging.debug(c)
         self.backend = os.path.expanduser(c.backend.name)
         self.backend_path = os.path.expanduser(c.backend.path)
         self.bookmarks_file = os.path.expanduser(c.bookmarks.path)
-        self.color_palette = self._create_palette(config['palette'])
+        try: self.color_palette = self._create_palette(config['palette'])
+        except: self.color_palette = self.defaults['color_palette']
         self.colors = c.colors
 
 

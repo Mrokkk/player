@@ -33,7 +33,7 @@ class CommandHandlerTests(TestCase):
         self.context.window = Mock()
         self.context.quit = Mock()
         self.commands = playerlib.commands.Commands(self.context)
-        self.sut = urwim.command_handler.CommandHandler(self.commands)
+        self.sut = urwim.command_handler.CommandHandler(self.commands, {})
 
 
     def test_can_execute_player_controller_commands(self):
