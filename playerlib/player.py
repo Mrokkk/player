@@ -25,7 +25,7 @@ class Player:
 
     def __init__(self):
         context = Context()
-        context.config = Config()
+        context.config = Config(config_files=['~/.config/player/config.yml'])
         context.playback_controller = PlaybackController(context.config)
         context.bookmarks = Bookmarks(context.config)
         context.playlist = Playlist(context.playback_controller.play_track)

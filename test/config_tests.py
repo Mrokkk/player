@@ -18,13 +18,13 @@ class ConfigTests(TestCase):
                 patch('os.path.exists') as exists_mock:
             yaml_load_mock.return_value = config
             exists_mock.return_value = True
-            sut = Config()
+            sut = Config(config_files=['some_file.yml'])
             open_mock.assert_called_once()
             yaml_load_mock.assert_called_once()
             self.assertEqual(sut.backend, 'some_backend')
             self.assertEqual(sut.backend_path, '/path/to/some_backend')
 
-    def test_have_default_configuration_when_no_config_yml(self):
+    def test_have_default_configuration_when_no_config_files(self):
         with patch('builtins.open') as open_mock, \
                 patch('yaml.load') as yaml_load_mock, \
                 patch('os.path.exists') as exists_mock:

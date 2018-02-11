@@ -37,13 +37,13 @@ class Config:
         ]
     }
 
-    def __init__(self):
+    def __init__(self, config_files=[], defaults={}):
         config = Config.defaults.copy()
-        path = os.path.expanduser('~/.config/player/config.yml')
-        if os.path.exists(path):
-            yaml_config = YamlConfigReader().read(path)
-            if yaml_config:
-                config.update(yaml_config)
+        if defaults:
+            config.update(defaults)
+        config_from_file = self._read_config(config_files)
+        if config_from_file:
+            config.update(config_from_file)
         c = obj(config)
         logging.debug(c)
         self.backend = os.path.expanduser(c.backend.name)
@@ -52,6 +52,19 @@ class Config:
         try: self.color_palette = self._create_palette(config['palette'])
         except: self.color_palette = self.defaults['color_palette']
         self.colors = c.colors
+
+
+    def _read_config(self, config_files):
+        if not config_files: return
+        for config_file in config_files:
+            config_file = os.path.expanduser(config_file)
+            if not os.path.exists(config_file): continue
+            if config_file.endswith('.yml'):
+                logging.debug('Reading YAML from {}'.format(config_file))
+                return YamlConfigReader().read(config_file)
+            elif config_file.endswith('.json'):
+                logging.debug('Reading JSON from {}'.format(config_file))
+                return JsonConfigReader().read(config_file)
 
 
     def _convert_color(self, color):
