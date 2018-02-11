@@ -38,6 +38,7 @@ class Player:
                 [context.playlist, context.track_info]]),
             commands=Commands(context),
             keys_mapping=self.keys_mapping,
+            command_mapping={'e': 'add_to_playlist'},
             palette=context.config.color_palette)
 
 

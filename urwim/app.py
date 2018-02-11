@@ -17,12 +17,12 @@ class App:
     _instance = None
 
     class _App(urwid.MainLoop):
-        def __init__(self, widget, commands=None, keys_mapping=None, palette=None):
+        def __init__(self, widget, commands=None, keys_mapping=None, command_mapping={}, palette=None):
             widget = widget if widget else urwid.ListBox([])
             self._hack_urwid_asyncio()
             self._draw_lock = threading.RLock()
             self._event_loop = urwid.AsyncioEventLoop(loop=asyncio.get_event_loop())
-            self._command_handler = CommandHandler(commands)
+            self._command_handler = CommandHandler(commands, command_mapping)
             self._command_panel = CommandPanel(self._command_handler)
             self._window = Window(widget, self._command_panel)
             self._sm = InputStateMachine(keys_mapping)
