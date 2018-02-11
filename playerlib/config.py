@@ -7,23 +7,24 @@ from urwim import log_exception
 
 class Config:
 
-    default_backend = 'mplayer'
-    default_backend_path = '/usr/bin/mplayer'
-    default_bookmarks_file = os.path.expanduser('~') + '/.config/player/bookmarks.json'
-    default_color_palette = [
-        ('head', 'yellow', 'black', '', '#a30', ''),
-        ('foot', 'light gray', 'black', '', '', 'g11'),
-        ('file', 'white', '', '', '#fff', ''),
-        ('file_focused', 'white', 'black', '', '#fff', 'g11'),
-        ('dir', 'dark green', '', '', '#8a5', ''),
-        ('dir_focused', 'dark green', 'black', '', '#8a5', 'g11'),
-        ('error', 'dark red', '', '', '#a00', ''),
-        ('info', 'dark cyan', '', '', '#06f', ''),
-        ('separator', 'black', 'black', '', 'g16', ''),
-        ('tab_inactive', '', '', '', '', ''),
-        ('tab_active', 'black', 'blue', '', '#000', '#0ad'),
-    ]
-
+    defaults = {
+        'backend': {'name': 'mplayer', 'path': '/usr/bin/mplayer'},
+        'bookmarks': {'path': os.path.expanduser('~') + '/.config/player/bookmarks.json'},
+        'colors': 256,
+        'color_palette': [
+            ('head', 'yellow', 'black', '', '#a30', ''),
+            ('foot', 'light gray', 'black', '', '', 'g11'),
+            ('file', 'white', '', '', '#fff', ''),
+            ('file_focused', 'white', 'black', '', '#fff', 'g11'),
+            ('dir', 'dark green', '', '', '#8a5', ''),
+            ('dir_focused', 'dark green', 'black', '', '#8a5', 'g11'),
+            ('error', 'dark red', '', '', '#a00', ''),
+            ('info', 'dark cyan', '', '', '#06f', ''),
+            ('separator', 'black', 'black', '', 'g16', ''),
+            ('tab_inactive', '', '', '', '', ''),
+            ('tab_active', 'black', 'blue', '', '#000', '#0ad'),
+        ]
+    }
 
     def __init__(self):
         config = {}
@@ -34,22 +35,22 @@ class Config:
         logging.debug(config)
 
         try: self.backend = config['backend']['name']
-        except: self.backend = self.default_backend
+        except: self.backend = self.defaults['backend']['name']
 
         try: self.backend_path = os.path.expanduser(config['backend']['path'])
-        except: self.backend_path = self.default_backend_path
+        except: self.backend_path = self.defaults['backend']['path']
 
         try: self.colors = config['colors']
-        except: self.colors = 256
+        except: self.colors = self.defaults['colors']
 
         try:
             self.color_palette = self._create_palette(config['palette'])
         except:
-            self.color_palette = self.default_color_palette
+            self.color_palette = self.defaults['color_palette']
         logging.debug(self.color_palette)
 
         try: self.bookmarks_file = os.path.expanduser(config['bookmarks']['path'])
-        except: self.bookmarks_file = self.default_bookmarks_file
+        except: self.bookmarks_file = self.defaults['bookmarks']['path']
 
 
     def _convert_color(self, color):
