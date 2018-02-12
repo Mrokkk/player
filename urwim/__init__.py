@@ -3,6 +3,7 @@
 from .app import *
 from .asynchronous import asynchronous
 from .commands import *
+from .config import *
 from .footer import *
 from .header import *
 from .helpers import *

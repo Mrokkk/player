@@ -4,7 +4,6 @@ import urwim
 
 from playerlib.bookmarks.bookmarks import *
 from playerlib.commands import *
-from playerlib.config import *
 from playerlib.context import *
 from playerlib.file_browser.file_browser import *
 from playerlib.playback_controller import *
@@ -23,9 +22,15 @@ class Player:
         ']': ':set volume +10',
     }
 
+    default_config = {
+        'backend': {'name': 'mplayer', 'path': '/usr/bin/mplayer'},
+        'bookmarks': {'path': '~/.config/player/bookmarks.json'},
+    }
+
     def __init__(self):
         context = Context()
-        context.config = Config(config_files=['~/.config/player/config.yml'])
+        context.config = urwim.read_config(config_files=['~/.config/player/config.yml'],
+            defaults=self.default_config)
         context.playback_controller = PlaybackController(context.config)
         context.bookmarks = Bookmarks(context.config)
         context.playlist = Playlist(context.playback_controller.play_track)

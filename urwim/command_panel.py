@@ -25,9 +25,6 @@ class CommandPanel(urwid.Edit):
         self.set_edit_text('')
         self.set_caption(caption)
 
-    def deactivate(self):
-        self.mode = None
-
     def is_active(self):
         return self.mode != None
 
@@ -35,6 +32,9 @@ class CommandPanel(urwid.Edit):
         self.mode = key
         self._clear_and_set_caption(key)
         self.history_index = -1
+
+    def deactivate(self):
+        self.mode = None
 
     def error(self, error):
         self._clear_and_set_caption(('error', 'Error: ' + error))

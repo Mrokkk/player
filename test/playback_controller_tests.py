@@ -20,7 +20,7 @@ class PlaybackControllerTests(TestCase):
         self.app_mock.return_value = self.app_instance
 
         self.config_mock = Mock()
-        self.config_mock.backend = 'mplayer'
+        self.config_mock.backend.name = 'mplayer'
         self.command_panel_mock.selectable.return_value = False
 
         self.current_track_mock = Mock()

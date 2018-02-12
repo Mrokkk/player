@@ -20,7 +20,7 @@ class BookmarksTests(TestCase):
         import playerlib.bookmarks.bookmarks
         self.Bookmarks = playerlib.bookmarks.bookmarks.Bookmarks
         self.config_mock = Mock()
-        self.config_mock.bookmarks_file = '/bookmarks.json'
+        self.config_mock.bookmarks.path = '/bookmarks.json'
 
     def test_can_start_when_bookmarks_file_does_not_exist(self):
         with patch('os.path.exists') as exists_mock:
@@ -44,7 +44,7 @@ class BookmarksTests(TestCase):
             exists_mock.return_value = False
             sut = self.Bookmarks(self.config_mock)
             sut.add('/path')
-            open_mock.assert_called_once_with(self.config_mock.bookmarks_file, 'w')
+            open_mock.assert_called_once_with(self.config_mock.bookmarks.path, 'w')
             json_dump_mock.assert_called_once_with(['/path'], ANY)
 
     def test_can_go_to_selected_bookmark(self):

@@ -13,7 +13,7 @@ class ListBoxEntry(urwid.Button):
     @property
     def text(self):
         '''Has to be implemented by subclass; used for searching in ListBox'''
-        raise NotImplementedError('text() not implemented by widget')
+        raise NotImplementedError('text property not implemented by widget')
 
     def update(self, text, unfocused=None, focused=None):
         widget = urwid.SelectableIcon(text, 0)

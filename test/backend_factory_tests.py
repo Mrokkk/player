@@ -13,11 +13,11 @@ class BackendFactoryTests(TestCase):
         self.sut = BackendFactory(self.context_mock.config, Mock(), Mock())
 
     def test_can_create_mplayer_backend(self):
-        self.context_mock.config.backend = 'mplayer'
+        self.context_mock.config.backend.name = 'mplayer'
         backend = self.sut.create()
         self.assertEqual(backend.__class__, MplayerBackend)
 
     def test_should_raise_exception_when_improper_backend_name(self):
-        self.context_mock.config.backend = 'aa'
+        self.context_mock.config.backend.name = 'aa'
         self.assertRaises(RuntimeError, self.sut.create)
 
