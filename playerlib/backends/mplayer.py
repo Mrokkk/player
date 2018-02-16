@@ -83,8 +83,12 @@ class MplayerBackend(Backend):
             self.logger.warning('No mplayer running')
             return
         self.logger.info('Sending command: {}'.format(command.strip()))
-        self.mplayer.stdin.write(command)
-        self.mplayer.stdin.flush()
+        try:
+            self.mplayer.stdin.write(command)
+            self.mplayer.stdin.flush()
+        except IOError:
+            log_exception(self.logger)
+            self.mplayer.terminate()
 
     def _build_mplayer_args(self):
         cache = 8192
