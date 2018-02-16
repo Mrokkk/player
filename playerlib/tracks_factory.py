@@ -46,7 +46,7 @@ class TracksFactory:
         tags = taglib.File(path)
         try:
             track.title = ', '.join(tags.tags['TITLE'])
-        except KeyError: pass
+        except KeyError: track.title = os.path.basename(path)
         try:
             track.artist = ', '.join(tags.tags['ARTIST'])
         except KeyError: pass
