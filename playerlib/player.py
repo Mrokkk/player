@@ -29,7 +29,7 @@ class Player:
 
     def __init__(self):
         context = Context()
-        context.config = urwim.read_config(config_files=['~/.config/player/config.yml'],
+        context.config = urwim.read_config(config_files=['~/.config/player/config.json', '~/.config/player/config.yml'],
             defaults=self.default_config)
         context.playback_controller = PlaybackController(context.config)
         context.bookmarks = Bookmarks(context.config)

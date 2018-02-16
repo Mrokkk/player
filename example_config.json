@@ -1,0 +1,47 @@
+{
+    "backend": {
+        "name": "mplayer",
+        "path": "~/.local/bin/mplayer"
+    },
+    "colors": 256,
+    "palette": {
+        "head": {
+            "fg": "#a30"
+        },
+        "foot": {
+            "bg": "g11"
+        },
+        "file": {
+            "fg": null
+        },
+        "file_focused": {
+            "bg": "g11"
+        },
+        "dir": {
+            "fg": "#8a5"
+        },
+        "dir_focused": {
+            "fg": "#8a5",
+            "bg": "g11"
+        },
+        "error": {
+            "fg": "#a00"
+        },
+        "info": {
+            "fg": 111
+        },
+        "separator": {
+            "fg": "g16"
+        },
+        "tab_inactive": {
+            "fg": "#a30"
+        },
+        "tab_active": {
+            "bg": "#0ad",
+            "fg": "#000"
+        }
+    },
+    "bookmarks": {
+        "path": "~/.config/player/bookmarks.json"
+    }
+}
