@@ -12,19 +12,21 @@ from playerlib.track_info.track_info import *
 
 class Player:
 
-    keys_mapping = {
-        'h': ':seek -10',
-        'l': ':seek +10',
-        'H': ':seek -60',
-        'L': ':seek +60',
-        ' ': ':pause',
-        '[': ':set volume -10',
-        ']': ':set volume +10',
-    }
-
     default_config = {
         'backend': {'name': 'mplayer', 'path': '/usr/bin/mplayer'},
         'bookmarks': {'path': '~/.config/player/bookmarks.json'},
+        'keys_mapping': {
+            'h': ':seek -10',
+            'l': ':seek +10',
+            'H': ':seek -60',
+            'L': ':seek +60',
+            ' ': ':pause',
+            '[': ':set volume -10',
+            ']': ':set volume +10',
+        },
+        'commands_mapping': {
+            'e': 'add_to_playlist'
+        }
     }
 
     def __init__(self):
@@ -37,14 +39,13 @@ class Player:
         context.track_info = TrackInfo()
         context.file_browser = FileBrowser()
         self.context = context
+        widget = urwim.VerticalBox([[context.file_browser, context.bookmarks],
+            [context.playlist, context.track_info]])
 
         self.app = urwim.App(
-            urwim.VerticalBox([[context.file_browser, context.bookmarks],
-                [context.playlist, context.track_info]]),
+            widget,
+            context.config,
             commands=Commands(context),
-            keys_mapping=self.keys_mapping,
-            command_mapping={'e': 'add_to_playlist'},
-            palette=context.config.color_palette,
             log_exceptions=True)
 
 
