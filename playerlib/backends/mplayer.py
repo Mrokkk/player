@@ -83,8 +83,12 @@ class MplayerBackend(Backend):
             self.logger.warning('No mplayer running')
             return
         self.logger.info('Sending command: {}'.format(command.strip()))
-        self.mplayer.stdin.write(command)
-        self.mplayer.stdin.flush()
+        try:
+            self.mplayer.stdin.write(command)
+            self.mplayer.stdin.flush()
+        except IOError:
+            self.mplayer.terminate()
+            self.mplayer = None
 
     def _build_mplayer_args(self):
         cache = 8192
@@ -137,7 +141,7 @@ class MplayerBackend(Backend):
         if self._thread: self._thread.stop()
         last_track = self.current_track
         self.current_track = track
-        if not self.mplayer:
+        if not self.mplayer or not last_track:
             self._start_backend()
         else:
             if self.current_track.path != last_track.path:

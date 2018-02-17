@@ -2,7 +2,6 @@
 
 import os
 import re
-import urwid
 import urwim
 
 class DirEntry(urwim.ListBoxEntry):

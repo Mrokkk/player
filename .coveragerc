@@ -5,8 +5,9 @@ omit =
     */.local/*
     /usr/*
     */__init__.py
-    test/*.py
+    test/*
     tests_run
+    urwim/*
 source = playerlib
 
 [report]

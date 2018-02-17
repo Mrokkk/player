@@ -9,7 +9,7 @@ class Bookmarks(urwim.ViewWidget):
     footer_text = 'Bookmarks'
 
     def __init__(self, config):
-        self.bookmarks_file = config.bookmarks_file
+        self.bookmarks_file = config.bookmarks.path
         self.header = urwim.Header('Bookmarks')
         self.content = urwim.SimpleListWalker([])
         self._load_bookmarks()
