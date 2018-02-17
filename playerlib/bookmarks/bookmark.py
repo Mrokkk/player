@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import urwid
 import urwim
 
 class Bookmark(urwim.ListBoxEntry):

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import urwid
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
