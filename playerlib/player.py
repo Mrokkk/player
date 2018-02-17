@@ -44,7 +44,8 @@ class Player:
             commands=Commands(context),
             keys_mapping=self.keys_mapping,
             command_mapping={'e': 'add_to_playlist'},
-            palette=context.config.color_palette)
+            palette=context.config.color_palette,
+            log_exceptions=True)
 
 
     def run(self):
