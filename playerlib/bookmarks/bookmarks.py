@@ -29,8 +29,8 @@ class Bookmarks(urwim.ViewWidget):
         }
         super().__init__(
             self.listbox,
-            callbacks,
             self.footer_text,
+            callbacks=callbacks,
             header=self.header)
 
     def _save_bookmarks(self):

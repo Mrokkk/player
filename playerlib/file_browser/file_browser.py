@@ -28,8 +28,8 @@ class FileBrowser(urwim.ViewWidget):
             'B': lambda: urwim.App().command_handler(':add_bookmark \"{}\"'.format(self.dir_name)),
         }
         super().__init__(self.listbox,
-            callbacks,
             'File browser',
+            callbacks=callbacks,
             header=self.header)
 
     def change_dir(self, dirname):

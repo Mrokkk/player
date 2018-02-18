@@ -23,7 +23,10 @@ class Playlist(urwim.ViewWidget):
         callbacks = {
             'enter': lambda: self.callback(self.listbox.focus.track)
         }
-        super().__init__(self.listbox, callbacks, 'Playlist', header=self.header)
+        super().__init__(self.listbox,
+            'Playlist',
+            callbacks=callbacks,
+            header=self.header)
 
     def _get_track_string(self, track):
         if track.title:
