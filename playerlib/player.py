@@ -29,7 +29,7 @@ class Player:
         }
     }
 
-    def __init__(self):
+    def __init__(self, verbose=False):
         context = Context()
         context.config = urwim.read_config(config_files=['~/.config/player/config.json', '~/.config/player/config.yml'],
             defaults=self.default_config)
@@ -48,7 +48,7 @@ class Player:
             widget,
             context.config,
             commands=Commands(context),
-            log_exceptions=True)
+            log_exceptions=verbose)
 
 
     def run(self):
