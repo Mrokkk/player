@@ -61,8 +61,7 @@ class Playlist(urwim.ViewWidget):
         with open(filename, 'r') as f:
             raw_tracks = json.load(f)
         for t in raw_tracks:
-            track = Track().from_dict(t)
-            self._add_track(track)
+            self._add_track(Track(t))
         self.header.text = filename
 
     def clear(self):
