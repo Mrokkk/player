@@ -10,9 +10,6 @@ from test.backend_factory_tests import *
 from test.backend_interface_tests import *
 from test.bookmarks_tests import *
 from test.command_handler_tests import *
-from test.command_panel_tests import *
-from test.completer_tests import *
-from test.config_tests import *
 from test.cueparser_tests import *
 from test.file_browser_tests import *
 from test.helpers_tests import *
@@ -23,7 +20,6 @@ from test.track_tests import *
 from test.tracks_factory_tests import *
 # from test.user_input_tests import *
 from test.window_tests import *
-from test.rdb_tests import *
 
 if __name__ == '__main__':
     logging.basicConfig(stream=unittest.mock.Mock())

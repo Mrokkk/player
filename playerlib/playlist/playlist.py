@@ -23,7 +23,10 @@ class Playlist(urwim.ViewWidget):
         callbacks = {
             'enter': lambda: self.callback(self.listbox.focus.track)
         }
-        super().__init__(self.listbox, callbacks, 'Playlist', header=self.header)
+        super().__init__(self.listbox,
+            'Playlist',
+            callbacks=callbacks,
+            header=self.header)
 
     def _get_track_string(self, track):
         if track.title:
@@ -58,8 +61,7 @@ class Playlist(urwim.ViewWidget):
         with open(filename, 'r') as f:
             raw_tracks = json.load(f)
         for t in raw_tracks:
-            track = Track().from_dict(t)
-            self._add_track(track)
+            self._add_track(Track(t))
         self.header.text = filename
 
     def clear(self):

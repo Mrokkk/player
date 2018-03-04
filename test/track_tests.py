@@ -35,7 +35,7 @@ class TrackTests(TestCase):
             'title': 'Some Title',
             'artist': 'Random Artist',
         }
-        track = Track().from_dict(dict_track)
+        track = Track(dict_track)
         self.assertEqual(track.path, 'some_path')
         self.assertEqual(track.offset, 23)
         self.assertEqual(track.length, 315)

@@ -7,7 +7,7 @@ class Track:
         PLAYING = 1
         PAUSED = 2
 
-    def __init__(self):
+    def __init__(self, dictionary=None):
         self.path = None
         self.offset = 0
         self.length = 0
@@ -17,6 +17,8 @@ class Track:
         self.performer = None
         self.state = self.State.STOPPED
         self.playlist_entry = None
+        if dictionary:
+            self._from_dict(dictionary)
 
     def to_dict(self):
         d = self.__dict__.copy()
@@ -24,7 +26,7 @@ class Track:
         del d['playlist_entry']
         return d
 
-    def from_dict(self, d):
+    def _from_dict(self, d):
         for k, v in d.items():
             setattr(self, k, v)
         return self

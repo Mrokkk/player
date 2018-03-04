@@ -12,7 +12,7 @@ class TrackInfo(urwim.ViewWidget):
         self.content = urwim.SimpleListWalker([])
         self.listbox = urwim.ListBox(self.content)
         self._no_track_playing()
-        super().__init__(self.listbox, {}, 'Track info', header=self.header)
+        super().__init__(self.listbox, 'Track info', header=self.header)
         urwim.rdb.subscribe('track', self._update)
 
     def _no_track_playing(self):
