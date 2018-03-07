@@ -7,7 +7,7 @@ from playerlib.backends.mplayer import *
 class MplayerBackendTests(TestCase):
 
     def setUp(self):
-        self.sut = MplayerBackend(lambda: None, lambda: None, 'mplayer')
+        self.sut = MplayerBackend(lambda: None, lambda: None, Mock())
 
     def test_should_raise_exception_when_no_track_given(self):
         self.assertRaises(RuntimeError, self.sut.play_track, None)

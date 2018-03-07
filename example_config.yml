@@ -1,6 +1,13 @@
 backend:
     name: mplayer
     path: ~/.local/bin/mplayer
+    audio_output: pulse
+    cdrom_device: /dev/cdrom
+    cache: 8192
+    demuxer:
+        mp3: audio
+        flac: lavf
+        ape: lavf
 
 colors: 256
 palette:
