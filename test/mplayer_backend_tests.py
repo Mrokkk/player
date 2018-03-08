@@ -197,3 +197,20 @@ class MplayerBackendTests(TestCase):
         self.sut.seek(20)
         mplayer_mock.stdin.write.assert_not_called()
 
+    def test_loadfile_and_seek_commands_should_be_sent_if_track_playing_and_paths_differ(self):
+        last_track = Mock()
+        last_track.path = 'file.flac'
+        last_track.offset = 100
+        mplayer_mock = Mock()
+        self.sut.current_track = last_track
+        self.sut.mplayer = mplayer_mock
+        track = Mock()
+        track.path = 'file2.mp3'
+        track.offset = 20
+        with patch('subprocess.Popen') as popen_mock, \
+                patch('threading.Thread') as thread_mock:
+            mplayer_mock.stdout = []
+            self.sut.play_track(track)
+            popen_mock.assert_not_called()
+            mplayer_mock.stdin.write.has_calls(['loadfile \"file2.mp3\"\n', 'seek 20 2 1\n'])
+

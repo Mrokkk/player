@@ -147,6 +147,8 @@ class MplayerBackend(Backend):
         else:
             if self.current_track.path != last_track.path:
                 self._loadfile(track.path)
+                if self.current_track.offset:
+                    self.seek(self.current_track.offset)
         if self.current_track == last_track:
             self.seek(self.current_track.offset)
         else:
