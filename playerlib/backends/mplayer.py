@@ -27,6 +27,7 @@ class MplayerReader(threading.Thread):
             log_exception(self.logger)
             return
         for row in reader:
+            self.logger.debug(row)
             if self._stop_flag.is_set(): return
             if len(row) == 0: continue
             try:

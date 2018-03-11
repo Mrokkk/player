@@ -31,6 +31,7 @@ class Player:
 
     def __init__(self, verbose=False):
         context = Context()
+        commands = Commands(context)
         context.config = urwim.read_config(config_files=['~/.config/player/config.json', '~/.config/player/config.yml'],
             defaults=self.default_config)
         context.playback_controller = PlaybackController(context.config)
@@ -47,7 +48,7 @@ class Player:
         self.app = urwim.App(
             widget,
             context.config,
-            commands=Commands(context),
+            commands=commands,
             log_exceptions=verbose)
 
 
