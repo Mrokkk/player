@@ -10,7 +10,8 @@ class FileBrowser(urwim.ViewWidget):
 
     footer_text = 'Browser'
 
-    def __init__(self):
+    def __init__(self, commands):
+        self._commands = commands
         self.dir_name = os.getcwd()
         self.header = urwim.Header(self.dir_name)
         self.content = urwim.SimpleListWalker([])
@@ -23,9 +24,9 @@ class FileBrowser(urwim.ViewWidget):
             'enter': lambda: self._toggle_dir(self.content.get_focus()[0]),
             'R': lambda: self.change_dir('.'),
             'C': self._enter_selected_dir,
-            'a': lambda: urwim.App().command_handler(':add_to_playlist \"{}\"'.format(self.content.get_focus()[0].path)),
-            'r': lambda: urwim.App().command_handler(':replace_playlist \"{}\"'.format(self.content.get_focus()[0].path)),
-            'B': lambda: urwim.App().command_handler(':add_bookmark \"{}\"'.format(self.dir_name)),
+            'a': lambda: self._commands.add_to_playlist(self.content.get_focus()[0].path),
+            'r': lambda: self._commands.replace_playlist(self.content.get_focus()[0].path),
+            'B': lambda: self._commands.add_bookmark(self.dir_name),
         }
         super().__init__(self.listbox,
             'File browser',

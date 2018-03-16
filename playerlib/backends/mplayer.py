@@ -27,6 +27,7 @@ class MplayerReader(threading.Thread):
             log_exception(self.logger)
             return
         for row in reader:
+            self.logger.debug(row)
             if self._stop_flag.is_set(): return
             if len(row) == 0: continue
             try:
@@ -47,10 +48,10 @@ class MplayerReader(threading.Thread):
 
 class MplayerBackend(Backend):
 
-    def __init__(self, adv_callback, set_time_callback, path):
+    def __init__(self, adv_callback, set_time_callback, config):
+        self.config = config
         self.adv_callback = adv_callback
         self.set_time_callback = set_time_callback
-        self.mplayer_path = path
         self.mplayer = None
         self.current_track = None
         self.should_stop = False
@@ -90,27 +91,28 @@ class MplayerBackend(Backend):
             self.mplayer.terminate()
             self.mplayer = None
 
+    def _get_cache(self):
+        try: return self.config.cache
+        except: return 0
+
+    def _get_demuxer(self, current_track):
+        try: return self.config.demuxer[current_track.path.split('.')[-1]]
+        except: return 'none'
+
+    def _get_cdrom_device(self):
+        try: return self.config.cdrom_device
+        except: return '/dev/sr0'
+
     def _build_mplayer_args(self):
-        cache = 8192
-        if self.current_track.path == 'cdda://':
-            demuxer = 'rawaudio'
-        elif self.current_track.path.endswith('.flac'):
-            demuxer = 'lavf'
-        elif self.current_track.path.endswith('.ape'):
-            demuxer = 'lavf'
-        elif self.current_track.path.endswith('.mp3'):
-            demuxer = 'audio'
-        else:
-            demuxer = 'none'
         return [
-            self.mplayer_path,
-            '-ao', 'pulse',
+            self.config.path,
+            '-ao', self.config.audio_output,
             '-noquiet',
             '-slave',
-            '-cdrom-device', '/dev/cdrom',
+            '-cdrom-device', self._get_cdrom_device(),
             '-vo', 'null',
-            '-demuxer', demuxer,
-            '-cache', str(cache),
+            '-demuxer', self._get_demuxer(self.current_track),
+            '-cache', str(self._get_cache()),
             '-ss', str(self.current_track.offset),
             '-volume', '100',
             self.current_track.path
@@ -146,6 +148,8 @@ class MplayerBackend(Backend):
         else:
             if self.current_track.path != last_track.path:
                 self._loadfile(track.path)
+                if self.current_track.offset:
+                    self.seek(self.current_track.offset)
         if self.current_track == last_track:
             self.seek(self.current_track.offset)
         else:

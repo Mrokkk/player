@@ -6,13 +6,8 @@ from unittest.mock import Mock, patch
 class FileBrowserTests(TestCase):
 
     def setUp(self):
-        self.command_handler_mock = Mock()
-        self.app_instance = Mock()
-        self.app_instance.command_handler = self.command_handler_mock
-        self.app_mock = Mock()
-        self.app_mock.return_value = self.app_instance
+        self.commands_mock = Mock()
         patch('urwim.asynchronous', lambda x: x).start()
-        patch('urwim.App', self.app_mock).start()
         import playerlib.file_browser.file_browser
         self.FileBrowser = playerlib.file_browser.file_browser.FileBrowser
 
@@ -25,7 +20,7 @@ class FileBrowserTests(TestCase):
             exists_mock.return_value = False
             listdir_mock.return_value = ['some_file', 'some_other_file', 'some dir', '1 - music file.mp3', '02 - sound.wav']
             isdir_mock.side_effect = [False, False, True, False, False]
-            sut = self.FileBrowser()
+            sut = self.FileBrowser(self.commands_mock)
             self.assertEqual(len(sut.content), 5)
             self.assertEqual(sut.header.text, '/dir')
             self.assertEqual(sut.content[0].path, '/dir/some dir')
@@ -43,10 +38,10 @@ class FileBrowserTests(TestCase):
             exists_mock.return_value = False
             listdir_mock.return_value = ['some_file']
             isdir_mock.side_effect = [False]
-            sut = self.FileBrowser()
+            sut = self.FileBrowser(self.commands_mock)
             sut.content.set_focus(0)
             sut.handle_input('a')
-            self.command_handler_mock.assert_called_once_with(':add_to_playlist "/dir/some_file"')
+            self.commands_mock.add_to_playlist.assert_called_once_with('/dir/some_file')
 
     def test_can_replace_playlist(self):
         with patch('os.getcwd') as getcwd_mock, \
@@ -57,10 +52,10 @@ class FileBrowserTests(TestCase):
             exists_mock.return_value = False
             listdir_mock.return_value = ['some_file']
             isdir_mock.side_effect = [False]
-            sut = self.FileBrowser()
+            sut = self.FileBrowser(self.commands_mock)
             sut.content.set_focus(0)
             sut.handle_input('r')
-            self.command_handler_mock.assert_called_once_with(':replace_playlist "/dir/some_file"')
+            self.commands_mock.replace_playlist.assert_called_once_with('/dir/some_file')
 
     def test_can_toggle_dir(self):
         with patch('os.getcwd') as getcwd_mock, \
@@ -71,7 +66,7 @@ class FileBrowserTests(TestCase):
             exists_mock.return_value = False
             listdir_mock.side_effect = [['some_file', 'some_other_file', 'some dir'], ['file in dir', 'file 2']]
             isdir_mock.side_effect = [False, False, True, True, False, False]
-            sut = self.FileBrowser()
+            sut = self.FileBrowser(self.commands_mock)
             sut.content.set_focus(0)
             sut.handle_input('enter')
             self.assertEqual(len(sut.content), 5)
@@ -97,7 +92,7 @@ class FileBrowserTests(TestCase):
             exists_mock.return_value = False
             listdir_mock.side_effect = [['some dir'], ['file in dir', 'file 2']]
             isdir_mock.side_effect = [True, True, False, False]
-            sut = self.FileBrowser()
+            sut = self.FileBrowser(self.commands_mock)
             sut.content.set_focus(0)
             sut.handle_input('enter')
             self.assertEqual(len(sut.content), 3)
@@ -119,7 +114,7 @@ class FileBrowserTests(TestCase):
             exists_mock.return_value = False
             listdir_mock.side_effect = [['some_file', 'some_other_file', 'some dir'], [], []]
             isdir_mock.side_effect = [False, False, True, True, True]
-            sut = self.FileBrowser()
+            sut = self.FileBrowser(self.commands_mock)
             sut.content.set_focus(0)
             sut.handle_input('enter')
             self.assertEqual(len(sut.content), 3)
@@ -143,7 +138,7 @@ class FileBrowserTests(TestCase):
             exists_mock.return_value = False
             listdir_mock.side_effect = [['some_file', 'some_other_file', 'some dir'], [], []]
             isdir_mock.side_effect = [False, False, True, False, False]
-            sut = self.FileBrowser()
+            sut = self.FileBrowser(self.commands_mock)
             sut.content.set_focus(1)
             sut.handle_input('enter')
             self.assertEqual(len(sut.content), 3)
@@ -167,7 +162,7 @@ class FileBrowserTests(TestCase):
             exists_mock.return_value = False
             listdir_mock.side_effect = [['some dir'], ['file in dir', 'file 2']]
             isdir_mock.side_effect = [True, True, False, False]
-            sut = self.FileBrowser()
+            sut = self.FileBrowser(self.commands_mock)
             sut.content.set_focus(0)
             sut.handle_input('C')
             self.assertEqual(len(sut.content), 2)
@@ -184,7 +179,7 @@ class FileBrowserTests(TestCase):
             exists_mock.return_value = False
             listdir_mock.side_effect = [['some dir'], []]
             isdir_mock.side_effect = [True, True, False, False]
-            sut = self.FileBrowser()
+            sut = self.FileBrowser(self.commands_mock)
             sut.content.set_focus(0)
             sut.handle_input('C')
             self.assertEqual(len(sut.content), 0)
@@ -199,7 +194,7 @@ class FileBrowserTests(TestCase):
             exists_mock.return_value = False
             listdir_mock.side_effect = [['some file']]
             isdir_mock.side_effect = [False, False, False, False]
-            sut = self.FileBrowser()
+            sut = self.FileBrowser(self.commands_mock)
             sut.content.set_focus(0)
             self.assertRaises(RuntimeError, sut.handle_input, 'C')
             self.assertEqual(len(sut.content), 1)
@@ -219,7 +214,7 @@ class FileBrowserTests(TestCase):
             exists_mock.return_value = False
             listdir_mock.side_effect = [['some dir'], ['file']]
             isdir_mock.side_effect = [True, True, False, False]
-            sut = self.FileBrowser()
+            sut = self.FileBrowser(self.commands_mock)
             sut.content.set_focus(0)
             sut.handle_input('u')
             self.assertEqual(len(sut.content), 1)
@@ -235,7 +230,7 @@ class FileBrowserTests(TestCase):
             exists_mock.return_value = False
             listdir_mock.side_effect = [['dir1', 'dir2', 'some dir'], ['file'], ['dir1', 'dir2', 'some dir']]
             isdir_mock.side_effect = [True, True, True, True, False, True, True, True, True]
-            sut = self.FileBrowser()
+            sut = self.FileBrowser(self.commands_mock)
             sut.content.set_focus(1)
             sut.handle_input('C')
             self.assertEqual(len(sut.content), 1)
@@ -253,7 +248,7 @@ class FileBrowserTests(TestCase):
             exists_mock.return_value = False
             listdir_mock.side_effect = [['some dir'], ['file']]
             isdir_mock.side_effect = [True, True, False, False]
-            sut = self.FileBrowser()
+            sut = self.FileBrowser(self.commands_mock)
             sut.content.set_focus(0)
             sut.handle_input('R')
             self.assertEqual(len(sut.content), 1)
@@ -269,9 +264,9 @@ class FileBrowserTests(TestCase):
             exists_mock.return_value = False
             listdir_mock.return_value = ['some_file', 'some_other_file', 'some dir', '1 - music file.mp3', '02 - sound.wav']
             isdir_mock.side_effect = [False, False, True, False, False]
-            sut = self.FileBrowser()
+            sut = self.FileBrowser(self.commands_mock)
             sut.handle_input('B')
-            self.command_handler_mock.assert_called_once_with(':add_bookmark "/dir"')
+            self.commands_mock.add_bookmark.assert_called_once_with('/dir')
 
     def test_ignores_other_keys(self):
         with patch('os.getcwd') as getcwd_mock, \
@@ -282,12 +277,12 @@ class FileBrowserTests(TestCase):
             exists_mock.return_value = False
             listdir_mock.return_value = ['some_file']
             isdir_mock.side_effect = [False]
-            sut = self.FileBrowser()
+            sut = self.FileBrowser(self.commands_mock)
             sut.content.set_focus(0)
             sut.handle_input('c')
             sut.handle_input('d')
             sut.handle_input('e')
-            self.command_handler_mock.assert_not_called()
+            self.commands_mock.assert_not_called()
 
     def test_is_searchable(self):
         with patch('os.getcwd') as getcwd_mock, \
@@ -298,7 +293,7 @@ class FileBrowserTests(TestCase):
             exists_mock.return_value = False
             listdir_mock.return_value = ['some_file']
             isdir_mock.side_effect = [False]
-            sut = self.FileBrowser()
+            sut = self.FileBrowser(self.commands_mock)
             self.assertTrue(hasattr(sut, 'searchable_list'))
             self.assertTrue(sut.searchable_list() != None)
 

@@ -50,6 +50,11 @@ class Playlist(urwim.ViewWidget):
             self.clear()
         for f in tracks:
             self._add_track(f)
+        if clear:
+            try:
+                self.listbox.focus_position = 0
+                self.callback(self.listbox.focus.track)
+            except: pass
 
     def save_playlist(self, filename):
         tracks = [t.track.to_dict() for t in self.content]
