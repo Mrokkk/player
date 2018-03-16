@@ -36,8 +36,8 @@ class Player:
             defaults=self.default_config)
         context.playback_controller = PlaybackController(context.config)
         context.playlist = Playlist(context.playback_controller.play_track)
-        context.file_browser = FileBrowser()
-        context.bookmarks = Bookmarks(context.config)
+        context.file_browser = FileBrowser(commands)
+        context.bookmarks = Bookmarks(context.config, commands)
         context.track_info = TrackInfo()
         self.context = context
         widget = urwim.VerticalBox([

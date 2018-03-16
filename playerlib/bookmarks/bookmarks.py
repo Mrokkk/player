@@ -8,8 +8,9 @@ class Bookmarks(urwim.ViewWidget):
 
     footer_text = 'Bookmarks'
 
-    def __init__(self, config):
+    def __init__(self, config, commands):
         self.bookmarks_file = config.bookmarks.path
+        self._commands = commands
         self.header = urwim.Header('Bookmarks')
         self.content = urwim.SimpleListWalker([])
         self._load_bookmarks()
@@ -52,8 +53,8 @@ class Bookmarks(urwim.ViewWidget):
         self._save_bookmarks()
 
     def _go_to_bookmark(self, bookmark):
-        urwim.App().command_handler(':change_dir {}'.format(bookmark.text))
-        urwim.App().command_handler(':toggle_pane_view')
+        self._commands.change_dir(bookmark.text)
+        self._commands.toggle_pane_view()
 
     def _handle_enter(self):
         self._go_to_bookmark(self.listbox.focus)
@@ -61,5 +62,5 @@ class Bookmarks(urwim.ViewWidget):
     def _handle_number(self, number):
         try:
             self._go_to_bookmark(self.content[number - 1])
-        except: urwim.App().command_handler(':error "no such bookmark: {}"'.format(number))
+        except: self._commands.error('no such bookmark: {}'.format(number))
 
