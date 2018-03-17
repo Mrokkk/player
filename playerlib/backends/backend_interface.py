@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-class Backend:
+class BackendInterface:
 
     def play_track(self, track):
         raise NotImplementedError('Not implemented!')
