@@ -13,15 +13,14 @@ from .entry import *
 class Playlist(urwim.ViewWidget):
 
     def __init__(self, play_callback):
-        self.callback = play_callback
-        self.list = []
+        self.play_callback = play_callback
         self.content = urwim.SimpleListWalker([])
         self.listbox = urwim.ListWidget(self.content)
         self.header = urwim.Header('Unnamed playlist')
         self.tracks_factory = TracksFactory()
         self.logger = logging.getLogger('Playlist')
         callbacks = {
-            'enter': lambda: self.callback(self.listbox.focus.track)
+            'enter': lambda: self.play_callback(self.listbox.focus.track)
         }
         super().__init__(self.listbox,
             'Playlist',
@@ -42,18 +41,18 @@ class Playlist(urwim.ViewWidget):
         last = self.content[-1] if len(self.content) > 0 else None
         self.content.append(Entry(track, self._get_track_string(track), prev=last))
 
-    def add_to_playlist(self, path, clear=False):
+    def add_to_playlist(self, path, clear_and_play=False):
         tracks = self.tracks_factory.get(path)
         if not tracks or len(tracks) == 0:
             raise RuntimeError('No music files to play!')
-        if clear:
+        if clear_and_play:
             self.clear()
         for f in tracks:
             self._add_track(f)
-        if clear:
+        if clear_and_play:
             try:
                 self.listbox.focus_position = 0
-                self.callback(self.listbox.focus.track)
+                self.play_callback(self.listbox.focus.track)
             except: pass
 
     def save_playlist(self, filename):

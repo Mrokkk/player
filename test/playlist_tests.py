@@ -81,7 +81,7 @@ class PlaylistTests(TestCase):
         self.sut.add_to_playlist('some_path')
         track2 = self._create_track(title='some other title')
         self.tracks_factory_mock.get.return_value = [track2, track2]
-        self.sut.add_to_playlist('some_path', clear=True)
+        self.sut.add_to_playlist('some_path', clear_and_play=True)
         self.assertEqual(len(self.sut.content), 2)
         self.assertEqual(self.sut.content[0].track, track2)
         self.assertEqual(self.sut.content[1].track, track2)

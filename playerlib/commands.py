@@ -13,7 +13,7 @@ class Commands(urwim.Commands):
 
     @urwim.asynchronous
     def replace_playlist(self, path):
-        self._context.playlist.add_to_playlist(path, clear=True)
+        self._context.playlist.add_to_playlist(path, clear_and_play=True)
 
     def clear_playlist(self):
         self._context.playlist.clear()
