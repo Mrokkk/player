@@ -1,52 +1,15 @@
 #!/usr/bin/env python3
 
-import csv
 import logging
 import os
 import re
 import subprocess
-import threading
 
-from urwim import log_exception
-from .backend_interface import *
+from .arguments_builder import *
+from .reader_thread import *
+from ..backend_interface import *
 
-class MplayerReader(threading.Thread):
-
-    def __init__(self, mplayer, stop_callback, update_time_callback, id):
-        self._mplayer = mplayer
-        self._stop_callback = stop_callback
-        self._update_time_callback = update_time_callback
-        self._stop_flag = threading.Event()
-        self.logger = logging.getLogger('MplayerReader-{}'.format(id))
-        super().__init__(daemon=True)
-
-    def _main_loop(self):
-        try:
-            reader = csv.reader(self._mplayer.stdout, delimiter='\r')
-        except:
-            log_exception(self.logger)
-            return
-        for row in reader:
-            self.logger.debug(row)
-            if self._stop_flag.is_set(): return
-            if len(row) == 0: continue
-            try:
-                self._update_time_callback(row[0])
-            except Exception as e:
-                log_exception(self.logger)
-        self._mplayer.wait()
-        self._stop_callback()
-
-    def run(self):
-        self.logger.debug('Start')
-        self._main_loop()
-        self.logger.debug('Stop')
-
-    def stop(self):
-        self._stop_flag.set()
-
-
-class MplayerBackend(Backend):
+class Backend(BackendInterface):
 
     def __init__(self, adv_callback, set_time_callback, config):
         self.config = config
@@ -57,15 +20,16 @@ class MplayerBackend(Backend):
         self.should_stop = False
         self._thread = None
         self._thread_id_counter = 0
+        self._arguments_builder = ArgumentsBuilder(config)
         self.logger = logging.getLogger('MplayerBackend')
         super().__init__()
 
     def _update_time_pos(self, line):
+        match = re.match('^A:[ \t]{0,}(\d+)', line)
+        if not match: return
         if not self.current_track:
             self.logger.warning('Trying to update time for stopped track!')
             return
-        match = re.match('^A:[ \t]{0,}(\d+)', line)
-        if not match: return
         self.set_time_callback(int(match.group(1)))
 
     def _mplayer_stopped(self):
@@ -91,41 +55,14 @@ class MplayerBackend(Backend):
             self.mplayer.terminate()
             self.mplayer = None
 
-    def _get_cache(self):
-        try: return self.config.cache
-        except: return 0
-
-    def _get_demuxer(self, current_track):
-        try: return self.config.demuxer[current_track.path.split('.')[-1]]
-        except: return 'none'
-
-    def _get_cdrom_device(self):
-        try: return self.config.cdrom_device
-        except: return '/dev/sr0'
-
-    def _build_mplayer_args(self):
-        return [
-            self.config.path,
-            '-ao', self.config.audio_output,
-            '-noquiet',
-            '-slave',
-            '-cdrom-device', self._get_cdrom_device(),
-            '-vo', 'null',
-            '-demuxer', self._get_demuxer(self.current_track),
-            '-cache', str(self._get_cache()),
-            '-ss', str(self.current_track.offset),
-            '-volume', '100',
-            self.current_track.path
-        ]
-
     def _start_thread(self):
-        self._thread = MplayerReader(self.mplayer, self._mplayer_stopped,
+        self._thread = ReaderThread(self.mplayer, self._mplayer_stopped,
             self._update_time_pos, self._thread_id_counter)
         self._thread.start()
         self._thread_id_counter += 1
 
     def _start_backend(self):
-        mplayer_args = self._build_mplayer_args()
+        mplayer_args = self._arguments_builder.build(self.current_track)
         self.logger.info('Starting mplayer with args: {}'.format(mplayer_args))
         self.mplayer = subprocess.Popen(mplayer_args,
             stdin=subprocess.PIPE,

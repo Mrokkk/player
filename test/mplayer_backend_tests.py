@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 from unittest.mock import Mock, MagicMock, patch
-from playerlib.backends.mplayer import *
+from playerlib.backends.mplayer.backend import Backend as MplayerBackend
 
 class MplayerBackendTests(TestCase):
 

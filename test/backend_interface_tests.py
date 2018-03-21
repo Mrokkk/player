@@ -7,7 +7,7 @@ from playerlib.backends.backend_interface import *
 class BackendInterfaceTests(TestCase):
 
     def test_should_raise_runtime_error_on_all_methods(self):
-        sut = Backend()
+        sut = BackendInterface()
         self.assertRaises(NotImplementedError, sut.play_track, Mock())
         self.assertRaises(NotImplementedError, sut.toggle_pause)
         self.assertRaises(NotImplementedError, sut.stop)

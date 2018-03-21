@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from .mplayer import *
+from .mplayer.backend import Backend as MplayerBackend
 
 class BackendFactory:
 

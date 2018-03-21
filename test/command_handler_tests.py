@@ -55,7 +55,7 @@ class CommandHandlerTests(TestCase):
 
         self.context.playlist.add_to_playlist.reset_mock()
         self.sut(':replace_playlist some_file')
-        self.context.playlist.add_to_playlist.assert_called_once_with('some_file', clear=True)
+        self.context.playlist.add_to_playlist.assert_called_once_with('some_file', clear_and_play=True)
 
 
     def test_can_execute_playback_controller_commands(self):
