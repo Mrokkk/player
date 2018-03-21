@@ -20,7 +20,7 @@ class PlaybackController:
         self.backend.set_volume(new)
 
     def update_current_state(self, pos):
-        if pos < 0: return
+        if pos < 0 or not self.current_track: return
         app = App()
         if pos - self.current_track.offset >= self.current_track.length and \
                 self.current_track.path == self.current_track.playlist_entry.next.track.path:
