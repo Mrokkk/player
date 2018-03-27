@@ -34,6 +34,7 @@ class Player:
         commands = Commands(context)
         context.config = urwim.read_config(config_files=['~/.config/player/config.json', '~/.config/player/config.yml'],
             defaults=self.default_config)
+        urwim.read_persistent_data('~/.player')
         context.playback_controller = PlaybackController(context.config)
         context.playlist = Playlist(context.playback_controller.play_track)
         context.file_browser = FileBrowser(commands)
