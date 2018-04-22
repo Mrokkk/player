@@ -4,26 +4,29 @@ import logging
 import os
 import re
 
-class CueTrack:
-    def __init__(self):
-        self.file = None
-        self.performer = []
-        self.title = []
-        self.index = None
-        self.offset = 0
-        self.length = 0
-
-
-class CueSheet:
-    def __init__(self):
-        self.rem = []
-        self.performer = []
-        self.artist = []
-        self.title = []
-        self.tracks = []
-
+from time import gmtime, strftime
+from playerlib.track.track import *
+from .tracks_reader_interface import *
 
 class CueParser:
+
+    class CueTrack:
+        def __init__(self):
+            self.file = None
+            self.performer = []
+            self.title = []
+            self.index = None
+            self.offset = 0
+            self.length = 0
+
+
+    class CueSheet:
+        def __init__(self):
+            self.rem = []
+            self.performer = []
+            self.artist = []
+            self.title = []
+            self.tracks = []
 
     def __init__(self):
         self.logger = logging.getLogger('CueParser')
@@ -44,7 +47,7 @@ class CueParser:
             return True
 
     def _parse_file(self, f, use_taglib, parent_dir):
-        cuesheet = CueSheet()
+        cuesheet = self.CueSheet()
         current_track = None
         current_file = None
         for raw_line in f:
@@ -63,7 +66,7 @@ class CueParser:
             if match:
                 if current_track:
                     cuesheet.tracks.append(current_track)
-                current_track = CueTrack()
+                current_track = self.CueTrack()
                 current_track.index = int(match.group(1))
                 current_track.file = current_file
                 continue
@@ -101,4 +104,29 @@ class CueParser:
                     return self._parse_file(f, use_taglib, parent_dir)
             except Exception as e:
                 self.logger.warning('Cannot open {} using encoding {}: {}'.format(path, encoding, str(e)))
+
+
+class CueReader(TracksReaderInterface):
+
+    def __init__(self):
+        self._parser = CueParser()
+
+    def _format_seconds_and_get_format_string(self, seconds):
+        time_format = '%H:%M:%S' if seconds >= 3600 else '%M:%S'
+        return strftime(time_format, gmtime(seconds)), time_format
+
+    def read(self, path):
+        cuesheet = self._parser.parse(path, use_taglib=True)
+        tracks = []
+        for t in cuesheet.tracks:
+            new_track = Track()
+            new_track.path = os.path.join(os.path.dirname(path), t.file)
+            new_track.artist = ', '.join(cuesheet.title)
+            new_track.title = ', '.join(t.title)
+            new_track.index = str(t.index)
+            new_track.length = t.length
+            new_track.length_string, new_track.time_format = self._format_seconds_and_get_format_string(t.length)
+            new_track.offset = t.offset
+            tracks.append(new_track)
+        return tracks
 

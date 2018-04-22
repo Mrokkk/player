@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 from unittest.mock import Mock, MagicMock, patch, mock_open
-from playerlib.cue_parser import *
+from playerlib.track.readers.cue_reader import *
 
 class CueParserTests(TestCase):
 

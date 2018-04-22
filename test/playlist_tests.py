@@ -9,9 +9,9 @@ class PlaylistTests(TestCase):
     def setUp(self):
         self.play_callback_mock = Mock()
         self.error_handler_mock = Mock()
-        self.tracks_factory_mock = Mock()
+        self.tracks_reader_mock = Mock()
         self.sut = Playlist(self.play_callback_mock)
-        self.sut.tracks_factory = self.tracks_factory_mock
+        self.sut.tracks_reader = self.tracks_reader_mock
 
     def _create_track(self, title=None, artist=None, index=0, length=0):
         track = Mock()
@@ -42,34 +42,34 @@ class PlaylistTests(TestCase):
 
     def test_should_be_able_to_add_tracks_to_playlist(self):
         track = self._create_track()
-        self.tracks_factory_mock.get.return_value = [track]
+        self.tracks_reader_mock.read.return_value = [track]
         self.sut.add_to_playlist('some_path')
         self.assertEqual(len(self.sut.content), 1)
-        self.tracks_factory_mock.get.return_value = [track, track]
+        self.tracks_reader_mock.read.return_value = [track, track]
         self.sut.add_to_playlist('some_path')
         self.assertEqual(len(self.sut.content), 3)
 
     def test_should_properly_handle_track_without_title(self):
         track = self._create_track(title=None)
-        self.tracks_factory_mock.get.return_value = [track]
+        self.tracks_reader_mock.read.return_value = [track]
         self.sut.add_to_playlist('some_path')
         self.assertEqual(len(self.sut.content), 1)
         self.assertEqual(self.sut.content[0].line, 'some_path 00:00:00')
 
     def test_should_properly_handle_track_with_title(self):
         track = self._create_track(title='some title')
-        self.tracks_factory_mock.get.return_value = [track]
+        self.tracks_reader_mock.read.return_value = [track]
         self.sut.add_to_playlist('some_path')
         self.assertEqual(len(self.sut.content), 1)
         self.assertEqual(self.sut.content[0].line, '?. ? - some title 00:00:00')
 
-    def test_should_raise_exception_if_no_tracks_from_tracks_factory(self):
-        self.tracks_factory_mock.get.return_value = []
+    def test_should_raise_exception_if_no_tracks_from_tracks_reader(self):
+        self.tracks_reader_mock.read.return_value = []
         self.assertRaises(Exception, self.sut.add_to_playlist, 'some_path')
 
     def test_can_clear_playlist(self):
         track = self._create_track(title='some title')
-        self.tracks_factory_mock.get.return_value = [track, track, track]
+        self.tracks_reader_mock.read.return_value = [track, track, track]
         self.sut.add_to_playlist('some_path')
         self.sut.clear()
         self.assertEqual(len(self.sut.content), 0)
@@ -77,10 +77,10 @@ class PlaylistTests(TestCase):
 
     def test_can_replace_playlist(self):
         track = self._create_track(title='some title')
-        self.tracks_factory_mock.get.return_value = [track, track, track]
+        self.tracks_reader_mock.read.return_value = [track, track, track]
         self.sut.add_to_playlist('some_path')
         track2 = self._create_track(title='some other title')
-        self.tracks_factory_mock.get.return_value = [track2, track2]
+        self.tracks_reader_mock.read.return_value = [track2, track2]
         self.sut.add_to_playlist('some_path', clear_and_play=True)
         self.assertEqual(len(self.sut.content), 2)
         self.assertEqual(self.sut.content[0].track, track2)
@@ -89,7 +89,7 @@ class PlaylistTests(TestCase):
 
     def test_can_save_playlist(self):
         track = self._create_track(title='some title')
-        self.tracks_factory_mock.get.return_value = [track]
+        self.tracks_reader_mock.read.return_value = [track]
         self.sut.add_to_playlist('some_path')
         track.to_dict.return_value = {'title:' 'some title'}
         with patch('builtins.open') as open_mock, \

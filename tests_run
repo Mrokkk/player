@@ -17,7 +17,7 @@ from test.mplayer_backend_tests import *
 from test.playback_controller_tests import *
 from test.playlist_tests import *
 from test.track_tests import *
-from test.tracks_factory_tests import *
+from test.tracks_reader_tests import *
 # from test.user_input_tests import *
 from test.window_tests import *
 

@@ -6,8 +6,8 @@ import os
 import time
 import urwim
 
-from playerlib.track import *
-from playerlib.tracks_factory import *
+from playerlib.track.track import *
+from playerlib.track.tracks_reader import *
 from .entry import *
 
 class Playlist(urwim.ViewWidget):
@@ -17,7 +17,7 @@ class Playlist(urwim.ViewWidget):
         self.content = urwim.SimpleListWalker([])
         self.listbox = urwim.ListWidget(self.content)
         self.header = urwim.Header('Unnamed playlist')
-        self.tracks_factory = TracksFactory()
+        self.tracks_reader = TracksReader()
         self.logger = logging.getLogger('Playlist')
         callbacks = {
             'enter': lambda: self.play_callback(self.listbox.focus.track)
@@ -42,7 +42,7 @@ class Playlist(urwim.ViewWidget):
         self.content.append(Entry(track, self._get_track_string(track), prev=last))
 
     def add_to_playlist(self, path, clear_and_play=False):
-        tracks = self.tracks_factory.get(path)
+        tracks = self.tracks_reader.read(path)
         if not tracks or len(tracks) == 0:
             raise RuntimeError('No music files to play!')
         if clear_and_play:
