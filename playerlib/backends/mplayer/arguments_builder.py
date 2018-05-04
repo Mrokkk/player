@@ -23,6 +23,7 @@ class ArgumentsBuilder:
             '-ao', self._config.audio_output,
             '-noquiet',
             '-slave',
+            '-novideo',
             '-cdrom-device', self._get_cdrom_device(),
             '-vo', 'null',
             '-cache', str(self._get_cache()),

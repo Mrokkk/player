@@ -4,6 +4,7 @@ import argparse
 import os
 import sys
 sys.path.insert(1, os.path.abspath(os.path.dirname(sys.argv[0])) + '/urwim')
+sys.path.insert(1, os.path.abspath(os.path.dirname(sys.argv[0])) + '/cueparser')
 import logging
 
 from playerlib.player import *

@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 from unittest.mock import Mock
-from playerlib.track import *
+from playerlib.track.track import *
 
 class TrackTests(TestCase):
 

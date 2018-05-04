@@ -3,6 +3,7 @@
 import os
 import sys
 sys.path.insert(1, os.path.abspath(os.path.dirname(sys.argv[0])) + '/urwim')
+sys.path.insert(1, os.path.abspath(os.path.dirname(sys.argv[0])) + '/cueparser')
 
 import logging
 import unittest
@@ -10,15 +11,13 @@ from test.backend_factory_tests import *
 from test.backend_interface_tests import *
 from test.bookmarks_tests import *
 from test.command_handler_tests import *
-from test.cueparser_tests import *
 from test.file_browser_tests import *
 from test.helpers_tests import *
 from test.mplayer_backend_tests import *
 from test.playback_controller_tests import *
 from test.playlist_tests import *
 from test.track_tests import *
-from test.tracks_factory_tests import *
-# from test.user_input_tests import *
+from test.tracks_reader_tests import *
 from test.window_tests import *
 
 if __name__ == '__main__':
