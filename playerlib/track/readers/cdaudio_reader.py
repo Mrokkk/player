@@ -1,19 +1,12 @@
 #!/usr/bin/env python3
 
-from time import gmtime, strftime
 from playerlib.track.track import *
 from .tracks_reader_interface import *
 
 class CdaudioReader(TracksReaderInterface):
 
-    def __init__(self):
-        pass
-
-    def _format_seconds_and_get_format_string(self, seconds):
-        time_format = '%H:%M:%S' if seconds >= 3600 else '%M:%S'
-        return strftime(time_format, gmtime(seconds)), time_format
-
     def read(self, path):
+        if path != 'cdda://': return None
         try:
             import discid
         except:
@@ -23,7 +16,7 @@ class CdaudioReader(TracksReaderInterface):
         tracks = []
         for cdda_track in disc.tracks:
             track = Track()
-            track.path = 'cdda://'
+            track.path = path
             track.title = 'CD Audio track' # TODO: read tags from FreeDB
             track.index = cdda_track.number
             track.length = cdda_track.seconds

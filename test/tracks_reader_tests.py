@@ -71,8 +71,8 @@ class TracksReaderTests(TestCase):
                 patch('os.path.isdir') as isdir_mock, \
                 patch('os.listdir') as listdir_mock, \
                 patch('taglib.File') as taglib_file_mock:
-            isfile_mock.return_value = True
-            isfile_mock.side_effect = [False, True, True]
+            isdir_mock.return_value = True
+            isfile_mock.side_effect = [True, True]
             self._prepare_tagfile(taglib_file_mock, 4)
             listdir_mock.return_value = ['some_file.mp3', 'some_other_file.mp3']
             tracks = self.sut.read('some_dir')
@@ -85,8 +85,8 @@ class TracksReaderTests(TestCase):
                 patch('os.path.isdir') as isdir_mock, \
                 patch('os.listdir') as listdir_mock, \
                 patch('taglib.File') as taglib_file_mock:
-            isfile_mock.return_value = True
-            isfile_mock.side_effect = [False, True, True, True, True]
+            isdir_mock.return_value = True
+            isfile_mock.side_effect = [True, True, True, True]
             self._prepare_tagfile(taglib_file_mock, 4)
             listdir_mock.return_value = ['03 - some_file.mp3', '2 - some_other_file.mp3', '1 - some_file.mp3', 'some music.mp3']
             tracks = self.sut.read('some_dir')

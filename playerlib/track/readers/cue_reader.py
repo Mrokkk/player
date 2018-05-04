@@ -4,7 +4,6 @@ import logging
 import os
 import re
 
-from time import gmtime, strftime
 from cueparser import *
 from playerlib.track.track import *
 from .tracks_reader_interface import *
@@ -14,11 +13,8 @@ class CueReader(TracksReaderInterface):
     def __init__(self):
         self._parser = CueParser()
 
-    def _format_seconds_and_get_format_string(self, seconds):
-        time_format = '%H:%M:%S' if seconds >= 3600 else '%M:%S'
-        return strftime(time_format, gmtime(seconds)), time_format
-
     def read(self, path):
+        if not path.endswith('.cue'): return None
         cuesheet = self._parser.parse(path, use_taglib=True)
         tracks = []
         for t in cuesheet.tracks:

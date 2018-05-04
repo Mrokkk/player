@@ -3,8 +3,6 @@
 import fnmatch
 import os
 import re
-import taglib
-from time import gmtime, strftime
 
 from playerlib.track.readers.cdaudio_reader import *
 from playerlib.track.readers.cue_reader import *
@@ -17,6 +15,7 @@ class TracksReader:
         self._cdaudio_reader = CdaudioReader()
         self._cue_reader = CueReader()
         self._file_reader = FileReader()
+        self._readers = [self._cdaudio_reader, self._cue_reader, self._file_reader]
 
     def _predicate(self, f):
         if f[0].isdigit():
@@ -32,18 +31,17 @@ class TracksReader:
                 if not os.path.isfile(os.path.join(path, f)): continue
                 track = self._file_reader.read(os.path.join(path, f))
                 if track: tracks.append(track[0])
-            return tracks
+            if len(tracks):
+                return tracks
         tracks = []
         for cue in cue_files:
             tracks.extend(self._cue_reader.read(cue))
         return tracks
 
     def read(self, path):
-        if path == 'cdda://':
-            return self._cdaudio_reader.read(path)
-        elif os.path.isfile(path):
-            if path.endswith('.cue'): return self._cue_reader.read(path)
-            return self._file_reader.read(path)
-        elif os.path.isdir(path):
+        if os.path.isdir(path):
             return self._handle_dir(path)
+        for reader in self._readers:
+            tracks = reader.read(path)
+            if tracks is not None: return tracks
 
