@@ -27,13 +27,14 @@ class TracksReaderTests(TestCase):
         with patch('os.path.isfile') as isfile_mock, patch('taglib.File') as taglib_file_mock:
             isfile_mock.return_value = True
             track_tags = Mock()
-            track_tags.tags = {'TITLE': ['some title'], 'ARTIST': ['some artist'], 'TRACKNUMBER': ['1']}
+            track_tags.tags = {'TITLE': ['some title'], 'ARTIST': ['some artist'], 'ALBUM': ['some album'], 'TRACKNUMBER': ['1']}
             track_tags.length = 22
             taglib_file_mock.return_value = track_tags
             tracks = self.sut.read('some_file.mp3')
             self.assertEqual(len(tracks), 1)
             self.assertEqual(tracks[0].path, 'some_file.mp3')
             self.assertEqual(tracks[0].title, 'some title')
+            self.assertEqual(tracks[0].album, 'some album')
             self.assertEqual(tracks[0].artist, 'some artist')
             self.assertEqual(tracks[0].index, '1')
             self.assertEqual(tracks[0].length, 22)

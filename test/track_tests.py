@@ -13,6 +13,7 @@ class TrackTests(TestCase):
         track.length = 21
         track.index = 1
         track.title = 'title'
+        track.album = 'album'
         track.artist = 'Artist'
         track.state = Track.State.PLAYING
         track.playlist_entry = Mock()
@@ -22,6 +23,7 @@ class TrackTests(TestCase):
         self.assertEqual(dict_track['length'], 21)
         self.assertEqual(dict_track['index'], 1)
         self.assertEqual(dict_track['title'], 'title')
+        self.assertEqual(dict_track['album'], 'album')
         self.assertEqual(dict_track['artist'], 'Artist')
         self.assertFalse('state' in dict_track)
         self.assertFalse('playlist_entry' in dict_track)
@@ -34,6 +36,7 @@ class TrackTests(TestCase):
             'index': 98,
             'title': 'Some Title',
             'artist': 'Random Artist',
+            'album': 'Super Album',
         }
         track = Track(dict_track)
         self.assertEqual(track.path, 'some_path')
@@ -41,6 +44,7 @@ class TrackTests(TestCase):
         self.assertEqual(track.length, 315)
         self.assertEqual(track.index, 98)
         self.assertEqual(track.title, 'Some Title')
+        self.assertEqual(track.album, 'Super Album')
         self.assertEqual(track.artist, 'Random Artist')
 
     def test_play_sets_proper_state_and_triggers_playlist_entry(self):

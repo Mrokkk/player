@@ -20,7 +20,8 @@ class CueReader(TracksReaderInterface):
         for t in cuesheet.tracks:
             new_track = Track()
             new_track.path = os.path.join(os.path.dirname(path), t.file)
-            new_track.artist = cuesheet.title
+            new_track.artist = cuesheet.performer
+            new_track.album = cuesheet.title
             new_track.title = t.title
             new_track.index = str(t.index)
             new_track.length = t.length
