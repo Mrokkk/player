@@ -3,6 +3,7 @@
 from unittest import TestCase
 from unittest.mock import Mock, MagicMock, patch
 from playerlib.backends.mplayer.backend import Backend as MplayerBackend
+from playerlib.backends.mplayer.arguments_builder import *
 
 class MplayerBackendTests(TestCase):
 
@@ -213,4 +214,67 @@ class MplayerBackendTests(TestCase):
             self.sut.play_track(track)
             popen_mock.assert_not_called()
             mplayer_mock.stdin.write.has_calls(['loadfile \"file2.mp3\"\n', 'seek 20 2 1\n'])
+
+
+class ArgumentsBuilderTests(TestCase):
+
+    class Config(object):
+        def __init__(self):
+            pass
+
+
+    def setUp(self):
+        self.config_mock = self.Config()
+        self.track_mock = Mock()
+        self.track_mock.path = 'some_file.mp3'
+        self.track_mock.offset = 0
+
+
+    def assertHasPair(self, data, a, b):
+        for i, e in enumerate(data):
+            if e == a:
+                if b:
+                    self.assertEqual(data[i + 1], b)
+                return
+        raise RuntimeError('cannot find pair of {}, {}'.format(a, b))
+
+
+    def assertHasItem(self, data, a):
+        self.assertTrue(a in data)
+
+
+    def assertDoesntHaveItem(self, data, a):
+        self.assertFalse(a in data)
+
+
+    def test_should_choose_default_values_if_no_config(self):
+        self.config_mock.path = 'mplayer'
+        sut = ArgumentsBuilder(self.config_mock)
+        expected_args = ['mplayer', '-ao', 'pulse', '-noquiet', '-slave',
+            '-novideo', '-cdrom-device', '/dev/sr0', '-vo', 'null', '-cache', '0', '-ss',
+            '0', '-volume', '100', 'some_file.mp3']
+        args = sut.build(self.track_mock)
+        self.assertEqual(sorted(args), sorted(expected_args))
+
+
+    def test_should_choose_proper_demuxer(self):
+        self.config_mock.path = 'mplayer'
+        self.config_mock.demuxer = {
+            "mp3": "audio",
+            "flac": "lavf",
+            "ape": "ape"
+        }
+        sut = ArgumentsBuilder(self.config_mock)
+
+        self.track_mock.path = 'some_file.mp3'
+        args = sut.build(self.track_mock)
+        self.assertHasPair(args, '-demuxer', 'audio')
+
+        self.track_mock.path = 'some_file.flac'
+        args = sut.build(self.track_mock)
+        self.assertHasPair(args, '-demuxer', 'lavf')
+
+        self.track_mock.path = 'some_file.eee'
+        args = sut.build(self.track_mock)
+        self.assertDoesntHaveItem(args, '-demuxer')
 

@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 
+from urwim import rdb
+
 class ArgumentsBuilder:
 
     def __init__(self, config):
         self._config = config
+
+    def _get_audio_output(self):
+        try: self._config.audio_output
+        except: return 'pulse'
 
     def _get_cache(self):
         try: return self._config.cache
@@ -17,10 +23,14 @@ class ArgumentsBuilder:
         try: return self._config.cdrom_device
         except: return '/dev/sr0'
 
+    def _get_volume(self):
+        try: return rdb['volume']
+        except: return 100
+
     def build(self, track):
         args = [
             self._config.path,
-            '-ao', self._config.audio_output,
+            '-ao', self._get_audio_output(),
             '-noquiet',
             '-slave',
             '-novideo',
@@ -28,7 +38,7 @@ class ArgumentsBuilder:
             '-vo', 'null',
             '-cache', str(self._get_cache()),
             '-ss', str(track.offset),
-            '-volume', '100',
+            '-volume', str(self._get_volume()),
         ]
         demuxer = self._get_demuxer(track)
         if demuxer:
