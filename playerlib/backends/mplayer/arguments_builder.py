@@ -8,7 +8,7 @@ class ArgumentsBuilder:
         self._config = config
 
     def _get_audio_output(self):
-        try: self._config.audio_output
+        try: return self._config.audio_output
         except: return 'pulse'
 
     def _get_cache(self):
