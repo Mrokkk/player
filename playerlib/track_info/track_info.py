@@ -22,6 +22,7 @@ class TrackInfo(urwim.ViewWidget):
         if track == None: return self._no_track_playing()
         self.content[:] = [
             urwim.Text('Artist: {}'.format(track.artist)),
+            urwim.Text('Album: {}'.format(track.album)),
             urwim.Text('Title: {}'.format(track.title)),
             urwim.Text('Index: {}'.format(track.index)),
             urwim.Text('Length: {}'.format(

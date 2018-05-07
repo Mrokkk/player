@@ -27,13 +27,14 @@ class TracksReaderTests(TestCase):
         with patch('os.path.isfile') as isfile_mock, patch('taglib.File') as taglib_file_mock:
             isfile_mock.return_value = True
             track_tags = Mock()
-            track_tags.tags = {'TITLE': ['some title'], 'ARTIST': ['some artist'], 'TRACKNUMBER': ['1']}
+            track_tags.tags = {'TITLE': ['some title'], 'ARTIST': ['some artist'], 'ALBUM': ['some album'], 'TRACKNUMBER': ['1']}
             track_tags.length = 22
             taglib_file_mock.return_value = track_tags
             tracks = self.sut.read('some_file.mp3')
             self.assertEqual(len(tracks), 1)
             self.assertEqual(tracks[0].path, 'some_file.mp3')
             self.assertEqual(tracks[0].title, 'some title')
+            self.assertEqual(tracks[0].album, 'some album')
             self.assertEqual(tracks[0].artist, 'some artist')
             self.assertEqual(tracks[0].index, '1')
             self.assertEqual(tracks[0].length, 22)
@@ -111,34 +112,32 @@ class TracksReaderTests(TestCase):
             tracks = self.sut.read('some_dir')
             self.assertEqual(len(tracks), 0)
 
-    # FIXME
-    # def test_can_handle_cuesheet(self):
-        # with patch('os.path.isdir') as isdir_mock, \
-                # patch('os.path.isfile') as isfile_mock, \
-                # patch('playerlib.tracks_reader.CueReader') as cueparser_class_mock, \
-                # patch('builtins.open') as open_mock:
-            # self.sut = TracksReader()
-            # isdir_mock.return_value = False
-            # isfile_mock.return_value = True
-            # track = Mock()
-            # track.file = 'some_file.flac'
-            # track.title = ['Title']
-            # track.index = 1
-            # track.length = 203
-            # track.offset = 0
-            # cuesheet_mock = Mock()
-            # cuesheet_mock.title = ['Album Title']
-            # cuesheet_mock.tracks = [track]
-            # cuereader_mock = Mock()
-            # cuereader_mock.read.return_value = [track]
-            # cueparser_class_mock.return_value = cuereader_mock
-            # tracks = self.sut.read('some_cue.cue')
-            # self.assertEqual(len(tracks), 1)
-            # self.assertEqual(tracks[0].path, 'some_file.flac')
-            # self.assertEqual(tracks[0].title, 'Title')
-            # self.assertEqual(tracks[0].index, '1')
-            # self.assertEqual(tracks[0].length, 203)
-            # self.assertEqual(tracks[0].offset, 0)
+    def test_can_handle_cuesheet(self):
+        with patch('os.path.isdir') as isdir_mock, \
+                patch('os.path.isfile') as isfile_mock, \
+                patch('builtins.open') as open_mock:
+            cueparser_mock = Mock()
+            self.sut = TracksReader()
+            self.sut._cue_reader._parser = cueparser_mock # FIXME
+            isdir_mock.return_value = False
+            isfile_mock.return_value = True
+            track = Mock()
+            track.file = 'some_file.flac'
+            track.title = 'Title'
+            track.index = 1
+            track.length = 203
+            track.offset = 0
+            cuesheet_mock = Mock()
+            cuesheet_mock.title = 'Album Title'
+            cuesheet_mock.tracks = [track]
+            cueparser_mock.parse.return_value = cuesheet_mock
+            tracks = self.sut.read('some_cue.cue')
+            self.assertEqual(len(tracks), 1)
+            self.assertEqual(tracks[0].path, 'some_file.flac')
+            self.assertEqual(tracks[0].title, 'Title')
+            self.assertEqual(tracks[0].index, '1')
+            self.assertEqual(tracks[0].length, 203)
+            self.assertEqual(tracks[0].offset, 0)
 
     def test_can_handle_empty_cdaudio(self):
         import sys

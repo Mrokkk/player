@@ -14,6 +14,7 @@ class Track:
         self.index = 0
         self.title = None
         self.artist = None
+        self.album = None
         self.performer = None
         self.state = self.State.STOPPED
         self.playlist_entry = None

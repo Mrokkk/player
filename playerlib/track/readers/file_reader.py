@@ -26,6 +26,8 @@ class FileReader(TracksReaderInterface):
         except KeyError: track.title = os.path.basename(path)
         try: track.artist = ', '.join(tags.tags['ARTIST'])
         except KeyError: pass
+        try: track.album = ', '.join(tags.tags['ALBUM'])
+        except KeyError: pass
         try: track.index = tags.tags['TRACKNUMBER'][0]
         except KeyError: pass
         track.length = tags.length
