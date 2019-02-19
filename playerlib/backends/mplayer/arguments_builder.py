@@ -37,12 +37,17 @@ class ArgumentsBuilder:
             '-cdrom-device', self._get_cdrom_device(),
             '-vo', 'null',
             '-cache', str(self._get_cache()),
-            '-ss', str(track.offset),
             '-volume', str(self._get_volume()),
         ]
+
+        if track.offset:
+            args.extend(['-ss', str(track.offset)])
+
         demuxer = self._get_demuxer(track)
+
         if demuxer:
             args.extend(['-demuxer', demuxer])
+
         args.append(track.path)
         return args
 
