@@ -11,7 +11,10 @@ class BackendFactory:
 
     def create(self):
         if self.config.backend.name == 'mplayer':
-            return MplayerBackend(self.play_next_track_callback, self.update_time_callback, self.config.backend)
+            return MplayerBackend(
+                self.play_next_track_callback,
+                self.update_time_callback,
+                self.config.backend)
         else:
             raise RuntimeError('Improper backend name: ' + self.config.backend.name)
 

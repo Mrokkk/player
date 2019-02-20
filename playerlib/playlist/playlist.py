@@ -35,7 +35,9 @@ class Playlist(urwim.ViewWidget):
                 track.title,
                 time.strftime('%H:%M:%S', time.gmtime(int(track.length))))
         else:
-            return '{} {}'.format(os.path.basename(track.path), time.strftime('%H:%M:%S', time.gmtime(int(track.length))))
+            return '{} {}'.format(
+                os.path.basename(track.path),
+                time.strftime('%H:%M:%S', time.gmtime(int(track.length))))
 
     def _add_track(self, track):
         last = self.content[-1] if len(self.content) > 0 else None

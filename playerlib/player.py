@@ -32,15 +32,20 @@ class Player:
     def __init__(self, verbose=False):
         context = Context()
         commands = Commands(context)
-        context.config = urwim.read_config(config_files=['~/.config/player/config.json', '~/.config/player/config.yml'],
+
+        context.config = urwim.read_config(
+            config_files=['~/.config/player/config.json', '~/.config/player/config.yml'],
             defaults=self.default_config)
+
         urwim.read_persistent_data('~/.player')
+
         context.playback_controller = PlaybackController(context.config)
         context.playlist = Playlist(context.playback_controller.play_track)
         context.file_browser = FileBrowser(commands)
         context.bookmarks = Bookmarks(context.config, commands)
         context.track_info = TrackInfo()
         self.context = context
+
         widget = urwim.VerticalBox([
             [context.file_browser, context.bookmarks],
             [context.playlist, context.track_info]
