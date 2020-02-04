@@ -2,14 +2,14 @@
 # https://github.com/Damnever/pigar
 
 # urwim/urwim/yaml_config_reader.py: 5
-PyYAML == 3.12
+PyYAML == 3.13
 
 # playerlib/tracks_factory.py: 79
 discid == 1.1.1
 
 # playerlib/cue_parser.py: 33
 # playerlib/tracks_factory.py: 6
-pytaglib == 1.4.1
+pytaglib
 
 # urwim/urwim/__init__.py: 20
 # urwim/urwim/app.py: 7
