@@ -33,6 +33,9 @@ class FileBrowser(urwim.ViewWidget):
             callbacks=callbacks,
             header=self.header)
 
+    def current_dir(self):
+        return self.dir_name
+
     def change_dir(self, dirname):
         path = os.path.abspath(os.path.join(self.dir_name, dirname))
         if not os.path.isdir(path): raise RuntimeError('Not a dir: {}'.format(path))
@@ -73,6 +76,7 @@ class FileBrowser(urwim.ViewWidget):
             self._hide_dir(parent)
         else:
             self._show_dir(parent)
+        urwim.App().draw_screen()
 
     def _enter_selected_dir(self):
         self.last_position = self.listbox.focus_position

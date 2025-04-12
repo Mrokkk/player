@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import urwim
 
 from playerlib.bookmarks.bookmarks import *
@@ -30,6 +31,7 @@ class Player:
     }
 
     def __init__(self, verbose=False):
+        os.makedirs(os.path.expanduser('~/.config/player'), mode=0o755, exist_ok=True)
         context = Context()
         commands = Commands(context)
         context.config = urwim.read_config(config_files=['~/.config/player/config.json', '~/.config/player/config.yml'],
@@ -52,8 +54,6 @@ class Player:
             commands=commands,
             log_exceptions=verbose)
 
-
     def run(self):
         self.app.run()
         self.context.playback_controller.quit()
-

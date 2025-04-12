@@ -31,6 +31,7 @@ class PlaybackController:
                 self.current_track.title,
                 strftime(self.current_track.time_format, gmtime(pos - self.current_track.offset)),
                 self.current_track.length_string))
+        app.draw_screen()
 
     def play_track(self, track):
         if not track:

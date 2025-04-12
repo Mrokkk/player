@@ -63,7 +63,7 @@ class Backend(BackendInterface):
 
     def _start_backend(self):
         mplayer_args = self._arguments_builder.build(self.current_track)
-        self.logger.info('Starting mplayer with args: {}'.format(mplayer_args))
+        self.logger.info('Starting mplayer with args: {}'.format(' '.join(mplayer_args)))
         self.mplayer = subprocess.Popen(mplayer_args,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,

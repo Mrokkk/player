@@ -41,7 +41,9 @@ class Commands(urwim.Commands):
     def seek(self, value):
         self._context.playback_controller.seek(value)
 
-    def add_bookmark(self, path):
+    def add_bookmark(self, path=None):
+        if path is None:
+            path = self._context.file_browser.current_dir()
         self._context.bookmarks.add(path)
 
     @urwim.asynchronous

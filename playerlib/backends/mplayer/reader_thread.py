@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import csv
 import logging
 import threading
 from urwim import log_exception
@@ -16,19 +15,17 @@ class ReaderThread(threading.Thread):
         super().__init__(daemon=True)
 
     def _main_loop(self):
-        try:
-            reader = csv.reader(self._mplayer.stdout, delimiter='\r')
-        except:
-            log_exception(self.logger)
-            return
-        for row in reader:
-            self.logger.debug(row)
+        while True:
+            line = self._mplayer.stdout.readline()
+            if not line or len(line) == 0: break
+            line = line.strip('\r').strip()
+            self.logger.debug(line)
             if self._stop_flag.is_set(): return
-            if len(row) == 0: continue
             try:
-                self._update_time_callback(row[0])
+                self._update_time_callback(line)
             except Exception as e:
                 log_exception(self.logger)
+
         self._mplayer.wait()
         self._stop_callback()
 

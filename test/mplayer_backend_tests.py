@@ -251,7 +251,7 @@ class ArgumentsBuilderTests(TestCase):
         self.config_mock.path = 'mplayer'
         sut = ArgumentsBuilder(self.config_mock)
         expected_args = ['mplayer', '-ao', 'pulse', '-noquiet', '-slave',
-            '-novideo', '-cdrom-device', '/dev/sr0', '-vo', 'null', '-cache', '0', '-ss',
+            '-novideo', '-cdrom-device', '/dev/sr0', '-vo', 'null', '-cache', '1024', '-ss',
             '0', '-volume', '100', 'some_file.mp3']
         args = sut.build(self.track_mock)
         self.assertEqual(sorted(args), sorted(expected_args))
