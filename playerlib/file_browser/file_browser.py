@@ -76,7 +76,6 @@ class FileBrowser(urwim.ViewWidget):
             self._hide_dir(parent)
         else:
             self._show_dir(parent)
-        urwim.App().draw_screen()
 
     def _enter_selected_dir(self):
         self.last_position = self.listbox.focus_position

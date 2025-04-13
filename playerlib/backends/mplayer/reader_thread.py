@@ -2,7 +2,7 @@
 
 import logging
 import threading
-from urwim import log_exception
+from urwim import log_exception, redraw
 
 class ReaderThread(threading.Thread):
 
@@ -23,11 +23,13 @@ class ReaderThread(threading.Thread):
             if self._stop_flag.is_set(): return
             try:
                 self._update_time_callback(line)
+                redraw()
             except Exception as e:
                 log_exception(self.logger)
 
         self._mplayer.wait()
         self._stop_callback()
+        redraw()
 
     def run(self):
         self.logger.debug('Start')
