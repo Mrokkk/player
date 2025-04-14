@@ -25,7 +25,7 @@ class Backend(BackendInterface):
         super().__init__()
 
     def _update_time_pos(self, line):
-        match = re.match('^A:[ \t]{0,}(\d+)', line)
+        match = re.match('^A:[ \t]{0,}([0-9]+)', line)
         if not match: return
         if not self.current_track:
             self.logger.warning('Trying to update time for stopped track!')
