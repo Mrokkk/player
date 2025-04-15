@@ -1,6 +1,0 @@
-[submodule "urwim"]
-	path = urwim
-	url = https://github.com/Mrokkk/urwim.git
-[submodule "cueparser"]
-	path = cueparser
-	url = https://github.com/Mrokkk/cueparser.git

@@ -33,9 +33,13 @@ class Player:
     def __init__(self, verbose=False):
         os.makedirs(os.path.expanduser('~/.config/player'), mode=0o755, exist_ok=True)
         context = Context()
-        commands = Commands(context)
-        context.config = urwim.read_config(config_files=['~/.config/player/config.json', '~/.config/player/config.yml'],
+
+        context.config = urwim.read_config(
+            config_files=['~/.config/player/config.json', '~/.config/player/config.yml'],
             defaults=self.default_config)
+
+        commands = Commands(context)
+
         urwim.read_persistent_data('~/.player')
         context.playback_controller = PlaybackController(context.config)
         context.playlist = Playlist(context.playback_controller.play_track)
@@ -43,6 +47,7 @@ class Player:
         context.bookmarks = Bookmarks(context.config, commands)
         context.track_info = TrackInfo()
         self.context = context
+
         widget = urwim.VerticalBox([
             [context.file_browser, context.bookmarks],
             [context.playlist, context.track_info]
