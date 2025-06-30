@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, PropertyMock, patch
 
 class CommandHandlerTests(TestCase):
 
@@ -48,14 +48,14 @@ class CommandHandlerTests(TestCase):
 
     def test_can_seek_forward(self):
         list_mock = Mock()
-        self.window_mock.searchable_list.return_value = list_mock
+        self.window_mock.searchable_list = list_mock
         self.sut('/some_string')
         list_mock.search_forward.assert_called_once_with('some_string')
 
 
     def test_can_seek_forward_same_string(self):
         list_mock = Mock()
-        self.window_mock.searchable_list.return_value = list_mock
+        self.window_mock.searchable_list = list_mock
         self.sut('/some_string')
         list_mock.search_forward.assert_called_once_with('some_string')
         list_mock.search_forward.reset_mock()
@@ -65,14 +65,14 @@ class CommandHandlerTests(TestCase):
 
     def test_can_seek_backward(self):
         list_mock = Mock()
-        self.window_mock.searchable_list.return_value = list_mock
+        self.window_mock.searchable_list = list_mock
         self.sut('?some_string')
         list_mock.search_backward.assert_called_once_with('some_string')
 
 
     def test_can_seek_forward_same_string(self):
         list_mock = Mock()
-        self.window_mock.searchable_list.return_value = list_mock
+        self.window_mock.searchable_list = list_mock
         self.sut('?some_string')
         list_mock.search_backward.assert_called_once_with('some_string')
         list_mock.search_backward.reset_mock()

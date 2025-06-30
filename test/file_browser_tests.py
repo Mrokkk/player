@@ -2,14 +2,13 @@
 
 from unittest import TestCase
 from unittest.mock import Mock, patch
+import playerlib.file_browser.file_browser as fb
 
 class FileBrowserTests(TestCase):
 
     def setUp(self):
         self.commands_mock = Mock()
-        patch('urwim.asynchronous', lambda x: x).start()
-        import playerlib.file_browser.file_browser
-        self.FileBrowser = playerlib.file_browser.file_browser.FileBrowser
+        self.FileBrowser = fb.FileBrowser
 
     def test_can_properly_create_current_dir_view(self):
         with patch('os.getcwd') as getcwd_mock, \
@@ -65,15 +64,15 @@ class FileBrowserTests(TestCase):
             getcwd_mock.return_value = '/dir'
             exists_mock.return_value = False
             listdir_mock.side_effect = [['some_file', 'some_other_file', 'some dir'], ['file in dir', 'file 2']]
-            isdir_mock.side_effect = [False, False, True, True, False, False]
+            isdir_mock.side_effect = [False, False, True, True, True, False, False]
             sut = self.FileBrowser(self.commands_mock)
             sut.content.set_focus(0)
             sut.handle_input('enter')
             self.assertEqual(len(sut.content), 5)
             self.assertEqual(sut.header.text, '/dir')
             self.assertEqual(sut.content[0].path, '/dir/some dir')
-            self.assertEqual(sut.content[1].path, '/dir/some dir/file 2')
-            self.assertEqual(sut.content[2].path, '/dir/some dir/file in dir')
+            self.assertEqual(sut.content[1].path, '/dir/some dir/file in dir')
+            self.assertEqual(sut.content[2].path, '/dir/some dir/file 2')
             self.assertEqual(sut.content[3].path, '/dir/some_file')
             self.assertEqual(sut.content[4].path, '/dir/some_other_file')
             sut.handle_input('enter')
@@ -295,5 +294,5 @@ class FileBrowserTests(TestCase):
             isdir_mock.side_effect = [False]
             sut = self.FileBrowser(self.commands_mock)
             self.assertTrue(hasattr(sut, 'searchable_list'))
-            self.assertTrue(sut.searchable_list() != None)
+            self.assertTrue(sut.searchable_list != None)
 

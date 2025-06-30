@@ -30,6 +30,9 @@ class Player:
         }
     }
 
+    context: Context
+    app:     urwim.App
+
     def __init__(self, verbose=False):
         os.makedirs(os.path.expanduser('~/.config/player'), mode=0o755, exist_ok=True)
         context = Context()

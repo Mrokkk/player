@@ -65,13 +65,16 @@ class PlaybackController:
 
     def next(self):
         try:
+            self.logger.info(f'Playing {self.current_track.playlist_entry.next}')
             self.play_track(self.current_track.playlist_entry.next.track)
-        except: self.stop()
+        except:
+            self.stop()
 
     def prev(self):
         try:
             self.play_track(self.current_track.playlist_entry.prev.track)
-        except: self.stop()
+        except:
+            self.stop()
 
     def _seek_percentage(self, value):
         match = re.match('^([0-9]+)%$', value)

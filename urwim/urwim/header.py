@@ -8,7 +8,7 @@ class Header(urwid.WidgetWrap):
 
     def __init__(self, name):
         self._name = name
-        super().__init__(urwid.AttrWrap(urwid.Text(self._name), 'head'))
+        super().__init__(urwid.AttrMap(urwid.Text(self._name), 'head'))
 
     @property
     def text(self):
@@ -17,5 +17,5 @@ class Header(urwid.WidgetWrap):
     @text.setter
     def text(self, text):
         self._name = text
-        self._w = urwid.AttrWrap(urwid.Text(self._name), 'head')
+        self._w = urwid.AttrMap(urwid.Text(self._name), 'head')
 

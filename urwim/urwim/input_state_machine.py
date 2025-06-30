@@ -7,9 +7,12 @@ class InputStateMachine:
 
     def __init__(self, keys_mapping):
         self._keys = {
-            'gg': lambda: urwim.App().window.searchable_list().scroll_beginning(),
-            'G': lambda: urwim.App().window.searchable_list().scroll_end(),
-            'dd': lambda: urwim.App().window.searchable_list().delete(),
+            'gg': lambda: urwim.App().window.searchable_list.scroll_beginning(),
+            'G': lambda: urwim.App().window.searchable_list.scroll_end(),
+            'dd': lambda: urwim.App().window.searchable_list.delete(),
+            'yy': lambda: urwim.App().window.searchable_list.yank(),
+            'p': lambda: urwim.App().window.searchable_list.paste_after(),
+            'P': lambda: urwim.App().window.searchable_list.paste_before(),
             '<C-w>left': lambda: urwim.App().window.switch_left(),
             '<C-w>right': lambda: urwim.App().window.switch_right(),
             '<C-w><C-w>': lambda: urwim.App().window.switch_panes(),

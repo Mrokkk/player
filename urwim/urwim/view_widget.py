@@ -15,8 +15,9 @@ class ViewWidget(urwid.Frame, Widget):
         if key in self._callbacks:
             self._callbacks[key]()
 
+    @property
     def searchable_list(self):
-        return self._widget.searchable_list()
+        return self._widget.searchable_list
 
     @property
     def name(self):

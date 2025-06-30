@@ -28,3 +28,6 @@ class Entry(urwim.ListBoxEntry):
     def text(self):
         return self.line
 
+    def __repr__(self):
+        return self.line
+

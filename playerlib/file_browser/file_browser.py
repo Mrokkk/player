@@ -8,9 +8,15 @@ from .dir_entry import *
 
 class FileBrowser(urwim.ViewWidget):
 
-    footer_text = 'Browser'
+    footer_text:   str = 'Browser'
+    dir_name:      str
+    header:        urwim.Header
+    content:       urwim.SimpleListWalker
+    listbox:       urwim.ListWidget
+    last_position: int
+    logger:        logging.Logger
 
-    def __init__(self, commands):
+    def __init__(self, commands) -> None:
         self._commands = commands
         self.dir_name = os.getcwd()
         self.header = urwim.Header(self.dir_name)
@@ -33,17 +39,17 @@ class FileBrowser(urwim.ViewWidget):
             callbacks=callbacks,
             header=self.header)
 
-    def current_dir(self):
+    def current_dir(self) -> str:
         return self.dir_name
 
-    def change_dir(self, dirname):
+    def change_dir(self, dirname: str) -> None:
         path = os.path.abspath(os.path.join(self.dir_name, dirname))
         if not os.path.isdir(path): raise RuntimeError('Not a dir: {}'.format(path))
         self.dir_name = path
         self.content[0:] = self._read_dir(self.dir_name)
         self.header.text = path
 
-    def _read_dir(self, path, level=0):
+    def _read_dir(self, path: str, level: int = 0) -> list[DirEntry]:
         return sorted([
             DirEntry(
                 dir_entry,
@@ -52,40 +58,44 @@ class FileBrowser(urwim.ViewWidget):
                 level=level
             ) for dir_entry in os.listdir(path) if not dir_entry.startswith('.')])
 
-    def _show_dir(self, parent):
+    def _show_dir(self, parent: DirEntry) -> None:
         parent_path = parent.path
-        if not os.path.isdir(parent_path): return
+        if not os.path.isdir(parent_path):
+            return
         index = self.listbox.focus_position + 1
         dir_entries = self._read_dir(parent_path, parent.level + 1)
         if len(dir_entries):
             self.content[index:index] = dir_entries
             parent.open = True
 
-    def _hide_dir(self, parent):
+    def _hide_dir(self, parent: DirEntry):
         index = self.listbox.focus_position + 1
         while True:
             del self.content[index]
             try:
-                if self.content[index].level < parent.level + 1: break
-            except: break
+                if self.content[index].level < parent.level + 1:
+                    break
+            except:
+                break
         parent.open = False
 
     @urwim.asynchronous
-    def _toggle_dir(self, parent):
+    def _toggle_dir(self, parent: DirEntry) -> None:
         if parent.open:
             self._hide_dir(parent)
         else:
             self._show_dir(parent)
 
-    def _enter_selected_dir(self):
+    def _enter_selected_dir(self) -> None:
         self.last_position = self.listbox.focus_position
         path = self.content.get_focus()[0].path
         self.change_dir(path)
         try:
             self.listbox.focus_position = 0
-        except: pass
+        except:
+            pass
 
-    def _go_back(self):
+    def _go_back(self) -> None:
         self.change_dir('..')
         if self.last_position:
             self.listbox.focus_position = self.last_position

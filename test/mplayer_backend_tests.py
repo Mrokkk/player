@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from unittest import TestCase
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import Mock, MagicMock, patch, call
 from playerlib.backends.mplayer.backend import Backend as MplayerBackend
 from playerlib.backends.mplayer.arguments_builder import *
 
@@ -20,7 +20,8 @@ class MplayerBackendTests(TestCase):
         with patch('subprocess.Popen') as popen_mock, \
                 patch('threading.Thread') as thread_mock:
             mplayer_mock = Mock()
-            mplayer_mock.stdout = []
+            mplayer_mock.stdout = Mock()
+            mplayer_mock.stdout.readline.return_value = ' '
             popen_mock.return_value = mplayer_mock
             self.sut.play_track(track)
             popen_mock.assert_called_once()
@@ -28,7 +29,7 @@ class MplayerBackendTests(TestCase):
 
     def test_seek_command_should_be_sent_if_tracks_are_same(self):
         mplayer_mock = Mock()
-        mplayer_mock.stdout = []
+        mplayer_mock.stdout.readline.return_value = ' '
         self.sut.mplayer = mplayer_mock
         track = Mock()
         track.path = 'file.mp3'
@@ -52,7 +53,7 @@ class MplayerBackendTests(TestCase):
         track.offset = 0
         with patch('subprocess.Popen') as popen_mock, \
                 patch('threading.Thread') as thread_mock:
-            mplayer_mock.stdout = []
+            mplayer_mock.stdout.readline.return_value = ' '
             self.sut.play_track(track)
             popen_mock.assert_not_called()
             mplayer_mock.stdin.write.assert_called_once_with('loadfile "some_file.mp3"\n')
@@ -69,14 +70,14 @@ class MplayerBackendTests(TestCase):
         track.offset = 20
         with patch('subprocess.Popen') as popen_mock, \
                 patch('threading.Thread') as thread_mock:
-            mplayer_mock.stdout = []
+            mplayer_mock.stdout.readline.return_value = ' '
             self.sut.play_track(track)
             popen_mock.assert_not_called()
             mplayer_mock.stdin.write.assert_called_once_with('seek 20 2 1\n')
 
     def test_backend_should_be_started_with_proper_ss_value_if_track_has_offset(self):
         mplayer_mock = Mock()
-        mplayer_mock.stdout = []
+        mplayer_mock.stdout.readline.return_value = ' '
         track = Mock()
         track.path = 'some_file.mp3'
         track.offset = 215
@@ -89,7 +90,7 @@ class MplayerBackendTests(TestCase):
 
     def test_stop_should_be_ignored_if_no_track_playing(self):
         mplayer_mock = Mock()
-        mplayer_mock.stdout = []
+        mplayer_mock.stdout.readline.return_value = ' '
         self.sut.current_track = None
         self.sut.mplayer = mplayer_mock
         self.sut.stop()
@@ -97,7 +98,7 @@ class MplayerBackendTests(TestCase):
 
     def test_stop_should_send_command_if_track_playing(self):
         mplayer_mock = Mock()
-        mplayer_mock.stdout = []
+        mplayer_mock.stdout.readline.return_value = ' '
         self.sut.current_track = Mock()
         self.sut.mplayer = mplayer_mock
         self.sut.stop()
@@ -105,7 +106,7 @@ class MplayerBackendTests(TestCase):
 
     def test_toggle_pause_should_be_ignored_if_no_track_playing(self):
         mplayer_mock = Mock()
-        mplayer_mock.stdout = []
+        mplayer_mock.stdout.readline.return_value = ' '
         self.sut.current_track = None
         self.sut.mplayer = mplayer_mock
         self.sut.toggle_pause()
@@ -113,7 +114,7 @@ class MplayerBackendTests(TestCase):
 
     def test_toggle_pause_should_send_command_if_track_playing(self):
         mplayer_mock = Mock()
-        mplayer_mock.stdout = []
+        mplayer_mock.stdout.readline.return_value = ' '
         self.sut.current_track = Mock()
         self.sut.mplayer = mplayer_mock
         self.sut.toggle_pause()
@@ -125,14 +126,14 @@ class MplayerBackendTests(TestCase):
 
     def test_can_be_closed_if_backend_running(self):
         mplayer_mock = Mock()
-        mplayer_mock.stdout = []
+        mplayer_mock.stdout.readline.return_value = ' '
         self.sut.mplayer = mplayer_mock
         self.sut.quit()
         mplayer_mock.stdin.write.assert_called_once_with('quit\n')
 
     def test_should_terminate_backend_if_it_doesnt_close(self):
         mplayer_mock = Mock()
-        mplayer_mock.stdout = []
+        mplayer_mock.stdout.readline.return_value = ' '
         mplayer_mock.wait.side_effect = RuntimeError('')
         self.sut.mplayer = mplayer_mock
         self.sut.quit()
@@ -140,7 +141,7 @@ class MplayerBackendTests(TestCase):
 
     def test_can_seek(self):
         mplayer_mock = Mock()
-        mplayer_mock.stdout = []
+        mplayer_mock.stdout.readline.return_value = ' '
         self.sut.current_track = Mock()
         self.sut.mplayer = mplayer_mock
         self.sut.seek(20)
@@ -148,7 +149,7 @@ class MplayerBackendTests(TestCase):
 
     def test_can_seek_percentage(self):
         mplayer_mock = Mock()
-        mplayer_mock.stdout = []
+        mplayer_mock.stdout.readline.return_value = ' '
         self.sut.current_track = Mock()
         self.sut.mplayer = mplayer_mock
         self.sut.seek_percentage(20)
@@ -156,7 +157,7 @@ class MplayerBackendTests(TestCase):
 
     def test_can_seek_forward(self):
         mplayer_mock = Mock()
-        mplayer_mock.stdout = []
+        mplayer_mock.stdout.readline.return_value = ' '
         self.sut.current_track = Mock()
         self.sut.mplayer = mplayer_mock
         self.sut.seek_forward(20)
@@ -164,7 +165,7 @@ class MplayerBackendTests(TestCase):
 
     def test_can_seek_backward(self):
         mplayer_mock = Mock()
-        mplayer_mock.stdout = []
+        mplayer_mock.stdout.readline.return_value = ' '
         self.sut.current_track = Mock()
         self.sut.mplayer = mplayer_mock
         self.sut.seek_backward(20)
@@ -172,7 +173,7 @@ class MplayerBackendTests(TestCase):
 
     def test_seek_should_be_ignored_if_no_track_playing(self):
         mplayer_mock = Mock()
-        mplayer_mock.stdout = []
+        mplayer_mock.stdout.readline.return_value = ' '
         self.sut.current_track = None
         self.sut.mplayer = mplayer_mock
         self.sut.seek(20)
@@ -183,7 +184,7 @@ class MplayerBackendTests(TestCase):
 
     def test_can_set_volume(self):
         mplayer_mock = Mock()
-        mplayer_mock.stdout = []
+        mplayer_mock.stdout.readline.return_value = ' '
         self.sut.current_track = Mock()
         self.sut.mplayer = mplayer_mock
         self.sut.set_volume(20)
@@ -191,7 +192,7 @@ class MplayerBackendTests(TestCase):
 
     def test_should_not_send_any_command_if_mplayer_is_not_running(self):
         mplayer_mock = Mock()
-        mplayer_mock.stdout = []
+        mplayer_mock.stdout.readline.return_value = ' '
         self.sut.current_track = Mock()
         self.sut.mplayer = None
         self.sut.set_volume(20)
@@ -210,10 +211,10 @@ class MplayerBackendTests(TestCase):
         track.offset = 20
         with patch('subprocess.Popen') as popen_mock, \
                 patch('threading.Thread') as thread_mock:
-            mplayer_mock.stdout = []
+            mplayer_mock.stdout.readline.return_value = ' '
             self.sut.play_track(track)
             popen_mock.assert_not_called()
-            mplayer_mock.stdin.write.has_calls(['loadfile \"file2.mp3\"\n', 'seek 20 2 1\n'])
+            mplayer_mock.stdin.write.assert_has_calls([call('loadfile \"file2.mp3\"\n'), call('seek 20 2 1\n')])
 
 
 class ArgumentsBuilderTests(TestCase):
@@ -251,7 +252,7 @@ class ArgumentsBuilderTests(TestCase):
         self.config_mock.path = 'mplayer'
         sut = ArgumentsBuilder(self.config_mock)
         expected_args = ['mplayer', '-ao', 'pulse', '-noquiet', '-slave',
-            '-novideo', '-cdrom-device', '/dev/sr0', '-vo', 'null', '-cache', '1024', '-ss',
+            '-novideo', '-cdrom-device', '/dev/sr0', '-vo', 'null', '-cache', '2048', '-ss',
             '0', '-volume', '100', 'some_file.mp3']
         args = sut.build(self.track_mock)
         self.assertEqual(sorted(args), sorted(expected_args))

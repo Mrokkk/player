@@ -13,7 +13,7 @@ class ArgumentsBuilder:
 
     def _get_cache(self):
         try: return self._config.cache
-        except: return 1024
+        except: return 2048
 
     def _get_demuxer(self, current_track):
         try: return self._config.demuxer[current_track.path.split('.')[-1]]

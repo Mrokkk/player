@@ -17,8 +17,9 @@ class Wrapper:
     def switch_right(self):
         self.focus.switch_right()
 
+    @property
     def searchable_list(self):
-        return self.focus.searchable_list()
+        return self.focus.searchable_list
 
     @property
     def name(self):

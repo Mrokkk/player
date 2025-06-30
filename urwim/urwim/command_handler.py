@@ -25,7 +25,7 @@ class CommandHandler:
             'qa': 'quit',
             **commands_mapping
         }
-        self.logger = logging.getLogger('CommandHandler')
+        self.logger = logging.getLogger(self.__class__.__name__)
         self._search_context = None
         self._last_search = None
 
@@ -45,17 +45,17 @@ class CommandHandler:
 
     def _search_forward_mode(self, command):
         if command:
-            urwim.App().window.searchable_list().search_forward(command)
+            urwim.App().window.searchable_list.search_forward(command)
             self._last_search = command
         elif self._last_search:
-            urwim.App().window.searchable_list().search_forward(self._last_search)
+            urwim.App().window.searchable_list.search_forward(self._last_search)
 
     def _search_backward_mode(self, command):
         if command:
-            urwim.App().window.searchable_list().search_backward(command)
+            urwim.App().window.searchable_list.search_backward(command)
             self._last_search = command
         elif self._last_search:
-            urwim.App().window.searchable_list().search_backward(self._last_search)
+            urwim.App().window.searchable_list.search_backward(self._last_search)
 
     def list_commands(self):
         import inspect

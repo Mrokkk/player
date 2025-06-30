@@ -17,6 +17,7 @@ class Widget:
     def switch_right(self):
         raise NotImplementedError('{} does not implement switch_right'.format(self.__class__.__name__))
 
+    @property
     def searchable_list(self):
         raise NotImplementedError('{} does not implement searchable_list'.format(self.__class__.__name__))
 

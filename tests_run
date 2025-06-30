@@ -7,6 +7,8 @@ sys.path.insert(1, os.path.abspath(os.path.dirname(sys.argv[0])) + '/cueparser')
 
 import logging
 import unittest
+from unittest.mock import patch
+patch('urwim.asynchronous', lambda x: x).start()
 from test.backend_factory_tests import *
 from test.backend_interface_tests import *
 from test.bookmarks_tests import *
