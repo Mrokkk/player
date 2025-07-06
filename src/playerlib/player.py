@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import argparse
+import logging
 import os
 import urwim
 
@@ -65,3 +67,21 @@ class Player:
     def run(self):
         self.app.run()
         self.context.playback_controller.quit()
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-v', '--verbose', help='Log more data', action='store_true')
+    return parser.parse_args()
+
+def main():
+    args = parse_args()
+    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
+        format='%(asctime)s %(name)-20s %(levelname)-10s %(message)s',
+        datefmt='%m-%d %H:%M:%S',
+        filename='player.log',
+        filemode='w')
+    Player(verbose=args.verbose).run()
+
+if __name__ == '__main__':
+    main()
+

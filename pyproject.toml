@@ -1,0 +1,39 @@
+[build-system]
+requires = [
+    "setuptools",
+    "wheel"
+]
+
+[project]
+name = "player"
+version = "1.0.0"
+dependencies = [
+  "pytaglib>=3.0.1",
+  "PyYAML>=6.0.2",
+  "urwid>=2.6.15",
+]
+authors = [
+  { name="Mrokkk", email="mrokk@protonmail.com" },
+]
+description = "Vim styled console music player"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+license-files = ["LICENSE"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+player = "playerlib.player:main"
+
+[project.urls]
+Homepage = "https://github.com/Mrokkk/player"
+Issues = "https://github.com/Mrokkk/player/issues"

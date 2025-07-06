@@ -4,7 +4,7 @@ from unittest import TestCase
 from unittest.mock import Mock, MagicMock, patch
 from urwim import read_config
 
-class ConfigTests(TestCase):
+class UrwimConfigTests(TestCase):
 
     def test_can_read_simple_config(self):
         config = {

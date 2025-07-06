@@ -6,7 +6,7 @@ from unittest.mock import Mock
 import urwim.command_panel
 import urwim.pdb
 
-class CommandPanelTests(TestCase):
+class UrwimCommandPanelTests(TestCase):
 
     def setUp(self):
         self.command_handler_mock = Mock()

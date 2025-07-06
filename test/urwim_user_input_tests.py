@@ -4,7 +4,7 @@ from unittest import TestCase
 from unittest.mock import Mock, MagicMock, patch
 from urwim.input_state_machine import *
 
-class InputStateMachineTests(TestCase):
+class UrwimInputStateMachineTests(TestCase):
 
     def setUp(self):
         self.view_mock = Mock()

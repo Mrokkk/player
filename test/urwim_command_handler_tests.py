@@ -3,7 +3,7 @@
 from unittest import TestCase
 from unittest.mock import Mock, PropertyMock, patch
 
-class CommandHandlerTests(TestCase):
+class UrwimCommandHandlerTests(TestCase):
 
     def setUp(self):
         self.command_handler_mock = Mock()
@@ -16,7 +16,6 @@ class CommandHandlerTests(TestCase):
         self.app_mock = Mock()
         self.app_mock.return_value = self.app_instance
 
-        patch('urwim.asynchronous', lambda x: x).start()
         patch('urwim.App', self.app_mock).start()
         patch('urwim.app.App', self.app_mock).start()
         import urwim.commands

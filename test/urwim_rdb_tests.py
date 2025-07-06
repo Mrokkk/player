@@ -4,7 +4,7 @@ from unittest import TestCase
 from unittest.mock import Mock, patch
 from urwim.rdb import *
 
-class RdbTests(TestCase):
+class UrwimRdbTests(TestCase):
 
     def setUp(self):
         self.sut = Rdb()

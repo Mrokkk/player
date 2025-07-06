@@ -1,16 +1,31 @@
 # player
-Branch | Build | Coverage
------- | ----- | --------
-master | [![Build Status](https://travis-ci.org/Mrokkk/player.svg?branch=master)](https://travis-ci.org/Mrokkk/player) | [![codecov](https://codecov.io/gh/Mrokkk/player/branch/master/graph/badge.svg)](https://codecov.io/gh/Mrokkk/player)
-devel | [![Build Status](https://travis-ci.org/Mrokkk/player.svg?branch=devel)](https://travis-ci.org/Mrokkk/player) | [![codecov](https://codecov.io/gh/Mrokkk/player/branch/devel/graph/badge.svg)](https://codecov.io/gh/Mrokkk/player)
+
+Simple TUI music player with vi-style key bindings.
 
 ## Dependencies
 
 * mplayer, taglib
 * python libraries: urwid, yaml, taglib
 
+## Installation
+
+### Arch Linux
+```
+cd archlinux
+makepkg
+sudo pacman -U player-*.tar.zst
+```
+
+### Others
+```
+python3 -m build --wheel
+sudo pip install dist/*.whl
+```
+
 ## Usage
+
 ### Commands list
+
 command                      | action
 ---------------------------  | ----------------------------------
 :add\_bookmark \<path\>      | create a bookmark for a \<path\>

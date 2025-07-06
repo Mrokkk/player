@@ -5,7 +5,7 @@ from unittest.mock import Mock, MagicMock, patch
 
 from urwim.completer import *
 
-class CompleterTests(TestCase):
+class UrwimCompleterTests(TestCase):
 
     def setUp(self):
         self.command_panel_mock = Mock()

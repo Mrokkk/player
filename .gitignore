@@ -2,3 +2,10 @@ __pycache__
 .coverage
 htmlcov
 *.log
+dist/
+player.egg-info
+build/
+archlinux/pkg
+archlinux/src
+archlinux/player
+archlinux/*.tar.zst
