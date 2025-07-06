@@ -32,20 +32,35 @@ class Player:
         }
     }
 
-    context: Context
-    app:     urwim.App
+    context:        Context
+    app:            urwim.App
+    runtime_dir:    str = os.path.expanduser('~/.local/share/player')
+    config_dir:     str = os.path.expanduser('~/.config/player')
 
-    def __init__(self, verbose=False):
-        os.makedirs(os.path.expanduser('~/.config/player'), mode=0o755, exist_ok=True)
+    def __init__(self, args):
+        os.makedirs(self.runtime_dir, mode=0o755, exist_ok=True)
+        os.makedirs(self.config_dir, mode=0o755, exist_ok=True)
+
+        logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
+            format='%(asctime)s %(name)-20s %(levelname)-10s %(message)s',
+            datefmt='%y-%m-%d %H:%M:%S',
+            filename=self.runtime_dir + '/player.log',
+            filemode='w')
+
         context = Context()
 
         context.config = urwim.read_config(
-            config_files=['~/.config/player/config.json', '~/.config/player/config.yml'],
+            config_files=[
+                self.config_dir + '/config.json',
+                self.config_dir + '/config.yml',
+                self.runtime_dir + '/config.json',
+                self.runtime_dir + '/config.yml'
+            ],
             defaults=self.default_config)
 
         commands = Commands(context)
 
-        urwim.read_persistent_data('~/.player')
+        urwim.read_persistent_data(self.runtime_dir + '/history.json')
         context.playback_controller = PlaybackController(context.config)
         context.playlist = Playlist(context.playback_controller.play_track)
         context.file_browser = FileBrowser(commands)
@@ -62,7 +77,7 @@ class Player:
             widget,
             context.config,
             commands=commands,
-            log_exceptions=verbose)
+            log_exceptions=args.verbose)
 
     def run(self):
         self.app.run()
@@ -75,12 +90,7 @@ def parse_args():
 
 def main():
     args = parse_args()
-    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
-        format='%(asctime)s %(name)-20s %(levelname)-10s %(message)s',
-        datefmt='%m-%d %H:%M:%S',
-        filename='player.log',
-        filemode='w')
-    Player(verbose=args.verbose).run()
+    Player(args).run()
 
 if __name__ == '__main__':
     main()

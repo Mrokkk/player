@@ -61,4 +61,5 @@ space                       | :pause
 \]                          | :set volume +10
 
 ### Config
-Configuration file should be located in the one of the following locations: `~/.config/player/config.json` or `~/.config/player/config.yml`. See https://github.com/Mrokkk/player/blob/master/example_config.json or https://github.com/Mrokkk/player/blob/master/example_config.yml for examples.
+
+Configuration file `config.json` or `config.yml` should be located in the one of the following locations: `~/.config/player` or `~/.local/share/player`. See https://github.com/Mrokkk/player/blob/master/example_config.json or https://github.com/Mrokkk/player/blob/master/example_config.yml for examples.
