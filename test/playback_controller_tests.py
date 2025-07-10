@@ -207,6 +207,32 @@ class PlaybackControllerTests(TestCase):
         self.command_panel_mock.set_caption.reset_mock()
 
 
+    def test_can_go_to_prev_track(self):
+        self.current_track_mock.offset = 21
+        self.current_track_mock.length = 32
+        self.current_track_mock.title = 'Some Title'
+        self.current_track_mock.path = '/path'
+        self.current_track_mock.length_string = '00:32'
+        self.current_track_mock.time_format = '%M:%S'
+        prev_track_mock = Mock()
+        prev_track_mock.offset = 0
+        prev_track_mock.length = 21
+        prev_track_mock.title = 'Some Other Title'
+        prev_track_mock.path = '/path'
+        prev_track_mock.length_string = '00:21'
+        prev_track_mock.time_format = '%M:%S'
+        self.current_track_mock.playlist_entry.prev.track = prev_track_mock
+        self.sut.current_track = self.current_track_mock
+
+        self.sut.update_current_state(31)
+        self.command_panel_mock.set_caption.assert_called_once_with('Some Title : 00:10 / 00:32')
+        self.command_panel_mock.set_caption.reset_mock()
+
+        self.sut.update_current_state(10)
+        self.command_panel_mock.set_caption.assert_called_once_with('Some Other Title : 00:10 / 00:21')
+        self.command_panel_mock.set_caption.reset_mock()
+
+
     def test_ignores_if_footer_focused(self):
         self.command_panel_mock.selectable.return_value = True
         self.current_track_mock.offset = 0

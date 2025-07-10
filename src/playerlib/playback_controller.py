@@ -22,9 +22,11 @@ class PlaybackController:
     def update_current_state(self, pos):
         if pos < 0 or not self.current_track: return
         app = App()
-        if pos - self.current_track.offset >= self.current_track.length and \
-                self.current_track.path == self.current_track.playlist_entry.next.track.path:
+        diff = pos - self.current_track.offset
+        if diff >= self.current_track.length and self.current_track.path == self.current_track.playlist_entry.next.track.path:
             self.set_next_track_playing()
+        elif diff < 0 and self.current_track.path == self.current_track.playlist_entry.prev.track.path:
+            self.set_prev_track_playing()
         if app.command_panel.selectable() or pos - self.current_track.offset < 0: return
         with app.draw_lock:
             app.command_panel.set_caption('{} : {} / {}'.format(
@@ -46,6 +48,13 @@ class PlaybackController:
         last_track = self.current_track
         last_track.stop()
         self.current_track = self.current_track.playlist_entry.next.track
+        self.current_track.play()
+        rdb['track'] = self.current_track
+
+    def set_prev_track_playing(self):
+        last_track = self.current_track
+        last_track.stop()
+        self.current_track = self.current_track.playlist_entry.prev.track
         self.current_track.play()
         rdb['track'] = self.current_track
 
