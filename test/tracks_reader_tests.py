@@ -87,15 +87,17 @@ class TracksReaderTests(TestCase):
                 patch('os.listdir') as listdir_mock, \
                 patch('taglib.File') as taglib_file_mock:
             isdir_mock.return_value = True
-            isfile_mock.side_effect = [True, True, True, True]
-            self._prepare_tagfile(taglib_file_mock, 4)
-            listdir_mock.return_value = ['03 - some_file.mp3', '2 - some_other_file.mp3', '1 - some_file.mp3', 'some music.mp3']
+            isfile_mock.side_effect = [True, True, True, True, True, True]
+            self._prepare_tagfile(taglib_file_mock, 6)
+            listdir_mock.return_value = ['03 - some_file.mp3', '2 - some_other_file.mp3', '1 - some_file.mp3', 'some music.mp3', '3-01 - test.mp3', '3-02 - test.mp3']
             tracks = self.sut.read('some_dir')
-            self.assertEqual(len(tracks), 4)
+            self.assertEqual(len(tracks), 6)
             self.assertEqual(tracks[0].path, 'some_dir/1 - some_file.mp3')
             self.assertEqual(tracks[1].path, 'some_dir/2 - some_other_file.mp3')
             self.assertEqual(tracks[2].path, 'some_dir/03 - some_file.mp3')
-            self.assertEqual(tracks[3].path, 'some_dir/some music.mp3')
+            self.assertEqual(tracks[3].path, 'some_dir/3-01 - test.mp3')
+            self.assertEqual(tracks[4].path, 'some_dir/3-02 - test.mp3')
+            self.assertEqual(tracks[5].path, 'some_dir/some music.mp3')
 
     def test_can_handle_dir_with_empty_cue_sheet(self):
         with patch('os.path.isdir') as isdir_mock, \

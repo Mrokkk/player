@@ -19,7 +19,7 @@ class TracksReader:
 
     def _predicate(self, f):
         if f[0].isdigit():
-            a = re.search('[0-9]+', f).group(0)
+            a = re.search('[0-9]*.[0-9]+', f).group(0)
             return a.zfill(9)
         return f
 
