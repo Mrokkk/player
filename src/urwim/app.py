@@ -29,6 +29,9 @@ class App:
             self._log_exceptions = log_exceptions
             self._hack_urwid_asyncio()
             self._draw_lock = threading.Lock()
+
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
             self._event_loop = urwid.AsyncioEventLoop(loop=asyncio.get_event_loop())
             self._command_handler = CommandHandler(commands, commands_mapping)
             self._command_panel = CommandPanel(self._command_handler)
